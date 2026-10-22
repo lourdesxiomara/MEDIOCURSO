@@ -513,7 +513,7 @@ def v_migracion():
         cubiertos += [x.strip() for x in fila.split(",") if x.strip()]
     if sorted(cubiertos, key=int) != sorted(ids_legado, key=int):
         errores.append(f"migracion.md §5 cubre {sorted(cubiertos, key=int)} y el legado tiene {ids_legado}")
-    m = re.search(r"leídos (\d+) = migrados (\d+) \+ cuarentena (\d+) \+ descartados (\d+)", texto)
+    m = re.search(r"read (\d+) = migrated (\d+) \+ quarantined (\d+) \+ discarded (\d+)", texto)
     if not m:
         errores.append("migracion.md: falta la línea de totales M-07")
     else:
