@@ -20,7 +20,7 @@
     "motivo": {
       "type": "string",
       "pattern": "^\\d{2}$",
-      "description": "Catálogo 09 (crédito) o 10 (débito); la ruta define cuál se valida."
+      "description": "Catalog 09 (credit) or 10 (debit); the path determines which one is validated."
     },
     "sustento": {
       "type": "string",

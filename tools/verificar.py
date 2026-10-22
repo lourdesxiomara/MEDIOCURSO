@@ -1,10 +1,10 @@
-"""Verificación automática de las especificaciones Spec-First.
+"""Automatic verification of the Spec-First specifications.
 
-Uso (desde la raíz del repo):
+Usage (from the repo root):
     python -m pip install -r tools/requirements.txt
     python tools/verificar.py
 
-Sale con código 0 solo si TODAS las comprobaciones pasan. Pensado para Windows, Linux y macOS.
+Exits with code 0 only if ALL checks pass. Works on Windows, Linux and macOS.
 """
 from __future__ import annotations
 
@@ -81,7 +81,7 @@ try:
     from lxml import etree
     from referencing import Registry, Resource
 except ImportError as e:  # pragma: no cover
-    sys.exit(f"Falta una dependencia ({e.name}). Ejecuta: python -m pip install -r tools/requirements.txt")
+    sys.exit(f"Missing dependency ({e.name}). Run: python -m pip install -r tools/requirements.txt")
 
 errores: list[str] = []
 avisos: list[str] = []
@@ -92,7 +92,7 @@ def check(nombre: str, fn) -> None:
     try:
         fn()
     except Exception as e:  # noqa: BLE001 - un fallo inesperado también es un error de verificación
-        errores.append(f"{nombre}: excepción {type(e).__name__}: {e}")
+        errores.append(f"{nombre}: exception {type(e).__name__}: {e}")
     estado = "OK " if len(errores) == antes else "ERR"
     print(f"[{estado}] {nombre}")
     for err in errores[antes:]:
@@ -153,7 +153,7 @@ def v_schemas():
             try:
                 resolver.lookup(ref)
             except Exception:  # noqa: BLE001
-                errores.append(f"{f.name}: $ref no resuelve: {ref}")
+                errores.append(f"{f.name}: $ref does not resolve: {ref}")
 
 
 def v_enums_catalogos():
@@ -243,7 +243,7 @@ def v_calculos():
             if "2000" in trib:
                 isc = Decimal(trib["2000"]["monto"])
                 if isc_esperado(trib["2000"], cant, vv) != isc:
-                    errores.append(f"{n}: ISC sistema {trib['2000']['sistemaIsc']} mal calculado (cat. 08)")
+                    errores.append(f"{n}: ISC sistema {trib['2000']['sistemaIsc']} miscalculated (cat. 08)")
             if af.startswith("1"):
                 if "1000" not in trib:
                     errores.append(f"{n}: afectación {af} exige tributo 1000 IGV (R-22)")
@@ -252,7 +252,7 @@ def v_calculos():
                 if Decimal(x["baseImponible"]) != vv + isc:
                     errores.append(f"{n}: base IGV ≠ valor + ISC (R-25)")
                 if r2((vv + isc) * tasa_igv) != Decimal(x["monto"]):
-                    errores.append(f"{n}: IGV mal calculado")
+                    errores.append(f"{n}: IGV miscalculated")
                 t["grav"] += vv
                 t["igv"] += Decimal(x["monto"])
             else:
@@ -273,7 +273,7 @@ def v_calculos():
                  ("precioVenta", t["vv"] + t["igv"] + t["isc"] + t["icb"])]
         for campo, esperado in pares:
             if tot[campo] != esperado:
-                errores.append(f"{nombre}: totales.{campo} = {tot[campo]} y debería ser {esperado} (R-30/R-31)")
+                errores.append(f"{nombre}: totales.{campo} = {tot[campo]} y should be {esperado} (R-30/R-31)")
         if tot["importeTotal"] != tot["precioVenta"] - tot.get("totalDescuentos", 0) - tot.get("totalAnticipos", 0):
             errores.append(f"{nombre}: importeTotal inconsistente (R-31)")
         if not any(l["codigo"] == "1000" for l in c["leyendas"]):
@@ -379,12 +379,12 @@ def v_openapi():
             for parte in ref[2:].split("/"):
                 nodo = nodo.get(parte) if isinstance(nodo, dict) else None
             if nodo is None:
-                errores.append(f"openapi.yaml: $ref interno no resuelve {ref}")
+                errores.append(f"openapi.yaml: $ref interno does not resolve {ref}")
         elif not (OPENAPI.parent / ref.split("#")[0]).resolve().is_file():
-            errores.append(f"openapi.yaml: archivo de $ref no existe {ref}")
+            errores.append(f"openapi.yaml: archivo de $ref does not exist {ref}")
     for ext in re.findall(r"externalValue:\s*'([^']+)'", texto):
         if not (OPENAPI.parent / ext).resolve().is_file():
-            errores.append(f"openapi.yaml: externalValue no existe {ext}")
+            errores.append(f"openapi.yaml: externalValue does not exist {ext}")
     # todo endpoint citado en los casos de uso existe en la API
     rutas = {r.split("?")[0] for r in api["paths"]}
     cu = CASOS_USO.read_text(encoding="utf-8")
@@ -417,9 +417,9 @@ def v_asyncapi():
             for parte in ref[2:].split("/"):
                 nodo = nodo.get(parte) if isinstance(nodo, dict) else None
             if nodo is None:
-                errores.append(f"asyncapi.yaml: $ref no resuelve {ref}")
+                errores.append(f"asyncapi.yaml: $ref does not resolve {ref}")
         elif not (ASYNCAPI.parent / ref).resolve().is_file():
-            errores.append(f"asyncapi.yaml: archivo no existe {ref}")
+            errores.append(f"asyncapi.yaml: archivo does not exist {ref}")
     tipos = set(leer_json(SCHEMAS / "evento.schema.json")["properties"]["tipo"]["enum"])
     mensajes = set(doc["components"]["messages"])
     if tipos != mensajes:
@@ -487,20 +487,20 @@ def v_matriz():
         if f["schema"]:
             sch = leer_json(SCHEMAS / f"{f['schema']}.schema.json")
             if not f["campo_dominio"].startswith("(") and not _resolver_puntero(sch, f["campo_dominio"], reg):
-                errores.append(f"{fid}: {f['schema']}{f['campo_dominio']} no existe en el schema")
+                errores.append(f"{fid}: {f['schema']}{f['campo_dominio']} does not exist en el schema")
         for r in filter(None, f["regla"].split(",")):
             if r.strip() not in reglas:
                 errores.append(f"{fid}: regla {r} no está definida")
         for c in filter(None, f["catalogo"].split("/")):
             if c not in cats:
-                errores.append(f"{fid}: catálogo {c} no existe en docs/sunat/catalogos")
+                errores.append(f"{fid}: catálogo {c} does not exist en docs/sunat/catalogos")
         xp = f["xpath_ubl"]
         if xp.startswith("/"):
             raiz = xp.split("/")[1]
             if "UBLExtensions" in xp:
-                avisos.append(f"{fid}: {xp} se agrega al firmar; no se comprueba en XML sin firma")
+                avisos.append(f"{fid}: {xp} is added on signing; not checked in unsigned XML")
             elif not xml[raiz].xpath(xp_ns(xp), namespaces=NS):
-                errores.append(f"{fid}: XPath sin resultado en el XML de ejemplo: {xp}")
+                errores.append(f"{fid}: XPath has no match in the example XML: {xp}")
 
 
 # ---------------------------------------------------------------- migración
@@ -525,7 +525,7 @@ def v_migracion():
             errores.append(f"mapeo-legado.csv: regla {r['regla']} no definida")
         sch = leer_json(SCHEMAS / f"{r['schema_destino']}.schema.json")
         if not _resolver_puntero(sch, r["campo_destino"], cargar_registro()):
-            errores.append(f"mapeo-legado.csv: {r['schema_destino']}{r['campo_destino']} no existe")
+            errores.append(f"mapeo-legado.csv: {r['schema_destino']}{r['campo_destino']} does not exist")
 
 
 # ---------------------------------------------------------------- criterios de aceptación
@@ -550,7 +550,7 @@ def v_aceptacion():
             continue
         rs = {r.strip() for r in m.group(1).split(",")}
         for r in rs - reglas:
-            errores.append(f"{cid}: regla {r} no existe")
+            errores.append(f"{cid}: regla {r} does not exist")
         cubiertas |= rs
         for paso in ("**Given**", "**When**", "**Then**"):
             if paso not in b:
@@ -562,7 +562,7 @@ def v_aceptacion():
             if ruta not in api["paths"] or metodo.lower() not in api["paths"][ruta]:
                 errores.append(f"{cid}: endpoint {metodo} {ruta} no está en openapi.yaml")
     for r in sorted(reglas - cubiertas):
-        errores.append(f"Regla {r} sin criterio de aceptación")
+        errores.append(f"Regla {r} has no acceptance criterion")
 
 
 # ---------------------------------------------------------------- referencias cruzadas y Mermaid
@@ -602,30 +602,30 @@ def v_xsd_oficiales_intactos():
                               capture_output=True, text=True, check=True).stdout.split()[0]
         r = subprocess.run(["git", "diff", "--quiet", base, "--", "docs/ubl/common", "docs/ubl/maindoc"], cwd=RAIZ)
         if r.returncode != 0:
-            errores.append("Los XSD oficiales de OASIS fueron modificados respecto del commit base")
+            errores.append("The official OASIS XSDs were modified since the base commit")
     except (FileNotFoundError, subprocess.CalledProcessError, IndexError):
-        avisos.append("git no disponible: no se comprobó que los XSD oficiales estén intactos")
+        avisos.append("git not available: official XSDs not checked")
 
 
 def main() -> int:
-    print(f"Verificando {RAIZ}\n")
-    check("Catálogos SUNAT (estructura)", v_catalogos)
-    check("JSON Schemas válidos y $ref resueltos", v_schemas)
-    check("Enums de schemas = catálogos SUNAT", v_enums_catalogos)
-    check("Ejemplos JSON válidos contra sus schemas", v_ejemplos_json)
-    check("Cálculo de IGV, ISC (cat. 08: 01/02/03), ICBPER y totales en ejemplos", v_calculos)
-    check("XML de ejemplo válidos contra XSD UBL 2.1", v_xml_xsd)
-    check("XML de ejemplo coinciden con su JSON", v_xml_coincide_json)
-    check("OpenAPI 3.1: estructura, $ref, ejemplos y rutas de casos de uso", v_openapi)
-    check("Matriz de trazabilidad: schema, XPath, reglas y catálogos", v_matriz)
-    check("Migración: cobertura de la muestra legada y mapeo", v_migracion)
-    check("Criterios de aceptación: cubren toda regla R-xx y M-xx", v_aceptacion)
-    check("Referencias cruzadas R-xx, D-xx, ADR-xxx", v_referencias)
-    check("Diagramas Mermaid (sintaxis básica)", v_mermaid)
-    check("XSD oficiales OASIS sin modificar", v_xsd_oficiales_intactos)
+    print(f"Verifying {RAIZ}\n")
+    check("SUNAT catalogs (structure)", v_catalogos)
+    check("Valid JSON Schemas and resolved $refs", v_schemas)
+    check("Schema enums = SUNAT catalogs", v_enums_catalogos)
+    check("JSON examples valid against their schemas", v_ejemplos_json)
+    check("IGV, ISC (cat. 08: 01/02/03), ICBPER and totals in examples", v_calculos)
+    check("Example XMLs valid against the UBL 2.1 XSD", v_xml_xsd)
+    check("Example XMLs match their JSON", v_xml_coincide_json)
+    check("OpenAPI 3.1: structure, $refs, examples and use-case routes", v_openapi)
+    check("Traceability matrix: schema, XPath, rules and catalogs", v_matriz)
+    check("Migration: legacy sample coverage and mapping", v_migracion)
+    check("Acceptance criteria cover every R-xx and M-xx rule", v_aceptacion)
+    check("Cross references R-xx, D-xx, ADR-xxx", v_referencias)
+    check("Mermaid diagrams (basic syntax)", v_mermaid)
+    check("Official OASIS XSDs untouched", v_xsd_oficiales_intactos)
     for a in avisos:
-        print(f"[AVISO] {a}")
-    print(f"\n{'TODO CORRECTO' if not errores else f'{len(errores)} ERROR(ES)'}")
+        print(f"[WARN] {a}")
+    print(f"\n{'TODO CORRECTO (all checks passed)' if not errores else f'{len(errores)} ERROR(S)'}")
     return 1 if errores else 0
 
 

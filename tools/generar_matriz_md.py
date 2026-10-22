@@ -1,6 +1,6 @@
-"""Regenera specs/05-trazabilidad/matriz.md a partir de matriz.csv (la fuente de verdad es el CSV).
+"""Regenerates specs/05-trazabilidad/matriz.md from matriz.csv (the CSV is the source of truth).
 
-Uso:  python3 tools/generar_matriz_md.py
+Usage:  python3 tools/generar_matriz_md.py
 """
 import csv
 from pathlib import Path
@@ -54,7 +54,7 @@ def main() -> None:
         out.append(f"| `{campo}` | {', '.join(ids) or '—'} |")
     out += ["", "Per-field transformation details: `specs/06-migracion/mapeo-legado.csv`.", ""]
     MD.write_text("\n".join(out), encoding="utf-8")
-    print(f"matriz.md regenerated: {len(filas)} filas")
+    print(f"matriz.md regenerated: {len(filas)} rows")
 
 
 if __name__ == "__main__":

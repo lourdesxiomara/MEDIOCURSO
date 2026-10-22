@@ -2,7 +2,7 @@
   "name": "abc-facturacion-specs-tools",
   "private": true,
   "type": "module",
-  "description": "Herramientas de verificación de las especificaciones (Mermaid y OpenAPI)",
+  "description": "Specification verification tools (Mermaid and OpenAPI)",
   "scripts": {
     "mermaid": "node verificar-mermaid.mjs ../specs",
     "openapi": "redocly lint ../specs/04-api/openapi.yaml --config ../redocly.yaml"

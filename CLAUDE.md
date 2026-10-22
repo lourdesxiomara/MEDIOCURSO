@@ -50,7 +50,7 @@ Any Claude agent working in this repo reads this file automatically. Read it ful
 ## 5. Mandatory verification (before each commit)
 ```bash
 python -m pip install -r tools/requirements.txt   # once
-python tools/verificar.py                         # must end with "TODO CORRECTO" (all checks pass)
+python tools/verificar.py                         # must end with "TODO CORRECTO (all checks passed)"
 cd tools && npm install && npm run mermaid && npm run openapi
 ```
 It checks: valid JSON Schemas, examples valid against their schemas, schema enums == catalogs,

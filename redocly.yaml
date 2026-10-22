@@ -1,9 +1,9 @@
-# Configuración de lint para specs/04-api/openapi.yaml  (npx @redocly/cli lint specs/04-api/openapi.yaml)
+# Lint configuration for specs/04-api/openapi.yaml  (npx @redocly/cli lint specs/04-api/openapi.yaml)
 extends:
   - recommended
 rules:
-  # Falso positivo: los schemas usan if/then para exigir propiedades ya definidas en el objeto padre
-  # (ej. sistemaIsc solo si el tributo es 2000). Redocly no resuelve properties del padre dentro de then.
+  # False positive: schemas use if/then to require properties already defined in the parent object
+  # (e.g. sistemaIsc only when the tax is 2000). Redocly does not resolve parent properties inside then.
   no-required-schema-properties-undefined: off
-  # Intencional: el monolito expone la API en la máquina local (ADR-001, ADR-003).
+  # Intentional: the monolith exposes the API on the local machine (ADR-001, ADR-003).
   no-server-example.com: off

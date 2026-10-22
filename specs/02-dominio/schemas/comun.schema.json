@@ -267,7 +267,7 @@
     "ubigeo": {
       "type": "string",
       "pattern": "^\\d{6}$",
-      "description": "Catálogo 13 (INEI)."
+      "description": "Catalog 13 (INEI ubigeo)."
     },
     "documentoIdentidad": {
       "type": "object",

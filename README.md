@@ -38,7 +38,7 @@ Other case requirements also covered:
 ## How to verify consistency
 ```bash
 python -m pip install -r tools/requirements.txt
-python tools/verificar.py                 # must end with "TODO CORRECTO" (all checks pass)
+python tools/verificar.py                 # must end with "TODO CORRECTO (all checks passed)"
 
 cd tools && npm install
 npm run mermaid                           # parses diagrams with the official Mermaid parser
