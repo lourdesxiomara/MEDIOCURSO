@@ -8,19 +8,20 @@
       "codigo": "01",
       "descripcion": "Sistema al valor (Apéndice IV, lit. A – TUO IGV e ISC)",
       "base": "valor de venta",
-      "formula": "isc = valorVenta × tasa (tasa según Apéndice IV, lit. A del TUO)"
+      "formula": "isc = valorVenta × tasa (tasa: Apéndice IV, literal A)"
     },
     {
       "codigo": "02",
       "descripcion": "Aplicación del monto fijo (Apéndice IV, lit. B – TUO IGV e ISC)",
-      "base": "cantidad",
-      "formula": "isc = cantidad × montoFijo (monto según Apéndice IV, lit. B del TUO)"
+      "base": "volumen vendido en la unidad fijada por decreto supremo",
+      "formula": "isc = cantidad × montoFijo (monto: Apéndice III / Apéndice IV, literal B)"
     },
     {
       "codigo": "03",
       "descripcion": "Sistema de precios de venta al público (Apéndice IV, lit. C – TUO IGV e ISC)",
-      "base": "precio de venta sugerido al público",
-      "formula": "isc = precioVentaPublicoSugerido × factor × tasa × cantidad (factor y tasa según Apéndice IV, lit. C del TUO)"
+      "base": "precio de venta al público sugerido × factor",
+      "formula": "isc = precioVentaPublico × factor × tasa × cantidad; factor = 1 / (1 + tasa IGV + tasa IPM) a 3 decimales = 0.847 (tasa: Apéndice IV, literal C)"
     }
-  ]
+  ],
+  "fuenteCalculo": "SUNAT Orientación tributaria, '05. Cálculo del Impuesto - ISC' (https://orientacion.sunat.gob.pe/node/1809)"
 }

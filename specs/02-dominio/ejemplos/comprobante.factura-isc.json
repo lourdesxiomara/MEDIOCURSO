@@ -1,0 +1,125 @@
+{
+  "id": "5d2e8f41-1a6b-4c7d-9e3f-7a8b9c0d1e03",
+  "tipoComprobante": "01",
+  "serie": "F001",
+  "correlativo": 2,
+  "numero": "F001-2",
+  "tipoOperacion": "0101",
+  "estado": "ACEPTADO",
+  "fechaEmision": "2026-10-22",
+  "horaEmision": "11:00:00",
+  "moneda": "PEN",
+  "emisor": {
+    "ruc": "20600123450",
+    "razonSocial": "ABC SOFTWARE CORP S.A.C.",
+    "nombreComercial": "ABC MAYORISTA",
+    "domicilioFiscal": {
+      "direccion": "AV. UNIVERSITARIA 123",
+      "ubigeo": "100601",
+      "departamento": "HUANUCO",
+      "provincia": "LEONCIO PRADO",
+      "distrito": "RUPA-RUPA",
+      "codigoPais": "PE",
+      "codigoEstablecimiento": "0000"
+    },
+    "amazonia": false
+  },
+  "cliente": {
+    "documento": {
+      "tipo": "6",
+      "numero": "20456789014"
+    },
+    "nombre": "BODEGA EJEMPLO S.A.C.",
+    "direccion": {
+      "direccion": "JR. LOS PINOS 456"
+    },
+    "correo": "compras@bodega-ejemplo.pe"
+  },
+  "lineas": [
+    {
+      "numero": 1,
+      "codigoProducto": "CER-1L",
+      "descripcion": "CERVEZA 1L (ISC MONTO FIJO)",
+      "unidadMedida": "NIU",
+      "cantidad": "12",
+      "valorUnitario": "4.00",
+      "precioUnitario": "6.49",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "48.00",
+      "tributos": [
+        {
+          "codigo": "2000",
+          "nombre": "ISC",
+          "codigoInternacional": "EXC",
+          "categoria": "S",
+          "baseImponible": "48.00",
+          "monto": "18.00",
+          "sistemaIsc": "02",
+          "montoPorUnidad": "1.50"
+        },
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "66.00",
+          "monto": "11.88",
+          "porcentaje": "18.00"
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "codigoProducto": "CIG-20",
+      "descripcion": "CIGARRILLOS CAJETILLA X20 (ISC PVP)",
+      "unidadMedida": "NIU",
+      "cantidad": "5",
+      "valorUnitario": "8.00",
+      "precioUnitario": "11.838",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "40.00",
+      "tributos": [
+        {
+          "codigo": "2000",
+          "nombre": "ISC",
+          "codigoInternacional": "EXC",
+          "categoria": "S",
+          "baseImponible": "40.00",
+          "monto": "10.16",
+          "porcentaje": "20.00",
+          "sistemaIsc": "03",
+          "precioVentaPublico": "12.00",
+          "factor": "0.847"
+        },
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "50.16",
+          "monto": "9.03",
+          "porcentaje": "18.00"
+        }
+      ]
+    }
+  ],
+  "totales": {
+    "totalGravado": "88.00",
+    "totalExonerado": "0.00",
+    "totalInafecto": "0.00",
+    "totalIgv": "20.91",
+    "totalIsc": "28.16",
+    "totalIcbper": "0.00",
+    "valorVenta": "88.00",
+    "precioVenta": "137.07",
+    "importeTotal": "137.07"
+  },
+  "leyendas": [
+    {
+      "codigo": "1000",
+      "texto": "CIENTO TREINTA Y SIETE CON 07/100 SOLES"
+    }
+  ]
+}

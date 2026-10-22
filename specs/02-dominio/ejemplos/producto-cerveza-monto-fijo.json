@@ -1,0 +1,12 @@
+{
+  "codigo": "CER-1L",
+  "descripcion": "CERVEZA 1L (ISC MONTO FIJO)",
+  "unidadMedida": "NIU",
+  "afectacionIgv": "10",
+  "precioUnitario": "6.49",
+  "isc": {
+    "sistema": "02",
+    "montoFijo": "1.50"
+  },
+  "esBolsaPlastica": false
+}

@@ -386,7 +386,17 @@
           "minimum": 1
         },
         "montoPorUnidad": {
-          "$ref": "comun.schema.json#/$defs/montoUnitario"
+          "$ref": "comun.schema.json#/$defs/montoUnitario",
+          "description": "ICBPER: monto por bolsa. ISC sistema 02: monto fijo por unidad."
+        },
+        "precioVentaPublico": {
+          "$ref": "comun.schema.json#/$defs/montoUnitario",
+          "description": "ISC sistema 03: precio de venta al público sugerido."
+        },
+        "factor": {
+          "type": "string",
+          "pattern": "^0\\.\\d{3}$",
+          "description": "ISC sistema 03: 1/(1+IGV+IPM) a 3 decimales (0.847)."
         }
       },
       "allOf": [
@@ -416,6 +426,71 @@
             "required": [
               "cantidadBolsas",
               "montoPorUnidad"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "codigo": {
+                "const": "2000"
+              },
+              "sistemaIsc": {
+                "const": "01"
+              }
+            },
+            "required": [
+              "codigo",
+              "sistemaIsc"
+            ]
+          },
+          "then": {
+            "required": [
+              "porcentaje"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "codigo": {
+                "const": "2000"
+              },
+              "sistemaIsc": {
+                "const": "02"
+              }
+            },
+            "required": [
+              "codigo",
+              "sistemaIsc"
+            ]
+          },
+          "then": {
+            "required": [
+              "montoPorUnidad"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "codigo": {
+                "const": "2000"
+              },
+              "sistemaIsc": {
+                "const": "03"
+              }
+            },
+            "required": [
+              "codigo",
+              "sistemaIsc"
+            ]
+          },
+          "then": {
+            "required": [
+              "porcentaje",
+              "precioVentaPublico",
+              "factor"
             ]
           }
         }

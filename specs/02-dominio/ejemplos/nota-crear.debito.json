@@ -1,0 +1,13 @@
+{
+  "serie": "FD01",
+  "motivo": "01",
+  "sustento": "Intereses por mora de 30 dias",
+  "lineas": [
+    {
+      "codigoProducto": "INT-MORA",
+      "cantidad": "1",
+      "precioUnitario": "50.00",
+      "afectacionIgv": "30"
+    }
+  ]
+}

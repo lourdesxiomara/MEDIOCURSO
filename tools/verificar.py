@@ -56,6 +56,22 @@ EJEMPLO_SCHEMA = {
     "producto-cerveza.json": "producto.schema.json",
     "movimiento-inventario.salida.json": "movimiento-inventario.schema.json",
     "error.validacion.json": "error.schema.json",
+    "comprobante.factura-isc.json": "comprobante.schema.json",
+    "comprobante-crear.boleta.json": "comprobante-crear.schema.json",
+    "comprobante.boleta.json": "comprobante.schema.json",
+    "nota-crear.debito.json": "nota-crear.schema.json",
+    "comprobante.nota-debito.json": "comprobante.schema.json",
+    "producto-cerveza-monto-fijo.json": "producto.schema.json",
+    "producto-cigarrillos.json": "producto.schema.json",
+}
+
+# XML de ejemplo -> JSON equivalente (se comprueba que digan lo mismo)
+XML_JSON = {
+    "factura-F001-1.sin-firma.xml": "comprobante.factura.json",
+    "factura-F001-2-isc.sin-firma.xml": "comprobante.factura-isc.json",
+    "boleta-B001-1.sin-firma.xml": "comprobante.boleta.json",
+    "nota-credito-FC01-1.sin-firma.xml": "comprobante.nota-credito.json",
+    "nota-debito-FD01-1.sin-firma.xml": "comprobante.nota-debito.json",
 }
 
 try:
@@ -186,42 +202,73 @@ def ruc_valido(ruc: str) -> bool:
     return dv == int(ruc[10])
 
 
+def isc_esperado(x: dict, cantidad: Decimal, vv: Decimal) -> Decimal:
+    """Catálogo 08: 01 al valor, 02 monto fijo, 03 precio de venta al público × factor."""
+    s = x["sistemaIsc"]
+    if s == "01":
+        return r2(vv * Decimal(x["porcentaje"]) / 100)
+    if s == "02":
+        return r2(cantidad * Decimal(x["montoPorUnidad"]))
+    if s == "03":
+        if x["factor"] != "0.847":
+            errores.append("ISC sistema 03: factor debe ser 1/(1+IGV+IPM) a 3 decimales = 0.847")
+        return r2(Decimal(x["precioVentaPublico"]) * Decimal(x["factor"]) * Decimal(x["porcentaje"]) / 100 * cantidad)
+    raise ValueError(f"sistemaIsc desconocido {s}")
+
+
 def v_calculos():
     tasa_igv = Decimal("0.18")
-    for nombre in ("comprobante.factura.json", "comprobante.nota-credito.json"):
-        c = leer_json(EJEMPLOS / nombre)
-        for quien, ruc in (("emisor", c["emisor"]["ruc"]), ("cliente", c["cliente"]["documento"]["numero"])):
-            if c[quien if quien == "emisor" else "cliente"] and not ruc_valido(ruc):
-                errores.append(f"{nombre}: RUC de {quien} {ruc} no cumple R-10")
-        t = {k: Decimal("0") for k in ("grav", "igv", "isc", "icb", "vv")}
+    for f in sorted(EJEMPLOS.glob("comprobante.*.json")):
+        nombre = f.name
+        c = leer_json(f)
+        if not ruc_valido(c["emisor"]["ruc"]):
+            errores.append(f"{nombre}: RUC del emisor no cumple R-10")
+        doc = c["cliente"]["documento"]
+        if doc["tipo"] == "6" and not ruc_valido(doc["numero"]):
+            errores.append(f"{nombre}: RUC del cliente no cumple R-10")
+        if c["tipoComprobante"] == "01" and doc["tipo"] != "6":
+            errores.append(f"{nombre}: factura exige cliente con RUC (R-11)")
+        if c["tipoComprobante"] == "03" and doc["tipo"] == "1" and not re.fullmatch(r"\d{8}", doc["numero"]):
+            errores.append(f"{nombre}: DNI debe tener 8 dígitos (R-12)")
+        t = {k: Decimal("0") for k in ("grav", "exo", "ina", "igv", "isc", "icb", "vv")}
         for ln in c["lineas"]:
             cant, vu, vv = Decimal(ln["cantidad"]), Decimal(ln["valorUnitario"]), Decimal(ln["valorVenta"])
+            n = f"{nombre} línea {ln['numero']}"
             if r2(cant * vu - Decimal(ln.get("descuento", "0"))) != vv:
-                errores.append(f"{nombre} línea {ln['numero']}: valorVenta ≠ cantidad × valorUnitario (R-28)")
+                errores.append(f"{n}: valorVenta ≠ cantidad × valorUnitario (R-28)")
             trib = {x["codigo"]: x for x in ln["tributos"]}
-            isc = Decimal(trib["2000"]["monto"]) if "2000" in trib else Decimal("0")
+            af = ln["afectacionIgv"]
+            isc = Decimal("0")
             if "2000" in trib:
-                x = trib["2000"]
-                if x["sistemaIsc"] == "01" and r2(vv * Decimal(x["porcentaje"]) / 100) != isc:
-                    errores.append(f"{nombre} línea {ln['numero']}: ISC sistema 01 mal calculado (cat. 08)")
-            if "1000" in trib:
+                isc = Decimal(trib["2000"]["monto"])
+                if isc_esperado(trib["2000"], cant, vv) != isc:
+                    errores.append(f"{n}: ISC sistema {trib['2000']['sistemaIsc']} mal calculado (cat. 08)")
+            if af.startswith("1"):
+                if "1000" not in trib:
+                    errores.append(f"{n}: afectación {af} exige tributo 1000 IGV (R-22)")
+                    continue
                 x = trib["1000"]
                 if Decimal(x["baseImponible"]) != vv + isc:
-                    errores.append(f"{nombre} línea {ln['numero']}: base IGV ≠ valor + ISC (R-25)")
+                    errores.append(f"{n}: base IGV ≠ valor + ISC (R-25)")
                 if r2((vv + isc) * tasa_igv) != Decimal(x["monto"]):
-                    errores.append(f"{nombre} línea {ln['numero']}: IGV mal calculado")
+                    errores.append(f"{n}: IGV mal calculado")
                 t["grav"] += vv
                 t["igv"] += Decimal(x["monto"])
+            else:
+                esperado = {"2": "9997", "3": "9998", "4": "9995"}[af[0]]
+                if esperado not in trib or "1000" in trib:
+                    errores.append(f"{n}: afectación {af} exige tributo {esperado} y sin IGV (R-23)")
+                t["exo" if af[0] == "2" else "ina"] += vv
             if "7152" in trib:
                 x = trib["7152"]
                 if Decimal(x["cantidadBolsas"]) * Decimal(x["montoPorUnidad"]) != Decimal(x["monto"]):
-                    errores.append(f"{nombre} línea {ln['numero']}: ICBPER ≠ bolsas × monto (R-26)")
+                    errores.append(f"{n}: ICBPER ≠ bolsas × monto (R-26)")
                 t["icb"] += Decimal(x["monto"])
             t["isc"] += isc
             t["vv"] += vv
         tot = {k: Decimal(v) for k, v in c["totales"].items()}
-        pares = [("totalGravado", t["grav"]), ("totalIgv", t["igv"]), ("totalIsc", t["isc"]),
-                 ("totalIcbper", t["icb"]), ("valorVenta", t["vv"]),
+        pares = [("totalGravado", t["grav"]), ("totalExonerado", t["exo"]), ("totalInafecto", t["ina"]),
+                 ("totalIgv", t["igv"]), ("totalIsc", t["isc"]), ("totalIcbper", t["icb"]), ("valorVenta", t["vv"]),
                  ("precioVenta", t["vv"] + t["igv"] + t["isc"] + t["icb"])]
         for campo, esperado in pares:
             if tot[campo] != esperado:
@@ -252,11 +299,14 @@ def v_xml_xsd():
 
 
 def v_xml_coincide_json():
-    pares = [("factura-F001-1.sin-firma.xml", "comprobante.factura.json", "Invoice"),
-             ("nota-credito-FC01-1.sin-firma.xml", "comprobante.nota-credito.json", "CreditNote")]
-    for xmlf, jsonf, raiz in pares:
+    sin_par = {p.name for p in EJEMPLOS.glob("comprobante.*.json")} - set(XML_JSON.values())
+    for n in sorted(sin_par):
+        errores.append(f"{n}: comprobante de ejemplo sin XML UBL equivalente")
+    for xmlf, jsonf in XML_JSON.items():
         d = etree.parse(str(EJEMPLOS / xmlf))
         c = leer_json(EJEMPLOS / jsonf)
+        raiz = etree.QName(d.getroot()).localname
+        total = "RequestedMonetaryTotal" if raiz == "DebitNote" else "LegalMonetaryTotal"
 
         def val(xp):
             r = d.xpath(xp_ns(xp), namespaces=NS)
@@ -266,24 +316,42 @@ def v_xml_coincide_json():
             f"/{raiz}/cbc:ID/text()": c["numero"],
             f"/{raiz}/cbc:IssueDate/text()": c["fechaEmision"],
             f"/{raiz}/cbc:DocumentCurrencyCode/text()": c["moneda"],
+            f"/{raiz}/cbc:Note[@languageLocaleID='1000']/text()": c["leyendas"][0]["texto"],
             f"/{raiz}/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID/text()": c["emisor"]["ruc"],
             f"/{raiz}/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID/text()": c["cliente"]["documento"]["numero"],
-            f"/{raiz}/cac:LegalMonetaryTotal/cbc:LineExtensionAmount/text()": c["totales"]["valorVenta"],
-            f"/{raiz}/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount/text()": c["totales"]["precioVenta"],
-            f"/{raiz}/cac:LegalMonetaryTotal/cbc:PayableAmount/text()": c["totales"]["importeTotal"],
-            f"/{raiz}/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxAmount/text()": c["totales"]["totalIgv"],
+            f"/{raiz}/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID/@schemeID": c["cliente"]["documento"]["tipo"],
+            f"/{raiz}/cac:{total}/cbc:LineExtensionAmount/text()": c["totales"]["valorVenta"],
+            f"/{raiz}/cac:{total}/cbc:TaxInclusiveAmount/text()": c["totales"]["precioVenta"],
+            f"/{raiz}/cac:{total}/cbc:PayableAmount/text()": c["totales"]["importeTotal"],
         }
+        for cod, campo in (("1000", "totalIgv"), ("2000", "totalIsc"), ("7152", "totalIcbper")):
+            xp = f"/{raiz}/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='{cod}']/cbc:TaxAmount/text()"
+            if val(xp) is not None or Decimal(c["totales"][campo]) != 0:
+                esperado[xp] = c["totales"][campo]
         if raiz == "Invoice":
             esperado[f"/{raiz}/cbc:InvoiceTypeCode/text()"] = c["tipoComprobante"]
             esperado[f"/{raiz}/cbc:InvoiceTypeCode/@listID"] = c["tipoOperacion"]
+        else:
+            esperado[f"/{raiz}/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID/text()"] = c["documentoAfectado"]["numero"]
+            esperado[f"/{raiz}/cac:DiscrepancyResponse/cbc:ResponseCode/text()"] = c["motivoNota"]["codigo"]
         for xp, v in esperado.items():
             if val(xp) != v:
                 errores.append(f"{xmlf}: {xp} = {val(xp)!r}, JSON dice {v!r}")
-        # suma del TaxTotal global = suma de subtotales
-        total = Decimal(val(f"/{raiz}/cac:TaxTotal/cbc:TaxAmount/text()"))
+        # líneas: cantidad, valor de venta y sistema ISC
+        lineas = d.xpath(xp_ns(f"/{raiz}/cac:*[local-name()='InvoiceLine' or local-name()='CreditNoteLine' or local-name()='DebitNoteLine']"), namespaces=NS)
+        if len(lineas) != len(c["lineas"]):
+            errores.append(f"{xmlf}: {len(lineas)} líneas y el JSON tiene {len(c['lineas'])}")
+        for lx, lj in zip(lineas, c["lineas"]):
+            if lx.xpath("cbc:LineExtensionAmount/text()", namespaces=NS)[0] != lj["valorVenta"]:
+                errores.append(f"{xmlf} línea {lj['numero']}: valor de venta distinto del JSON")
+            sis = [x.get("sistemaIsc") for x in lj["tributos"] if x["codigo"] == "2000"]
+            if sis and lx.xpath(".//cbc:TierRange/text()", namespaces=NS) != sis:
+                errores.append(f"{xmlf} línea {lj['numero']}: TierRange ≠ sistemaIsc {sis}")
+        # TaxTotal global = Σ subtotales
+        tot = Decimal(val(f"/{raiz}/cac:TaxTotal/cbc:TaxAmount/text()"))
         subs = sum(Decimal(s) for s in d.xpath(xp_ns(f"/{raiz}/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxAmount/text()"), namespaces=NS))
-        if total != subs:
-            errores.append(f"{xmlf}: TaxTotal {total} ≠ Σ TaxSubtotal {subs}")
+        if tot != subs:
+            errores.append(f"{xmlf}: TaxTotal {tot} ≠ Σ TaxSubtotal {subs}")
 
 
 # ---------------------------------------------------------------- OpenAPI
@@ -425,6 +493,43 @@ def v_migracion():
             errores.append(f"mapeo-legado.csv: {r['schema_destino']}{r['campo_destino']} no existe")
 
 
+# ---------------------------------------------------------------- criterios de aceptación
+ACEPTACION = RAIZ / "specs/07-aceptacion/criterios-aceptacion.md"
+
+
+def v_aceptacion():
+    texto = ACEPTACION.read_text(encoding="utf-8")
+    bloques = re.split(r"^### ", texto, flags=re.M)[1:]
+    ids = [b.split()[0] for b in bloques]
+    if len(ids) != len(set(ids)):
+        errores.append("criterios-aceptacion.md: IDs CA duplicados")
+    reglas = set(re.findall(r"\|\s*(R-\d{2})\s*\|", REGLAS.read_text(encoding="utf-8")))
+    reglas |= set(re.findall(r"\*\*(M-\d{2})\*\*", MIGRACION.read_text(encoding="utf-8")))
+    api = yaml.safe_load(OPENAPI.read_text(encoding="utf-8"))
+    cubiertas = set()
+    for b in bloques:
+        cid = b.split()[0]
+        m = re.search(r"\*\*Reglas:\*\*\s*([^·\n]+)", b)
+        if not m:
+            errores.append(f"{cid}: sin reglas")
+            continue
+        rs = {r.strip() for r in m.group(1).split(",")}
+        for r in rs - reglas:
+            errores.append(f"{cid}: regla {r} no existe")
+        cubiertas |= rs
+        for paso in ("**Dado**", "**Cuando**", "**Entonces**"):
+            if paso not in b:
+                errores.append(f"{cid}: falta {paso}")
+        for ej in re.findall(r"`ejemplos/([^`]+)`", b):
+            if not (EJEMPLOS / ej).is_file():
+                errores.append(f"{cid}: ejemplo inexistente {ej}")
+        for metodo, ruta in re.findall(r"`(GET|POST|PUT|DELETE) (/[^`?]+)", b):
+            if ruta not in api["paths"] or metodo.lower() not in api["paths"][ruta]:
+                errores.append(f"{cid}: endpoint {metodo} {ruta} no está en openapi.yaml")
+    for r in sorted(reglas - cubiertas):
+        errores.append(f"Regla {r} sin criterio de aceptación")
+
+
 # ---------------------------------------------------------------- referencias cruzadas y Mermaid
 def v_referencias():
     reglas = set(re.findall(r"\|\s*(R-\d{2})\s*\|", REGLAS.read_text(encoding="utf-8")))
@@ -473,12 +578,13 @@ def main() -> int:
     check("JSON Schemas válidos y $ref resueltos", v_schemas)
     check("Enums de schemas = catálogos SUNAT", v_enums_catalogos)
     check("Ejemplos JSON válidos contra sus schemas", v_ejemplos_json)
-    check("Cálculo de tributos y totales en ejemplos (R-10, R-25..R-32)", v_calculos)
+    check("Cálculo de IGV, ISC (cat. 08: 01/02/03), ICBPER y totales en ejemplos", v_calculos)
     check("XML de ejemplo válidos contra XSD UBL 2.1", v_xml_xsd)
     check("XML de ejemplo coinciden con su JSON", v_xml_coincide_json)
     check("OpenAPI 3.1: estructura, $ref, ejemplos y rutas de casos de uso", v_openapi)
     check("Matriz de trazabilidad: schema, XPath, reglas y catálogos", v_matriz)
     check("Migración: cobertura de la muestra legada y mapeo", v_migracion)
+    check("Criterios de aceptación: cubren toda regla R-xx y M-xx", v_aceptacion)
     check("Referencias cruzadas R-xx, D-xx, ADR-xxx", v_referencias)
     check("Diagramas Mermaid (sintaxis básica)", v_mermaid)
     check("XSD oficiales OASIS sin modificar", v_xsd_oficiales_intactos)

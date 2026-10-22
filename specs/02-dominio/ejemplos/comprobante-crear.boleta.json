@@ -1,0 +1,26 @@
+{
+  "tipoComprobante": "03",
+  "serie": "B001",
+  "tipoOperacion": "0101",
+  "fechaEmision": "2026-10-22",
+  "moneda": "PEN",
+  "cliente": {
+    "documento": {
+      "tipo": "1",
+      "numero": "45678912"
+    },
+    "nombre": "MARIA QUISPE HUAMAN"
+  },
+  "lineas": [
+    {
+      "codigoProducto": "ARZ-5K",
+      "cantidad": "2",
+      "precioUnitario": "25.96"
+    },
+    {
+      "codigoProducto": "BOL-01",
+      "cantidad": "1",
+      "precioUnitario": "0.118"
+    }
+  ]
+}

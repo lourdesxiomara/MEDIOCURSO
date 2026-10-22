@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Factura con ISC catálogo 08: línea 1 sistema 02 (monto fijo), línea 2 sistema 03 (precio de venta al público, factor 0.847).
+  Equivale a specs/02-dominio/ejemplos/comprobante.factura-isc.json. XML ANTES de firmar (R-50).
+-->
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+  <cbc:CustomizationID>2.0</cbc:CustomizationID>
+  <cbc:ID>F001-2</cbc:ID>
+  <cbc:IssueDate>2026-10-22</cbc:IssueDate>
+  <cbc:IssueTime>11:00:00</cbc:IssueTime>
+  <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">01</cbc:InvoiceTypeCode>
+  <cbc:Note languageLocaleID="1000">CIENTO TREINTA Y SIETE CON 07/100 SOLES</cbc:Note>
+  <cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>
+  <cbc:LineCountNumeric>2</cbc:LineCountNumeric>
+  <cac:Signature>
+    <cbc:ID>IDSignABC</cbc:ID>
+    <cac:SignatoryParty>
+      <cac:PartyIdentification><cbc:ID>20600123450</cbc:ID></cac:PartyIdentification>
+      <cac:PartyName><cbc:Name>ABC SOFTWARE CORP S.A.C.</cbc:Name></cac:PartyName>
+    </cac:SignatoryParty>
+    <cac:DigitalSignatureAttachment>
+      <cac:ExternalReference><cbc:URI>#SignatureABC</cbc:URI></cac:ExternalReference>
+    </cac:DigitalSignatureAttachment>
+  </cac:Signature>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cac:PartyIdentification><cbc:ID schemeID="6">20600123450</cbc:ID></cac:PartyIdentification>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>ABC SOFTWARE CORP S.A.C.</cbc:RegistrationName>
+        <cac:RegistrationAddress><cbc:AddressTypeCode>0000</cbc:AddressTypeCode></cac:RegistrationAddress>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cac:PartyIdentification><cbc:ID schemeID="6">20456789014</cbc:ID></cac:PartyIdentification>
+      <cac:PartyLegalEntity><cbc:RegistrationName>BODEGA EJEMPLO S.A.C.</cbc:RegistrationName></cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="PEN">49.07</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">88.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">28.16</cbc:TaxAmount>
+        <cac:TaxCategory><cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">116.16</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">20.91</cbc:TaxAmount>
+        <cac:TaxCategory><cac:TaxScheme><cbc:ID>1000</cbc:ID><cbc:Name>IGV</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="PEN">88.00</cbc:LineExtensionAmount>
+    <cbc:TaxInclusiveAmount currencyID="PEN">137.07</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="PEN">137.07</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="NIU">12</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="PEN">48.00</cbc:LineExtensionAmount>
+    <cac:PricingReference><cac:AlternativeConditionPrice>
+      <cbc:PriceAmount currencyID="PEN">6.49</cbc:PriceAmount><cbc:PriceTypeCode>01</cbc:PriceTypeCode>
+    </cac:AlternativeConditionPrice></cac:PricingReference>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="PEN">29.88</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">48.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">18.00</cbc:TaxAmount>
+        <cbc:BaseUnitMeasure unitCode="NIU">12</cbc:BaseUnitMeasure>
+        <cbc:PerUnitAmount currencyID="PEN">1.50</cbc:PerUnitAmount>
+        <cac:TaxCategory><cbc:TierRange>02</cbc:TierRange><cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">66.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">11.88</cbc:TaxAmount>
+        <cac:TaxCategory><cbc:Percent>18.00</cbc:Percent><cbc:TaxExemptionReasonCode>10</cbc:TaxExemptionReasonCode><cac:TaxScheme><cbc:ID>1000</cbc:ID><cbc:Name>IGV</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>CERVEZA 1L (ISC MONTO FIJO)</cbc:Description>
+      <cac:SellersItemIdentification><cbc:ID>CER-1L</cbc:ID></cac:SellersItemIdentification>
+    </cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="PEN">4.00</cbc:PriceAmount></cac:Price>
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>2</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="NIU">5</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="PEN">40.00</cbc:LineExtensionAmount>
+    <cac:PricingReference><cac:AlternativeConditionPrice>
+      <cbc:PriceAmount currencyID="PEN">11.838</cbc:PriceAmount><cbc:PriceTypeCode>01</cbc:PriceTypeCode>
+    </cac:AlternativeConditionPrice></cac:PricingReference>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="PEN">19.19</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">40.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">10.16</cbc:TaxAmount>
+        <cac:TaxCategory><cbc:Percent>20.00</cbc:Percent><cbc:TierRange>03</cbc:TierRange><cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">50.16</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">9.03</cbc:TaxAmount>
+        <cac:TaxCategory><cbc:Percent>18.00</cbc:Percent><cbc:TaxExemptionReasonCode>10</cbc:TaxExemptionReasonCode><cac:TaxScheme><cbc:ID>1000</cbc:ID><cbc:Name>IGV</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>CIGARRILLOS CAJETILLA X20 (ISC PVP)</cbc:Description>
+      <cac:SellersItemIdentification><cbc:ID>CIG-20</cbc:ID></cac:SellersItemIdentification>
+    </cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="PEN">8.00</cbc:PriceAmount></cac:Price>
+  </cac:InvoiceLine>
+</Invoice>

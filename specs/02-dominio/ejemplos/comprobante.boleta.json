@@ -1,0 +1,109 @@
+{
+  "id": "6e3f9a52-2b7c-4d8e-8f4a-8b9c0d1e2f04",
+  "tipoComprobante": "03",
+  "serie": "B001",
+  "correlativo": 1,
+  "numero": "B001-1",
+  "tipoOperacion": "0101",
+  "estado": "ACEPTADO",
+  "fechaEmision": "2026-10-22",
+  "horaEmision": "12:30:00",
+  "moneda": "PEN",
+  "emisor": {
+    "ruc": "20600123450",
+    "razonSocial": "ABC SOFTWARE CORP S.A.C.",
+    "nombreComercial": "ABC MAYORISTA",
+    "domicilioFiscal": {
+      "direccion": "AV. UNIVERSITARIA 123",
+      "ubigeo": "100601",
+      "departamento": "HUANUCO",
+      "provincia": "LEONCIO PRADO",
+      "distrito": "RUPA-RUPA",
+      "codigoPais": "PE",
+      "codigoEstablecimiento": "0000"
+    },
+    "amazonia": false
+  },
+  "cliente": {
+    "documento": {
+      "tipo": "1",
+      "numero": "45678912"
+    },
+    "nombre": "MARIA QUISPE HUAMAN"
+  },
+  "lineas": [
+    {
+      "numero": 1,
+      "codigoProducto": "ARZ-5K",
+      "descripcion": "ARROZ EXTRA 5KG",
+      "unidadMedida": "NIU",
+      "cantidad": "2",
+      "valorUnitario": "22.00",
+      "precioUnitario": "25.96",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "44.00",
+      "tributos": [
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "44.00",
+          "monto": "7.92",
+          "porcentaje": "18.00"
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "codigoProducto": "BOL-01",
+      "descripcion": "BOLSA PLASTICA",
+      "unidadMedida": "NIU",
+      "cantidad": "1",
+      "valorUnitario": "0.10",
+      "precioUnitario": "0.118",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "0.10",
+      "tributos": [
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "0.10",
+          "monto": "0.02",
+          "porcentaje": "18.00"
+        },
+        {
+          "codigo": "7152",
+          "nombre": "ICBPER",
+          "codigoInternacional": "OTH",
+          "categoria": "S",
+          "baseImponible": "0.00",
+          "monto": "0.50",
+          "cantidadBolsas": 1,
+          "montoPorUnidad": "0.50"
+        }
+      ]
+    }
+  ],
+  "totales": {
+    "totalGravado": "44.10",
+    "totalExonerado": "0.00",
+    "totalInafecto": "0.00",
+    "totalIgv": "7.94",
+    "totalIsc": "0.00",
+    "totalIcbper": "0.50",
+    "valorVenta": "44.10",
+    "precioVenta": "52.54",
+    "importeTotal": "52.54"
+  },
+  "leyendas": [
+    {
+      "codigo": "1000",
+      "texto": "CINCUENTA Y DOS CON 54/100 SOLES"
+    }
+  ]
+}

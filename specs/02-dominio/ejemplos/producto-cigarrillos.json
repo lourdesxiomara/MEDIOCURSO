@@ -1,0 +1,13 @@
+{
+  "codigo": "CIG-20",
+  "descripcion": "CIGARRILLOS CAJETILLA X20 (ISC PVP)",
+  "unidadMedida": "NIU",
+  "afectacionIgv": "10",
+  "precioUnitario": "11.838",
+  "isc": {
+    "sistema": "03",
+    "tasa": "20.00",
+    "precioVentaPublico": "12.00"
+  },
+  "esBolsaPlastica": false
+}

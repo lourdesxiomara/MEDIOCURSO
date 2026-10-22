@@ -1,0 +1,86 @@
+{
+  "id": "7f4a0b63-3c8d-4e9f-9a5b-9c0d1e2f3a05",
+  "tipoComprobante": "08",
+  "serie": "FD01",
+  "correlativo": 1,
+  "numero": "FD01-1",
+  "estado": "ACEPTADO",
+  "fechaEmision": "2026-11-25",
+  "horaEmision": "09:30:00",
+  "moneda": "PEN",
+  "emisor": {
+    "ruc": "20600123450",
+    "razonSocial": "ABC SOFTWARE CORP S.A.C.",
+    "nombreComercial": "ABC MAYORISTA",
+    "domicilioFiscal": {
+      "direccion": "AV. UNIVERSITARIA 123",
+      "ubigeo": "100601",
+      "departamento": "HUANUCO",
+      "provincia": "LEONCIO PRADO",
+      "distrito": "RUPA-RUPA",
+      "codigoPais": "PE",
+      "codigoEstablecimiento": "0000"
+    },
+    "amazonia": false
+  },
+  "cliente": {
+    "documento": {
+      "tipo": "6",
+      "numero": "20456789014"
+    },
+    "nombre": "BODEGA EJEMPLO S.A.C.",
+    "direccion": {
+      "direccion": "JR. LOS PINOS 456"
+    },
+    "correo": "compras@bodega-ejemplo.pe"
+  },
+  "documentoAfectado": {
+    "tipoComprobante": "01",
+    "numero": "F001-1"
+  },
+  "motivoNota": {
+    "codigo": "01",
+    "sustento": "Intereses por mora de 30 dias"
+  },
+  "lineas": [
+    {
+      "numero": 1,
+      "codigoProducto": "INT-MORA",
+      "descripcion": "INTERESES POR MORA",
+      "unidadMedida": "ZZ",
+      "cantidad": "1",
+      "valorUnitario": "50.00",
+      "precioUnitario": "50.00",
+      "tipoPrecio": "01",
+      "afectacionIgv": "30",
+      "valorVenta": "50.00",
+      "tributos": [
+        {
+          "codigo": "9998",
+          "nombre": "INA",
+          "codigoInternacional": "FRE",
+          "categoria": "O",
+          "baseImponible": "50.00",
+          "monto": "0.00"
+        }
+      ]
+    }
+  ],
+  "totales": {
+    "totalGravado": "0.00",
+    "totalExonerado": "0.00",
+    "totalInafecto": "50.00",
+    "totalIgv": "0.00",
+    "totalIsc": "0.00",
+    "totalIcbper": "0.00",
+    "valorVenta": "50.00",
+    "precioVenta": "50.00",
+    "importeTotal": "50.00"
+  },
+  "leyendas": [
+    {
+      "codigo": "1000",
+      "texto": "CINCUENTA CON 00/100 SOLES"
+    }
+  ]
+}
