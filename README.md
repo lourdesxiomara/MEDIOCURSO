@@ -4,6 +4,14 @@
 de escribir una sola línea de lógica de negocio. Examen de medio curso de Arquitectura de Software,
 UNAS – Facultad de Ingeniería en Informática y Sistemas.
 
+| | |
+|---|---|
+| **Alumna** | Lourdes Xiomara López Gonzalez |
+| **Grupo** | "A" |
+| **Curso** | Arquitectura de Software – Examen de medio curso |
+| **Universidad** | Universidad Nacional Agraria de la Selva |
+| **Fecha** | 19 de octubre de 2026 |
+
 ## Entregables
 | # | Entregable solicitado | Dónde está |
 |---|---|---|
