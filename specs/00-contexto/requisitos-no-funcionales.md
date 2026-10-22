@@ -1,16 +1,16 @@
-# Requisitos no funcionales (medibles)
+# Non-functional requirements (measurable)
 
-| ID | Atributo | Requisito | Cómo se verifica |
+| ID | Attribute | Requirement | How it is verified |
 |---|---|---|---|
-| RNF-01 | Disponibilidad offline | Se puede crear, firmar y guardar comprobantes sin internet; quedan `PENDIENTE_ENVIO` y se reenvían solos (CU-11, ADR-004) | CA-32 |
-| RNF-02 | Rendimiento | Validar y calcular un comprobante de 50 líneas en < 300 ms en el equipo mínimo | Prueba de carga |
-| RNF-03 | Rendimiento | Generar + firmar el XML en < 1 s (p95), sin contar la respuesta del OSE | Prueba de carga |
-| RNF-04 | Conservación legal | XML firmado y CDR se guardan íntegros, con hash, durante el plazo de prescripción tributaria | Auditoría de la BD |
-| RNF-05 | Seguridad | Certificado digital (.pfx) en el almacén seguro del SO (Windows) / Android Keystore; nunca en el instalador ni en texto plano | Revisión de ADR-002 |
-| RNF-06 | Seguridad | Acceso por roles (Vendedor, Almacenero, Contador, Administrador); anular y migrar solo Administrador | OpenAPI `security` |
-| RNF-07 | Auditoría | Todo cambio de estado de un comprobante queda registrado con usuario, fecha y origen | Prueba de integración |
-| RNF-08 | Portabilidad | Mismo dominio en Windows (MSI) y Android (APK); resultados de cálculo idénticos en ambos | Pruebas del módulo `dominio` en ambas plataformas |
-| RNF-09 | Mantenibilidad | `dominio` sin dependencias técnicas, verificado por prueba de arquitectura (ADR-001) | ArchUnit/Konsist |
-| RNF-10 | Exactitud | Montos con decimal exacto, nunca `float`; redondeo half-up por línea (R-28) | CA-20 |
-| RNF-11 | Usabilidad | Emitir una boleta de 3 ítems en < 60 s; errores con mensaje y campo exactos | Prueba con usuarios |
-| RNF-12 | Localización | Español (Perú), zona America/Lima, moneda PEN por defecto | Revisión |
+| RNF-01 | Offline availability | Documents can be created, signed and saved without internet; they stay `PENDIENTE_ENVIO` and are resent automatically (CU-11, ADR-004) | CA-32 |
+| RNF-02 | Performance | Validate and calculate a 50-line document in < 300 ms on the minimum hardware | Load test |
+| RNF-03 | Performance | Generate + sign the XML in < 1 s (p95), excluding the OSE response | Load test |
+| RNF-04 | Legal retention | Signed XML and CDR stored intact, with hash, for the tax statute-of-limitations period | DB audit |
+| RNF-05 | Security | Digital certificate (.pfx) in the OS secure store (Windows) / Android Keystore; never inside the installer or in plain text | ADR-002 review |
+| RNF-06 | Security | Role-based access (Seller, Warehouse clerk, Accountant, Administrator); voiding and migrating are Administrator-only | OpenAPI `security` |
+| RNF-07 | Audit | Every status change of a document is logged with user, date and origin | Integration test |
+| RNF-08 | Portability | Same domain on Windows (MSI) and Android (APK); identical calculation results on both | Domain module tests on both platforms |
+| RNF-09 | Maintainability | `dominio` free of technical dependencies, checked by an architecture test (ADR-001) | ArchUnit/Konsist |
+| RNF-10 | Accuracy | Amounts as exact decimals, never `float`; half-up rounding per line (R-28) | CA-20 |
+| RNF-11 | Usability | Issue a 3-item receipt in < 60 s; errors with exact message and field | User testing |
+| RNF-12 | Localization | Spanish (Peru) UI, America/Lima time zone, PEN as default currency | Review |

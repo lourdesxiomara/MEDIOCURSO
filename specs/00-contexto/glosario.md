@@ -1,21 +1,21 @@
-# Glosario
+# Glossary
 
-| Término | Significado |
+| Term | Meaning |
 |---|---|
-| **CPE** | Comprobante de Pago Electrónico. |
-| **SEE** | Sistema de Emisión Electrónica. Aquí: *SEE – Del Contribuyente* (RS 097-2012/SUNAT). |
-| **UBL 2.1** | Universal Business Language, estándar OASIS para documentos comerciales en XML. |
-| **XSD** | Esquema XML que define estructura y tipos válidos del documento. |
-| **OSE** | Operador de Servicios Electrónicos: valida el CPE en nombre de SUNAT y devuelve el CDR. |
-| **CDR** | Constancia de Recepción: `ApplicationResponse` UBL firmado con el resultado (aceptado / observado / rechazado). |
-| **Catálogo** | Tabla de códigos oficiales del Anexo 8 (ej. cat. 01 tipos de comprobante). |
-| **Serie / correlativo** | Identificador del comprobante `F001-00000123`: serie de 4 caracteres + número de hasta 8 dígitos. |
-| **IGV** | Impuesto General a las Ventas (tributo 1000, 18 %: 16 % IGV + 2 % IPM). |
-| **ISC** | Impuesto Selectivo al Consumo (tributo 2000). Su forma de cálculo la indica el **catálogo 08**. |
-| **ICBPER** | Impuesto al Consumo de Bolsas de Plástico (tributo 7152), monto fijo por bolsa. |
-| **Afectación IGV** | Cómo afecta el IGV a cada ítem (catálogo 07: gravado, exonerado, inafecto, exportación). |
-| **Valor de venta** | Monto sin impuestos. **Precio de venta**: monto con impuestos. |
-| **Formato 12.1** | Registro de Inventario Permanente en Unidades Físicas (RS 234-2006/SUNAT). |
-| **DTO** | Data Transfer Object: estructura de datos que cruza una frontera (API, puerto). |
-| **Puerto / adaptador** | En arquitectura hexagonal: interfaz que define el núcleo (puerto) y su implementación técnica (adaptador). |
-| **MSI / APK** | Instalador de Windows Installer / paquete de aplicación Android. |
+| **CPE** | Electronic payment document (Comprobante de Pago Electrónico). |
+| **SEE** | Electronic Issuing System. Here: *SEE – Del Contribuyente* (RS 097-2012/SUNAT). |
+| **UBL 2.1** | Universal Business Language, OASIS standard for XML business documents. |
+| **XSD** | XML schema defining the document's valid structure and types. |
+| **OSE** | Electronic Services Operator: validates the document on SUNAT's behalf and returns the CDR. |
+| **CDR** | Receipt confirmation: signed UBL `ApplicationResponse` with the result (accepted / observed / rejected). |
+| **Catalog** | Official code table from Annex 8 (e.g. cat. 01 document types). |
+| **Series / number** | Document identifier `F001-00000123`: 4-character series + number of up to 8 digits. |
+| **IGV** | General Sales Tax (tax 1000, 18 %: 16 % IGV + 2 % IPM). |
+| **ISC** | Selective Consumption Tax (tax 2000). Its calculation method is given by **catalog 08**. |
+| **ICBPER** | Plastic Bag Consumption Tax (tax 7152), fixed amount per bag. |
+| **IGV treatment** | How IGV applies to each line (catalog 07: taxed, exempt, unaffected, export). |
+| **Sale value** | Amount before taxes. **Sale price**: amount including taxes. |
+| **Format 12.1** | Permanent Inventory Record in Physical Units (RS 234-2006/SUNAT). |
+| **DTO** | Data Transfer Object: data structure that crosses a boundary (API, port). |
+| **Port / adapter** | In hexagonal architecture: interface defined by the core (port) and its technical implementation (adapter). |
+| **MSI / APK** | Windows Installer package / Android application package. |
