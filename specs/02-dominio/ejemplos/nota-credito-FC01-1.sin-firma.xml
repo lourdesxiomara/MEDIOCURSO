@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Ejemplo de Nota de Crédito Electrónica UBL 2.1 ANTES de firmar.
-  Motivo cat. 09 = 07 (devolución por ítem) sobre la factura F001-1.
-  Equivale a specs/02-dominio/ejemplos/comprobante.nota-credito.json.
+  Electronic Credit Note UBL 2.1 example BEFORE signing.
+  Reason cat. 09 = 07 (return per item) on invoice F001-1.
+  Equivalent to specs/02-dominio/ejemplos/comprobante.nota-credito.json.
 -->
 <CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
             xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"

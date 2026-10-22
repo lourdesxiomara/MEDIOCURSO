@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/emisor.schema.json",
-  "title": "Emisor",
-  "description": "Contribuyente que emite (UBL cac:AccountingSupplierParty). CU-10.",
+  "title": "Issuer",
+  "description": "Issuing taxpayer (UBL cac:AccountingSupplierParty). CU-10.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -30,7 +30,7 @@
     "amazonia": {
       "type": "boolean",
       "default": false,
-      "description": "Emisor acogido a Ley 27037 (ADR-005, D-04)."
+      "description": "Issuer under Law 27037 (ADR-005, D-04)."
     }
   }
 }

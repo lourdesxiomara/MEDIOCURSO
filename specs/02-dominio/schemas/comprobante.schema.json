@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/comprobante.schema.json",
-  "title": "Comprobante",
-  "description": "Comprobante emitido o en proceso, con montos calculados por el dominio. Salida de la API (CU-03..CU-08).",
+  "title": "Tax document",
+  "description": "Issued or in-progress document, with amounts calculated by the domain. API output (CU-03..CU-08).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -216,7 +216,7 @@
         "tipoComprobante",
         "numero"
       ],
-      "description": "Solo notas de crédito/débito. UBL cac:BillingReference/cac:InvoiceDocumentReference",
+      "description": "Credit/debit notes only. UBL cac:BillingReference/cac:InvoiceDocumentReference",
       "properties": {
         "tipoComprobante": {
           "$ref": "comun.schema.json#/$defs/tipoComprobanteVenta"
@@ -251,7 +251,7 @@
       "properties": {
         "hash": {
           "type": "string",
-          "description": "DigestValue de la firma XMLDSig"
+          "description": "DigestValue of the XMLDSig signature"
         },
         "fechaFirma": {
           "type": "string",
@@ -262,7 +262,7 @@
     "respuestaSunat": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Resumen del CDR (ApplicationResponse).",
+      "description": "CDR summary (ApplicationResponse).",
       "properties": {
         "codigoRespuesta": {
           "type": "string"
@@ -387,16 +387,16 @@
         },
         "montoPorUnidad": {
           "$ref": "comun.schema.json#/$defs/montoUnitario",
-          "description": "ICBPER: monto por bolsa. ISC sistema 02: monto fijo por unidad."
+          "description": "ICBPER: amount per bag. ISC system 02: fixed amount per unit."
         },
         "precioVentaPublico": {
           "$ref": "comun.schema.json#/$defs/montoUnitario",
-          "description": "ISC sistema 03: precio de venta al público sugerido."
+          "description": "ISC system 03: suggested retail sale price."
         },
         "factor": {
           "type": "string",
           "pattern": "^0\\.\\d{3}$",
-          "description": "ISC sistema 03: 1/(1+IGV+IPM) a 3 decimales (0.847)."
+          "description": "ISC system 03: 1/(1+IGV+IPM) to 3 decimals (0.847)."
         }
       },
       "allOf": [

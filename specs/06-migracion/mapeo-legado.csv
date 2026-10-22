@@ -1,15 +1,15 @@
 campo_legado,tipo_legado,schema_destino,campo_destino,regla,transformacion,ejemplo_entrada,ejemplo_salida
-id,texto,movimiento-inventario,/idLegado,M-07,Copia literal,15,"""15"""
-fecha,texto,movimiento-inventario,/fecha,M-01,dd/mm/aaaa o aaaa-mm-dd → ISO 8601,05/01/2026,2026-01-05
-ingreso,numero,movimiento-inventario,/cantidad,M-02,"> 0 → tipo INGRESO; < 0 → AJUSTE_NEGATIVO (M-05)",100,"""100"""
-ingreso,numero,movimiento-inventario,/tipo,M-02,Derivado del signo y de nro_documento,100,INGRESO
-salida,numero,movimiento-inventario,/cantidad,M-02,> 0 → tipo SALIDA,10,"""10"""
-salida,numero,movimiento-inventario,/tipo,M-02,Derivado,10,SALIDA
-producto,texto,producto,/descripcion,M-03,"Mayúsculas, sin tildes, espacios simples",arroz costeño 5kg,ARROZ COSTENO 5KG
-producto,texto,producto,/codigo,M-03,Código estable generado tras agrupar variantes,ARROZ COSTEÑO 5KG,PRD-0001
-producto,texto,producto,/idLegado,M-03,Texto original más frecuente de la agrupación,ARROZ COSTEÑO 5KG,ARROZ COSTEÑO 5KG
-producto,texto,producto,/esBolsaPlastica,M-06,true si la descripción normalizada contiene BOLSA,BOLSA PLASTICA,true
-producto,texto,producto,/isc,M-06,Pendiente de decisión (D-05) para bebidas alcohólicas y cigarrillos,CERVEZA PILSEN 630ML,(producto inactivo hasta configurar cat. 08)
-producto,texto,movimiento-inventario,/productoId,M-03,UUID del producto agrupado,ARROZ COSTEÑO 5KG,(uuid)
-nro_documento,texto,movimiento-inventario,/documentoSustento/tipo,M-04,"F###-n → 01, B###-n → 03, GR-* → 09, AJUSTE/vacío → INTERNO",F001-125,01
-nro_documento,texto,movimiento-inventario,/documentoSustento/numero,M-04,Copia normalizada en mayúsculas; reparación solo con aprobación,b1-89,B001-89 (propuesta)
+id,text,movimiento-inventario,/idLegado,M-07,Literal copy,15,"""15"""
+fecha,text,movimiento-inventario,/fecha,M-01,dd/mm/yyyy or yyyy-mm-dd → ISO 8601,05/01/2026,2026-01-05
+ingreso,number,movimiento-inventario,/cantidad,M-02,> 0 → type INGRESO; < 0 → AJUSTE_NEGATIVO (M-05),100,"""100"""
+ingreso,number,movimiento-inventario,/tipo,M-02,Derived from the sign and nro_documento,100,INGRESO
+salida,number,movimiento-inventario,/cantidad,M-02,> 0 → type SALIDA,10,"""10"""
+salida,number,movimiento-inventario,/tipo,M-02,Derived,10,SALIDA
+producto,text,producto,/descripcion,M-03,"Uppercase, no accents, single spaces",arroz costeño 5kg,ARROZ COSTENO 5KG
+producto,text,producto,/codigo,M-03,Stable code generated after grouping variants,ARROZ COSTEÑO 5KG,PRD-0001
+producto,text,producto,/idLegado,M-03,Most frequent original text in the group,ARROZ COSTEÑO 5KG,ARROZ COSTEÑO 5KG
+producto,text,producto,/esBolsaPlastica,M-06,true if the normalized description contains BOLSA (bag),BOLSA PLASTICA,true
+producto,text,producto,/isc,M-06,Pending decision (D-05) for alcoholic drinks and cigarettes,CERVEZA PILSEN 630ML,(product inactive until cat. 08 is configured)
+producto,text,movimiento-inventario,/productoId,M-03,UUID of the grouped product,ARROZ COSTEÑO 5KG,(uuid)
+nro_documento,text,movimiento-inventario,/documentoSustento/tipo,M-04,"F###-n → 01, B###-n → 03, GR-* → 09, AJUSTE/empty → INTERNO",F001-125,01
+nro_documento,text,movimiento-inventario,/documentoSustento/numero,M-04,Normalized uppercase copy; repair only with approval,b1-89,B001-89 (proposed)

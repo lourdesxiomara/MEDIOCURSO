@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Ejemplo de Factura Electrónica UBL 2.1 (SUNAT) ANTES de firmar (regla R-50).
-  Equivale a specs/02-dominio/ejemplos/comprobante.factura.json.
-  Al firmar se antepone ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature (R-51).
-  Cada nodo está cruzado en specs/05-trazabilidad/matriz.csv.
+  SUNAT Electronic Invoice UBL 2.1 example BEFORE signing (rule R-50).
+  Equivalent to specs/02-dominio/ejemplos/comprobante.factura.json.
+  On signing, ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature is prepended (R-51).
+  Every node is cross-referenced in specs/05-trazabilidad/matriz.csv.
 -->
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
          xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
@@ -87,7 +87,7 @@
     <cbc:PayableAmount currencyID="PEN">345.80</cbc:PayableAmount>
   </cac:LegalMonetaryTotal>
 
-  <!-- Línea 1: gravado (cat. 07 = 10), solo IGV -->
+  <!-- Line 1: taxed (cat. 07 = 10), IGV only -->
   <cac:InvoiceLine>
     <cbc:ID>1</cbc:ID>
     <cbc:InvoicedQuantity unitCode="NIU">10</cbc:InvoicedQuantity>
@@ -117,7 +117,7 @@
     <cac:Price><cbc:PriceAmount currencyID="PEN">22.00</cbc:PriceAmount></cac:Price>
   </cac:InvoiceLine>
 
-  <!-- Línea 2: gravado con ISC sistema al valor (cat. 08 = 01). IGV sobre valor + ISC (R-25) -->
+  <!-- Line 2: taxed with ISC ad valorem system (cat. 08 = 01). IGV on value + ISC (R-25) -->
   <cac:InvoiceLine>
     <cbc:ID>2</cbc:ID>
     <cbc:InvoicedQuantity unitCode="NIU">12</cbc:InvoicedQuantity>
@@ -157,7 +157,7 @@
     <cac:Price><cbc:PriceAmount currencyID="PEN">5.00</cbc:PriceAmount></cac:Price>
   </cac:InvoiceLine>
 
-  <!-- Línea 3: bolsa plástica, IGV + ICBPER (tributo 7152, R-26) -->
+  <!-- Line 3: plastic bag, IGV + ICBPER (tax 7152, R-26) -->
   <cac:InvoiceLine>
     <cbc:ID>3</cbc:ID>
     <cbc:InvoicedQuantity unitCode="NIU">2</cbc:InvoicedQuantity>

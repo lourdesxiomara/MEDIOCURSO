@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/producto.schema.json",
-  "title": "Producto",
-  "description": "Maestro de productos con su configuración tributaria. CU-02.",
+  "title": "Product",
+  "description": "Product master with its tax configuration. CU-02.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -42,7 +42,7 @@
           "$ref": "comun.schema.json#/$defs/montoUnitario"
         }
       ],
-      "description": "Precio de lista con impuestos (supuesto S-04)."
+      "description": "Tax-inclusive list price (assumption S-04)."
     },
     "isc": {
       "type": "object",
@@ -50,7 +50,7 @@
       "required": [
         "sistema"
       ],
-      "description": "Solo si el producto está sujeto a ISC (R-24, catálogo 08).",
+      "description": "Only if the product is subject to ISC (R-24, catalog 08).",
       "properties": {
         "sistema": {
           "$ref": "comun.schema.json#/$defs/catalogo08"
@@ -114,11 +114,11 @@
     "esBolsaPlastica": {
       "type": "boolean",
       "default": false,
-      "description": "Si es true, cada unidad vendida genera ICBPER (R-26)."
+      "description": "If true, every unit sold generates ICBPER (R-26)."
     },
     "idLegado": {
       "type": "string",
-      "description": "Trazabilidad con el producto del sistema legado (M-03)."
+      "description": "Traceability to the legacy system product (M-03)."
     }
   }
 }

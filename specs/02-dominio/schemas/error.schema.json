@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/error.schema.json",
   "title": "Error",
-  "description": "Error de la API en formato RFC 9457 (Problem Details) con detalle por regla.",
+  "description": "API error in RFC 9457 (Problem Details) format with per-rule detail.",
   "type": "object",
   "required": [
     "type",
@@ -36,18 +36,18 @@
           "regla": {
             "type": "string",
             "pattern": "^(R|M)-\\d{2}$",
-            "description": "ID en docs/sunat/reglas-validacion.md o specs/06-migracion"
+            "description": "ID in docs/sunat/reglas-validacion.md or specs/06-migracion"
           },
           "campo": {
             "type": "string",
-            "description": "JSON Pointer del campo"
+            "description": "JSON Pointer of the field"
           },
           "mensaje": {
             "type": "string"
           },
           "codigoSunat": {
             "type": "string",
-            "description": "Código devuelto en el CDR, si el error es externo (D-07)."
+            "description": "Code returned in the CDR, if the error is external (D-07)."
           }
         }
       }

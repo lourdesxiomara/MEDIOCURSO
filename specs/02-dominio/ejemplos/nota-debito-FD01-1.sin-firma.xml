@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Nota de débito (cat. 01 = 08), motivo cat. 10 = 01 (intereses por mora), inafecta (cat. 07 = 30).
-  Equivale a specs/02-dominio/ejemplos/comprobante.nota-debito.json. XML ANTES de firmar (R-50).
+  Debit note (cat. 01 = 08), reason cat. 10 = 01 (late-payment interest), unaffected (cat. 07 = 30).
+  Equivalent to specs/02-dominio/ejemplos/comprobante.nota-debito.json. XML BEFORE signing (R-50).
 -->
 <DebitNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2"
     xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"

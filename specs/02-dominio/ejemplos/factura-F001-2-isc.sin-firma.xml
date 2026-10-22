@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Factura con ISC catálogo 08: línea 1 sistema 02 (monto fijo), línea 2 sistema 03 (precio de venta al público, factor 0.847).
-  Equivale a specs/02-dominio/ejemplos/comprobante.factura-isc.json. XML ANTES de firmar (R-50).
+  Invoice with ISC catalog 08: line 1 system 02 (fixed amount), line 2 system 03 (retail price, factor 0.847).
+  Equivalent to specs/02-dominio/ejemplos/comprobante.factura-isc.json. XML BEFORE signing (R-50).
 -->
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"

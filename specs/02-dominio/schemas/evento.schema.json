@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/evento.schema.json",
-  "title": "Evento de dominio",
-  "description": "Sobre común de los eventos entre microservicios (specs/04-api/eventos.md). En el monolito van por un bus en memoria con el mismo contrato.",
+  "title": "Domain event",
+  "description": "Common envelope for events between microservices (specs/04-api/eventos.md). In the monolith they travel through an in-memory bus with the same contract.",
   "type": "object",
   "required": [
     "id",
@@ -120,7 +120,7 @@
         "numero",
         "importeTotal"
       ],
-      "description": "ms-emision → ms-envio-cpe: XML firmado listo para enviar al OSE.",
+      "description": "ms-emision → ms-envio-cpe: signed XML ready to be sent to the OSE.",
       "properties": {
         "comprobanteId": {
           "$ref": "comun.schema.json#/$defs/uuid"
@@ -144,7 +144,7 @@
         "codigoRespuesta",
         "lineas"
       ],
-      "description": "ms-envio-cpe → ms-inventario (salidas, CU-14) y ms-emision (estado).",
+      "description": "ms-envio-cpe → ms-inventario (outputs, CU-14) and ms-emision (status).",
       "properties": {
         "comprobanteId": {
           "$ref": "comun.schema.json#/$defs/uuid"
@@ -204,7 +204,7 @@
         "comprobanteId",
         "numero"
       ],
-      "description": "ms-envio-cpe → ms-inventario revierte salidas (CU-07).",
+      "description": "ms-envio-cpe → ms-inventario reverts outputs (CU-07).",
       "properties": {
         "comprobanteId": {
           "$ref": "comun.schema.json#/$defs/uuid"

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/movimiento-inventario.schema.json",
   "title": "MovimientoInventario",
-  "description": "Movimiento del Registro de Inventario Permanente en Unidades Físicas (Formato 12.1, RS 234-2006). CU-14.",
+  "description": "Movement of the Permanent Inventory Record in Physical Units (Format 12.1, RS 234-2006). CU-14.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -49,7 +49,7 @@
       "properties": {
         "tipo": {
           "type": "string",
-          "description": "Cat. 01 o 'INTERNO' para ajustes / documentos legados no identificables."
+          "description": "Cat. 01 or 'INTERNO' for adjustments / unidentifiable legacy documents."
         },
         "numero": {
           "type": "string"
@@ -69,7 +69,7 @@
     },
     "idLegado": {
       "type": "string",
-      "description": "id de la fila legada (trazabilidad M-07)."
+      "description": "Legacy row id (traceability M-07)."
     }
   }
 }

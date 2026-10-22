@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Boleta de venta (cat. 01 = 03) a persona con DNI (cat. 06 = 1), con ICBPER.
-  Equivale a specs/02-dominio/ejemplos/comprobante.boleta.json. XML ANTES de firmar (R-50).
+  Sales receipt (cat. 01 = 03) to a person with DNI (cat. 06 = 1), with ICBPER.
+  Equivalent to specs/02-dominio/ejemplos/comprobante.boleta.json. XML BEFORE signing (R-50).
 -->
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
     xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"

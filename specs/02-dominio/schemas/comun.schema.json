@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/comun.schema.json",
-  "title": "Tipos comunes y catálogos SUNAT",
-  "description": "Definiciones reutilizables. Los enum de catálogos se generan desde docs/sunat/catalogos y tools/verificar.py comprueba que coincidan.",
+  "title": "Common types and SUNAT catalogs",
+  "description": "Reusable definitions. Catalog enums are generated from docs/sunat/catalogos and tools/verificar.py checks that they match.",
   "$defs": {
     "catalogo01": {
       "type": "string",
-      "title": "Catálogo 01 – Tipo de documento",
+      "title": "Catalog 01 – Document type",
       "enum": [
         "01",
         "03",
@@ -16,21 +16,21 @@
         "12",
         "31"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat01.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat01.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo02": {
       "type": "string",
-      "title": "Catálogo 02 – Tipo de moneda (ISO 4217)",
+      "title": "Catalog 02 – Currency (ISO 4217)",
       "enum": [
         "PEN",
         "USD",
         "EUR"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat02.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat02.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo03": {
       "type": "string",
-      "title": "Catálogo 03 – Unidad de medida comercial (UN/ECE Rec. 20)",
+      "title": "Catalog 03 – Commercial unit of measure (UN/ECE Rec. 20)",
       "enum": [
         "NIU",
         "ZZ",
@@ -43,11 +43,11 @@
         "PK",
         "DZN"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat03.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat03.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo05": {
       "type": "string",
-      "title": "Catálogo 05 – Tipos de tributos",
+      "title": "Catalog 05 – Tax types",
       "enum": [
         "1000",
         "1016",
@@ -59,11 +59,11 @@
         "9998",
         "9999"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat05.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat05.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo06": {
       "type": "string",
-      "title": "Catálogo 06 – Tipo de documento de identidad",
+      "title": "Catalog 06 – Identity document type",
       "enum": [
         "0",
         "1",
@@ -75,11 +75,11 @@
         "C",
         "D"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat06.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat06.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo07": {
       "type": "string",
-      "title": "Catálogo 07 – Tipo de afectación del IGV",
+      "title": "Catalog 07 – IGV treatment type",
       "enum": [
         "10",
         "11",
@@ -100,21 +100,21 @@
         "36",
         "40"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat07.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat07.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo08": {
       "type": "string",
-      "title": "Catálogo 08 – Tipos de sistema de cálculo del ISC",
+      "title": "Catalog 08 – ISC calculation system types",
       "enum": [
         "01",
         "02",
         "03"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat08.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat08.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo09": {
       "type": "string",
-      "title": "Catálogo 09 – Tipo de nota de crédito",
+      "title": "Catalog 09 – Credit note type",
       "enum": [
         "01",
         "02",
@@ -127,30 +127,30 @@
         "09",
         "10"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat09.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat09.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo10": {
       "type": "string",
-      "title": "Catálogo 10 – Tipo de nota de débito",
+      "title": "Catalog 10 – Debit note type",
       "enum": [
         "01",
         "02",
         "03"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat10.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat10.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo16": {
       "type": "string",
-      "title": "Catálogo 16 – Tipo de precio de venta unitario",
+      "title": "Catalog 16 – Unit sale price type",
       "enum": [
         "01",
         "02"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat16.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat16.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo51": {
       "type": "string",
-      "title": "Catálogo 51 – Tipo de operación",
+      "title": "Catalog 51 – Operation type",
       "enum": [
         "0101",
         "0112",
@@ -159,11 +159,11 @@
         "1001",
         "2001"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat51.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat51.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo52": {
       "type": "string",
-      "title": "Catálogo 52 – Leyendas",
+      "title": "Catalog 52 – Legends",
       "enum": [
         "1000",
         "1002",
@@ -172,18 +172,18 @@
         "2002",
         "2006"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat52.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat52.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "catalogo53": {
       "type": "string",
-      "title": "Catálogo 53 – Cargos o descuentos",
+      "title": "Catalog 53 – Charges or discounts",
       "enum": [
         "00",
         "01",
         "02",
         "03"
       ],
-      "description": "Fuente: docs/sunat/catalogos/cat53.json (RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT))."
+      "description": "Source: docs/sunat/catalogos/cat53.json (RS 097-2012/SUNAT, Annex 8 (UBL 2.1 version: annex E of RS 245-2017/SUNAT))."
     },
     "tipoComprobanteEmision": {
       "type": "string",
@@ -193,7 +193,7 @@
         "07",
         "08"
       ],
-      "description": "Subconjunto del catálogo 01 en alcance de emisión (R-01)."
+      "description": "Subset of catalog 01 in issuing scope (R-01)."
     },
     "tipoComprobanteVenta": {
       "type": "string",
@@ -201,32 +201,32 @@
         "01",
         "03"
       ],
-      "description": "Factura o boleta (catálogo 01)."
+      "description": "Invoice or receipt (catalog 01)."
     },
     "montoDecimal": {
       "type": "string",
       "pattern": "^-?\\d{1,12}\\.\\d{2}$",
-      "description": "Monto con 2 decimales como texto, nunca float (R-28). Ej. \"118.00\"."
+      "description": "Amount with 2 decimals as text, never float (R-28). E.g. \"118.00\"."
     },
     "montoUnitario": {
       "type": "string",
       "pattern": "^\\d{1,12}(\\.\\d{1,10})?$",
-      "description": "Valor/precio unitario: hasta 10 decimales (UBL n(12,10))."
+      "description": "Unit value/price: up to 10 decimals (UBL n(12,10))."
     },
     "cantidad": {
       "type": "string",
       "pattern": "^\\d{1,12}(\\.\\d{1,10})?$",
-      "description": "Cantidad del ítem, hasta 10 decimales."
+      "description": "Line quantity, up to 10 decimals."
     },
     "porcentaje": {
       "type": "string",
       "pattern": "^\\d{1,3}\\.\\d{2}$",
-      "description": "Porcentaje, ej. \"18.00\"."
+      "description": "Percentage, e.g. \"18.00\"."
     },
     "ruc": {
       "type": "string",
       "pattern": "^(10|15|16|17|20)\\d{9}$",
-      "description": "RUC: 11 dígitos con prefijo válido. El dígito verificador módulo 11 lo valida el dominio (R-10)."
+      "description": "RUC: 11 digits with a valid prefix. The modulo-11 check digit is validated by the domain (R-10)."
     },
     "serieFactura": {
       "type": "string",
@@ -239,18 +239,18 @@
     "serie": {
       "type": "string",
       "pattern": "^[FB][A-Z0-9]{3}$",
-      "description": "Serie de 4 caracteres; F = factura y sus notas, B = boleta y sus notas (R-02, R-04)."
+      "description": "4-character series; F = invoice and its notes, B = receipt and its notes (R-02, R-04)."
     },
     "correlativo": {
       "type": "integer",
       "minimum": 1,
       "maximum": 99999999,
-      "description": "Asignado por el sistema (R-03)."
+      "description": "Assigned by the system (R-03)."
     },
     "numeroComprobante": {
       "type": "string",
       "pattern": "^[FB][A-Z0-9]{3}-\\d{1,8}$",
-      "description": "SERIE-CORRELATIVO, ej. F001-123 (UBL cbc:ID)."
+      "description": "SERIES-NUMBER, e.g. F001-123 (UBL cbc:ID)."
     },
     "fecha": {
       "type": "string",
@@ -352,7 +352,7 @@
         "codigoEstablecimiento": {
           "type": "string",
           "pattern": "^\\d{4}$",
-          "description": "Código de establecimiento anexo SUNAT; 0000 = domicilio fiscal (UBL cbc:AddressTypeCode)."
+          "description": "SUNAT branch establishment code; 0000 = registered address (UBL cbc:AddressTypeCode)."
         }
       }
     },
