@@ -15,7 +15,7 @@ UNAS – School of Computer and Systems Engineering.
 ## Deliverables
 | # | Required deliverable | Location |
 |---|---|---|
-| 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (12 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (JSON + UBL 2.1 XML, validated) |
+| 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (12 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (validated JSON + UBL 2.1 XML) |
 | 2 | **MVC architecture diagrams with a Hexagonal vision** | [`specs/03-arquitectura/arquitectura.md`](specs/03-arquitectura/arquitectura.md) · decisions in [`specs/adr/`](specs/adr) |
 | 3 | **Endpoint / service specification (API contracts)** | [`specs/04-api/openapi.yaml`](specs/04-api/openapi.yaml) (OpenAPI 3.1) · [`puertos-salida.md`](specs/04-api/puertos-salida.md) · [`eventos.md`](specs/04-api/eventos.md) |
 | 4 | **Regulatory traceability matrix SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (52 rows) |
@@ -32,7 +32,7 @@ Other case requirements also covered:
 | Non-functional requirements | [`specs/00-contexto/requisitos-no-funcionales.md`](specs/00-contexto/requisitos-no-funcionales.md) |
 | Context, assumptions, glossary and open questions | [`specs/00-contexto/`](specs/00-contexto) |
 
-> UBL 2.1 (OASIS) defines the XML **structure**; SUNAT's customization 2.0 defines the **values** for Peru
+> UBL 2.1 (OASIS) defines the XML **structure**; SUNAT customization 2.0 defines the **values** for Peru
 > (RUC, `F001-1` series-number, PEN, IGV 18 %…). This project validates against both.
 
 ## How to verify consistency
@@ -44,13 +44,10 @@ cd tools && npm install
 npm run mermaid                           # parses diagrams with the official Mermaid parser
 npm run openapi                           # lints the API contract with Redocly
 ```
-`verificar.py` checks, among other things, that the example XMLs validate against the UBL 2.1 XSD,
-that IGV/ISC/ICBPER calculations are correct, that every matrix row points to a real schema field and
-XML node, that every rule has an acceptance criterion, and that schema enums match SUNAT catalogs.
 
 ## Working with Claude in this repo
 The agent automatically reads [`CLAUDE.md`](CLAUDE.md): Spec-First rules, repo map and mandatory
 verification before each commit.
 
-> Note: field names in schemas and API (`tipoComprobante`, `importeTotal`…) are kept in Spanish because they
-> mirror SUNAT's official terminology.
+> Field names in schemas and API (`tipoComprobante`, `importeTotal`…) are kept in Spanish on purpose:
+> they mirror SUNAT's official terminology and are cross-checked by the verifier.
