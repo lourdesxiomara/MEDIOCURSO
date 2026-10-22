@@ -1,0 +1,43 @@
+{
+  "catalogo": "06",
+  "titulo": "Tipo de documento de identidad",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "codigos": [
+    {
+      "codigo": "0",
+      "descripcion": "Doc. trib. no domiciliado sin RUC"
+    },
+    {
+      "codigo": "1",
+      "descripcion": "DNI"
+    },
+    {
+      "codigo": "4",
+      "descripcion": "Carnet de extranjería"
+    },
+    {
+      "codigo": "6",
+      "descripcion": "RUC"
+    },
+    {
+      "codigo": "7",
+      "descripcion": "Pasaporte"
+    },
+    {
+      "codigo": "A",
+      "descripcion": "Cédula diplomática de identidad"
+    },
+    {
+      "codigo": "B",
+      "descripcion": "Doc. identidad país de residencia - no domiciliado"
+    },
+    {
+      "codigo": "C",
+      "descripcion": "Tax Identification Number (TIN)"
+    },
+    {
+      "codigo": "D",
+      "descripcion": "Identification Number (IN)"
+    }
+  ]
+}

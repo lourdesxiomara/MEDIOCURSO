@@ -1,0 +1,15 @@
+{
+  "catalogo": "16",
+  "titulo": "Tipo de precio de venta unitario",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "codigos": [
+    {
+      "codigo": "01",
+      "descripcion": "Precio unitario (incluye el IGV)"
+    },
+    {
+      "codigo": "02",
+      "descripcion": "Valor referencial unitario en operaciones no onerosas"
+    }
+  ]
+}

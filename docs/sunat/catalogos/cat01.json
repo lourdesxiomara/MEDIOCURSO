@@ -1,0 +1,37 @@
+{
+  "catalogo": "01",
+  "titulo": "Tipo de documento",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "listURI": "urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01",
+  "nota": "Subconjunto. En alcance de emisión: 01, 03, 07, 08. 09/31 solo como documentos relacionados.",
+  "codigos": [
+    {
+      "codigo": "01",
+      "descripcion": "Factura"
+    },
+    {
+      "codigo": "03",
+      "descripcion": "Boleta de venta"
+    },
+    {
+      "codigo": "07",
+      "descripcion": "Nota de crédito"
+    },
+    {
+      "codigo": "08",
+      "descripcion": "Nota de débito"
+    },
+    {
+      "codigo": "09",
+      "descripcion": "Guía de remisión remitente"
+    },
+    {
+      "codigo": "12",
+      "descripcion": "Ticket de máquina registradora"
+    },
+    {
+      "codigo": "31",
+      "descripcion": "Guía de remisión transportista"
+    }
+  ]
+}

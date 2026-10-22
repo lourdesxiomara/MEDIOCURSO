@@ -1,0 +1,14 @@
+{
+  "codigo": "CER-630",
+  "codigoSunat": "50202201",
+  "descripcion": "CERVEZA 630ML",
+  "unidadMedida": "NIU",
+  "afectacionIgv": "10",
+  "precioUnitario": "7.08",
+  "isc": {
+    "sistema": "01",
+    "tasa": "20.00"
+  },
+  "esBolsaPlastica": false,
+  "idLegado": "CERVEZA PILSEN 630ML"
+}

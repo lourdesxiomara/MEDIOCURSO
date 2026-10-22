@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/migracion.schema.json",
+  "title": "ResultadoMigracion",
+  "description": "Resultado de una ejecución de migración (CU-13).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "estado",
+    "resumen"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "estado": {
+      "type": "string",
+      "enum": [
+        "EN_PROCESO",
+        "COMPLETADA",
+        "COMPLETADA_CON_CUARENTENA",
+        "FALLIDA",
+        "REVERTIDA"
+      ]
+    },
+    "resumen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "leidos",
+        "migrados",
+        "cuarentena",
+        "descartados"
+      ],
+      "properties": {
+        "leidos": {
+          "type": "integer"
+        },
+        "migrados": {
+          "type": "integer"
+        },
+        "cuarentena": {
+          "type": "integer"
+        },
+        "descartados": {
+          "type": "integer"
+        }
+      }
+    },
+    "trazas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "idLegado",
+          "resultado"
+        ],
+        "properties": {
+          "idLegado": {
+            "type": "string"
+          },
+          "resultado": {
+            "type": "string",
+            "enum": [
+              "MIGRADO",
+              "CUARENTENA",
+              "DESCARTADO"
+            ]
+          },
+          "reglas": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^M-\\d{2}$"
+            }
+          },
+          "idsNuevos": {
+            "type": "array",
+            "items": {
+              "$ref": "comun.schema.json#/$defs/uuid"
+            }
+          },
+          "motivo": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

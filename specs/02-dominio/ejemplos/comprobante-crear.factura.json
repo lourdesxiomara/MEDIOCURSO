@@ -1,0 +1,35 @@
+{
+  "tipoComprobante": "01",
+  "serie": "F001",
+  "tipoOperacion": "0101",
+  "fechaEmision": "2026-10-22",
+  "moneda": "PEN",
+  "cliente": {
+    "documento": {
+      "tipo": "6",
+      "numero": "20456789014"
+    },
+    "nombre": "BODEGA EJEMPLO S.A.C.",
+    "direccion": {
+      "direccion": "JR. LOS PINOS 456"
+    },
+    "correo": "compras@bodega-ejemplo.pe"
+  },
+  "lineas": [
+    {
+      "codigoProducto": "ARZ-5K",
+      "cantidad": "10",
+      "precioUnitario": "25.96"
+    },
+    {
+      "codigoProducto": "CER-630",
+      "cantidad": "12",
+      "precioUnitario": "7.08"
+    },
+    {
+      "codigoProducto": "BOL-01",
+      "cantidad": "2",
+      "precioUnitario": "0.118"
+    }
+  ]
+}

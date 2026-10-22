@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/nota-crear.schema.json",
+  "title": "CrearNotaRequest",
+  "description": "Entrada para nota de crédito (CU-05) o débito (CU-06). El comprobante afectado va en la ruta. R-40..R-42.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "serie",
+    "motivo",
+    "sustento"
+  ],
+  "properties": {
+    "serie": {
+      "$ref": "comun.schema.json#/$defs/serie"
+    },
+    "fechaEmision": {
+      "$ref": "comun.schema.json#/$defs/fecha"
+    },
+    "motivo": {
+      "type": "string",
+      "pattern": "^\\d{2}$",
+      "description": "Catálogo 09 (crédito) o 10 (débito); la ruta define cuál se valida."
+    },
+    "sustento": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 250
+    },
+    "lineas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cantidad",
+          "precioUnitario"
+        ],
+        "properties": {
+          "productoId": {
+            "$ref": "comun.schema.json#/$defs/uuid"
+          },
+          "codigoProducto": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Si se omite se toma del producto."
+          },
+          "unidadMedida": {
+            "$ref": "comun.schema.json#/$defs/catalogo03"
+          },
+          "cantidad": {
+            "$ref": "comun.schema.json#/$defs/cantidad"
+          },
+          "precioUnitario": {
+            "allOf": [
+              {
+                "$ref": "comun.schema.json#/$defs/montoUnitario"
+              }
+            ],
+            "description": "Precio con impuestos (cat. 16 = 01). El sistema calcula el valor unitario."
+          },
+          "afectacionIgv": {
+            "$ref": "comun.schema.json#/$defs/catalogo07"
+          },
+          "descuento": {
+            "$ref": "comun.schema.json#/$defs/montoDecimal"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "productoId"
+            ]
+          },
+          {
+            "required": [
+              "codigoProducto"
+            ]
+          }
+        ]
+      },
+      "description": "Obligatorio para motivos por ítem (NC 05, 07) y para ND."
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/emisor.schema.json",
+  "title": "Emisor",
+  "description": "Contribuyente que emite (UBL cac:AccountingSupplierParty). CU-10.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ruc",
+    "razonSocial",
+    "domicilioFiscal"
+  ],
+  "properties": {
+    "ruc": {
+      "$ref": "comun.schema.json#/$defs/ruc"
+    },
+    "razonSocial": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "UBL cac:PartyLegalEntity/cbc:RegistrationName"
+    },
+    "nombreComercial": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "UBL cac:PartyName/cbc:Name"
+    },
+    "domicilioFiscal": {
+      "$ref": "comun.schema.json#/$defs/direccion"
+    },
+    "amazonia": {
+      "type": "boolean",
+      "default": false,
+      "description": "Emisor acogido a Ley 27037 (ADR-005, D-04)."
+    }
+  }
+}

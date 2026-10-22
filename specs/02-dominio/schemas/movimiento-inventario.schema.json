@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/movimiento-inventario.schema.json",
+  "title": "MovimientoInventario",
+  "description": "Movimiento del Registro de Inventario Permanente en Unidades Físicas (Formato 12.1, RS 234-2006). CU-14.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fecha",
+    "tipo",
+    "productoId",
+    "cantidad",
+    "documentoSustento"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "fecha": {
+      "$ref": "comun.schema.json#/$defs/fecha"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "INGRESO",
+        "SALIDA",
+        "AJUSTE_POSITIVO",
+        "AJUSTE_NEGATIVO",
+        "SALDO_INICIAL"
+      ]
+    },
+    "productoId": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "cantidad": {
+      "$ref": "comun.schema.json#/$defs/cantidad"
+    },
+    "almacen": {
+      "type": "string",
+      "default": "PRINCIPAL"
+    },
+    "documentoSustento": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipo",
+        "numero"
+      ],
+      "properties": {
+        "tipo": {
+          "type": "string",
+          "description": "Cat. 01 o 'INTERNO' para ajustes / documentos legados no identificables."
+        },
+        "numero": {
+          "type": "string"
+        },
+        "comprobanteId": {
+          "$ref": "comun.schema.json#/$defs/uuid"
+        }
+      }
+    },
+    "origen": {
+      "type": "string",
+      "enum": [
+        "SISTEMA",
+        "MIGRACION"
+      ],
+      "default": "SISTEMA"
+    },
+    "idLegado": {
+      "type": "string",
+      "description": "id de la fila legada (trazabilidad M-07)."
+    }
+  }
+}

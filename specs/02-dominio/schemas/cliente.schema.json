@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/cliente.schema.json",
+  "title": "Cliente (adquirente)",
+  "description": "UBL cac:AccountingCustomerParty. CU-01. Reglas R-11, R-12.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "documento",
+    "nombre"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "documento": {
+      "$ref": "comun.schema.json#/$defs/documentoIdentidad"
+    },
+    "nombre": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Razón social o nombres. UBL cac:PartyLegalEntity/cbc:RegistrationName"
+    },
+    "direccion": {
+      "$ref": "comun.schema.json#/$defs/direccion"
+    },
+    "correo": {
+      "type": "string",
+      "format": "email"
+    }
+  }
+}

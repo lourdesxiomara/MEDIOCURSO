@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/producto.schema.json",
+  "title": "Producto",
+  "description": "Maestro de productos con su configuración tributaria. CU-02.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "codigo",
+    "descripcion",
+    "unidadMedida",
+    "afectacionIgv",
+    "precioUnitario"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "codigo": {
+      "type": "string",
+      "maxLength": 30,
+      "description": "UBL cac:SellersItemIdentification/cbc:ID"
+    },
+    "codigoSunat": {
+      "type": "string",
+      "pattern": "^\\d{8}$",
+      "description": "UNSPSC. UBL cac:CommodityClassification/cbc:ItemClassificationCode"
+    },
+    "descripcion": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "unidadMedida": {
+      "$ref": "comun.schema.json#/$defs/catalogo03"
+    },
+    "afectacionIgv": {
+      "$ref": "comun.schema.json#/$defs/catalogo07"
+    },
+    "precioUnitario": {
+      "allOf": [
+        {
+          "$ref": "comun.schema.json#/$defs/montoUnitario"
+        }
+      ],
+      "description": "Precio de lista con impuestos (supuesto S-04)."
+    },
+    "isc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sistema"
+      ],
+      "description": "Solo si el producto está sujeto a ISC (R-24, catálogo 08).",
+      "properties": {
+        "sistema": {
+          "$ref": "comun.schema.json#/$defs/catalogo08"
+        },
+        "tasa": {
+          "$ref": "comun.schema.json#/$defs/porcentaje"
+        },
+        "montoFijo": {
+          "$ref": "comun.schema.json#/$defs/montoUnitario"
+        },
+        "precioVentaPublico": {
+          "$ref": "comun.schema.json#/$defs/montoUnitario"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "sistema": {
+                "const": "01"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "tasa"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "sistema": {
+                "const": "02"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "montoFijo"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "sistema": {
+                "const": "03"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "tasa",
+              "precioVentaPublico"
+            ]
+          }
+        }
+      ]
+    },
+    "esBolsaPlastica": {
+      "type": "boolean",
+      "default": false,
+      "description": "Si es true, cada unidad vendida genera ICBPER (R-26)."
+    },
+    "idLegado": {
+      "type": "string",
+      "description": "Trazabilidad con el producto del sistema legado (M-03)."
+    }
+  }
+}

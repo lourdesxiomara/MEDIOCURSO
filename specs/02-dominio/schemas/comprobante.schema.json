@@ -1,0 +1,425 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/comprobante.schema.json",
+  "title": "Comprobante",
+  "description": "Comprobante emitido o en proceso, con montos calculados por el dominio. Salida de la API (CU-03..CU-08).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tipoComprobante",
+    "serie",
+    "estado",
+    "fechaEmision",
+    "moneda",
+    "emisor",
+    "cliente",
+    "lineas",
+    "totales",
+    "leyendas"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "tipoComprobante": {
+      "$ref": "comun.schema.json#/$defs/tipoComprobanteEmision"
+    },
+    "serie": {
+      "$ref": "comun.schema.json#/$defs/serie"
+    },
+    "correlativo": {
+      "$ref": "comun.schema.json#/$defs/correlativo"
+    },
+    "numero": {
+      "$ref": "comun.schema.json#/$defs/numeroComprobante"
+    },
+    "tipoOperacion": {
+      "$ref": "comun.schema.json#/$defs/catalogo51"
+    },
+    "estado": {
+      "type": "string",
+      "enum": [
+        "BORRADOR",
+        "VALIDADO",
+        "FIRMADO",
+        "PENDIENTE_ENVIO",
+        "ACEPTADO",
+        "ACEPTADO_CON_OBSERVACIONES",
+        "RECHAZADO",
+        "ANULADO"
+      ]
+    },
+    "fechaEmision": {
+      "$ref": "comun.schema.json#/$defs/fecha"
+    },
+    "horaEmision": {
+      "$ref": "comun.schema.json#/$defs/hora"
+    },
+    "fechaVencimiento": {
+      "$ref": "comun.schema.json#/$defs/fecha"
+    },
+    "moneda": {
+      "$ref": "comun.schema.json#/$defs/catalogo02"
+    },
+    "emisor": {
+      "$ref": "emisor.schema.json"
+    },
+    "cliente": {
+      "$ref": "cliente.schema.json"
+    },
+    "lineas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "numero",
+          "descripcion",
+          "unidadMedida",
+          "cantidad",
+          "valorUnitario",
+          "precioUnitario",
+          "tipoPrecio",
+          "afectacionIgv",
+          "valorVenta",
+          "tributos"
+        ],
+        "description": "UBL cac:InvoiceLine",
+        "properties": {
+          "numero": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "codigoProducto": {
+            "type": "string"
+          },
+          "codigoSunat": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "unidadMedida": {
+            "$ref": "comun.schema.json#/$defs/catalogo03"
+          },
+          "cantidad": {
+            "$ref": "comun.schema.json#/$defs/cantidad"
+          },
+          "valorUnitario": {
+            "$ref": "comun.schema.json#/$defs/montoUnitario"
+          },
+          "precioUnitario": {
+            "$ref": "comun.schema.json#/$defs/montoUnitario"
+          },
+          "tipoPrecio": {
+            "$ref": "comun.schema.json#/$defs/catalogo16"
+          },
+          "afectacionIgv": {
+            "$ref": "comun.schema.json#/$defs/catalogo07"
+          },
+          "descuento": {
+            "$ref": "comun.schema.json#/$defs/montoDecimal"
+          },
+          "valorVenta": {
+            "$ref": "comun.schema.json#/$defs/montoDecimal"
+          },
+          "tributos": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/tributo"
+            }
+          }
+        }
+      }
+    },
+    "totales": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "UBL cac:TaxTotal + cac:LegalMonetaryTotal (R-30, R-31)",
+      "required": [
+        "totalGravado",
+        "totalExonerado",
+        "totalInafecto",
+        "totalIgv",
+        "totalIsc",
+        "totalIcbper",
+        "valorVenta",
+        "precioVenta",
+        "importeTotal"
+      ],
+      "properties": {
+        "totalGravado": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalExonerado": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalInafecto": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalExportacion": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalGratuito": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalIgv": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalIsc": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalIcbper": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalDescuentos": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalCargos": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "totalAnticipos": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "valorVenta": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "precioVenta": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "importeTotal": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        }
+      }
+    },
+    "leyendas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "comun.schema.json#/$defs/leyenda"
+      },
+      "contains": {
+        "properties": {
+          "codigo": {
+            "const": "1000"
+          }
+        }
+      }
+    },
+    "documentoAfectado": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipoComprobante",
+        "numero"
+      ],
+      "description": "Solo notas de crédito/débito. UBL cac:BillingReference/cac:InvoiceDocumentReference",
+      "properties": {
+        "tipoComprobante": {
+          "$ref": "comun.schema.json#/$defs/tipoComprobanteVenta"
+        },
+        "numero": {
+          "$ref": "comun.schema.json#/$defs/numeroComprobante"
+        }
+      }
+    },
+    "motivoNota": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "codigo",
+        "sustento"
+      ],
+      "description": "UBL cac:DiscrepancyResponse (cbc:ResponseCode cat. 09/10, cbc:Description)",
+      "properties": {
+        "codigo": {
+          "type": "string",
+          "pattern": "^\\d{2}$"
+        },
+        "sustento": {
+          "type": "string",
+          "maxLength": 250
+        }
+      }
+    },
+    "firma": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hash": {
+          "type": "string",
+          "description": "DigestValue de la firma XMLDSig"
+        },
+        "fechaFirma": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "respuestaSunat": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Resumen del CDR (ApplicationResponse).",
+      "properties": {
+        "codigoRespuesta": {
+          "type": "string"
+        },
+        "descripcion": {
+          "type": "string"
+        },
+        "observaciones": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fechaRecepcion": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "canal": {
+          "type": "string",
+          "enum": [
+            "OSE",
+            "SUNAT"
+          ]
+        }
+      }
+    },
+    "enlaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "xml": {
+          "type": "string"
+        },
+        "cdr": {
+          "type": "string"
+        },
+        "pdf": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tipoComprobante": {
+            "enum": [
+              "07",
+              "08"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "documentoAfectado",
+          "motivoNota"
+        ]
+      },
+      "else": {
+        "required": [
+          "tipoOperacion"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "tributo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "codigo",
+        "nombre",
+        "codigoInternacional",
+        "categoria",
+        "baseImponible",
+        "monto"
+      ],
+      "description": "UBL cac:TaxTotal/cac:TaxSubtotal",
+      "properties": {
+        "codigo": {
+          "$ref": "comun.schema.json#/$defs/catalogo05"
+        },
+        "nombre": {
+          "type": "string"
+        },
+        "codigoInternacional": {
+          "type": "string",
+          "enum": [
+            "VAT",
+            "EXC",
+            "OTH",
+            "FRE"
+          ]
+        },
+        "categoria": {
+          "type": "string",
+          "enum": [
+            "S",
+            "E",
+            "O",
+            "Z",
+            "G"
+          ]
+        },
+        "baseImponible": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "porcentaje": {
+          "$ref": "comun.schema.json#/$defs/porcentaje"
+        },
+        "monto": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "sistemaIsc": {
+          "$ref": "comun.schema.json#/$defs/catalogo08"
+        },
+        "cantidadBolsas": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "montoPorUnidad": {
+          "$ref": "comun.schema.json#/$defs/montoUnitario"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "codigo": {
+                "const": "2000"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "sistemaIsc"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "codigo": {
+                "const": "7152"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "cantidadBolsas",
+              "montoPorUnidad"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

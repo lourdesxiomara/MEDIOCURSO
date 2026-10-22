@@ -1,0 +1,71 @@
+{
+  "catalogo": "05",
+  "titulo": "Tipos de tributos",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "nota": "codigoInternacional = UN/ECE 5153 (cbc:TaxTypeCode); categoria = UN/ECE 5305 (cac:TaxCategory/cbc:ID). Filas 1016 y 7152 añadidas por modificaciones posteriores al Anexo 8 de 2017; verificar nombres cortos en Anexo 8 vigente.",
+  "codigos": [
+    {
+      "codigo": "1000",
+      "descripcion": "IGV Impuesto General a las Ventas",
+      "nombre": "IGV",
+      "codigoInternacional": "VAT",
+      "categoria": "S"
+    },
+    {
+      "codigo": "1016",
+      "descripcion": "Impuesto a la Venta Arroz Pilado",
+      "nombre": "IVAP",
+      "codigoInternacional": "VAT",
+      "categoria": "S"
+    },
+    {
+      "codigo": "2000",
+      "descripcion": "ISC Impuesto Selectivo al Consumo",
+      "nombre": "ISC",
+      "codigoInternacional": "EXC",
+      "categoria": "S"
+    },
+    {
+      "codigo": "7152",
+      "descripcion": "Impuesto al Consumo de las Bolsas de Plástico",
+      "nombre": "ICBPER",
+      "codigoInternacional": "OTH",
+      "categoria": "S"
+    },
+    {
+      "codigo": "9995",
+      "descripcion": "Exportación",
+      "nombre": "EXP",
+      "codigoInternacional": "FRE",
+      "categoria": "G"
+    },
+    {
+      "codigo": "9996",
+      "descripcion": "Gratuito",
+      "nombre": "GRA",
+      "codigoInternacional": "FRE",
+      "categoria": "Z"
+    },
+    {
+      "codigo": "9997",
+      "descripcion": "Exonerado",
+      "nombre": "EXO",
+      "codigoInternacional": "VAT",
+      "categoria": "E"
+    },
+    {
+      "codigo": "9998",
+      "descripcion": "Inafecto",
+      "nombre": "INA",
+      "codigoInternacional": "FRE",
+      "categoria": "O"
+    },
+    {
+      "codigo": "9999",
+      "descripcion": "Otros conceptos de pago",
+      "nombre": "OTROS",
+      "codigoInternacional": "OTH",
+      "categoria": "S"
+    }
+  ]
+}

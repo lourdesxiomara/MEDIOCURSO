@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Ejemplo de Nota de Crédito Electrónica UBL 2.1 ANTES de firmar.
+  Motivo cat. 09 = 07 (devolución por ítem) sobre la factura F001-1.
+  Equivale a specs/02-dominio/ejemplos/comprobante.nota-credito.json.
+-->
+<CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+  <cbc:CustomizationID>2.0</cbc:CustomizationID>
+  <cbc:ID>FC01-1</cbc:ID>
+  <cbc:IssueDate>2026-10-23</cbc:IssueDate>
+  <cbc:IssueTime>09:00:00</cbc:IssueTime>
+  <cbc:Note languageLocaleID="1000">CATORCE CON 16/100 SOLES</cbc:Note>
+  <cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>
+  <cac:DiscrepancyResponse>
+    <cbc:ReferenceID>F001-1</cbc:ReferenceID>
+    <cbc:ResponseCode>07</cbc:ResponseCode>
+    <cbc:Description>Devolucion de 2 botellas por rotura</cbc:Description>
+  </cac:DiscrepancyResponse>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID>F001-1</cbc:ID>
+      <cbc:DocumentTypeCode>01</cbc:DocumentTypeCode>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:Signature>
+    <cbc:ID>IDSignABC</cbc:ID>
+    <cac:SignatoryParty>
+      <cac:PartyIdentification><cbc:ID>20600123450</cbc:ID></cac:PartyIdentification>
+      <cac:PartyName><cbc:Name>ABC SOFTWARE CORP S.A.C.</cbc:Name></cac:PartyName>
+    </cac:SignatoryParty>
+    <cac:DigitalSignatureAttachment>
+      <cac:ExternalReference><cbc:URI>#SignatureABC</cbc:URI></cac:ExternalReference>
+    </cac:DigitalSignatureAttachment>
+  </cac:Signature>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cac:PartyIdentification><cbc:ID schemeID="6">20600123450</cbc:ID></cac:PartyIdentification>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>ABC SOFTWARE CORP S.A.C.</cbc:RegistrationName>
+        <cac:RegistrationAddress><cbc:AddressTypeCode>0000</cbc:AddressTypeCode></cac:RegistrationAddress>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cac:PartyIdentification><cbc:ID schemeID="6">20456789014</cbc:ID></cac:PartyIdentification>
+      <cac:PartyLegalEntity><cbc:RegistrationName>BODEGA EJEMPLO S.A.C.</cbc:RegistrationName></cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="PEN">4.16</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="PEN">10.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="PEN">2.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="PEN">12.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="PEN">2.16</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cac:TaxScheme><cbc:ID>1000</cbc:ID><cbc:Name>IGV</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="PEN">10.00</cbc:LineExtensionAmount>
+    <cbc:TaxInclusiveAmount currencyID="PEN">14.16</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="PEN">14.16</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:CreditNoteLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:CreditedQuantity unitCode="NIU">2</cbc:CreditedQuantity>
+    <cbc:LineExtensionAmount currencyID="PEN">10.00</cbc:LineExtensionAmount>
+    <cac:PricingReference>
+      <cac:AlternativeConditionPrice>
+        <cbc:PriceAmount currencyID="PEN">7.08</cbc:PriceAmount>
+        <cbc:PriceTypeCode>01</cbc:PriceTypeCode>
+      </cac:AlternativeConditionPrice>
+    </cac:PricingReference>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="PEN">4.16</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">10.00</cbc:TaxableAmount>
+        <cbc:TaxAmount currencyID="PEN">2.00</cbc:TaxAmount>
+        <cac:TaxCategory>
+          <cbc:Percent>20.00</cbc:Percent>
+          <cbc:TierRange>01</cbc:TierRange>
+          <cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme>
+        </cac:TaxCategory>
+      </cac:TaxSubtotal>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">12.00</cbc:TaxableAmount>
+        <cbc:TaxAmount currencyID="PEN">2.16</cbc:TaxAmount>
+        <cac:TaxCategory>
+          <cbc:Percent>18.00</cbc:Percent>
+          <cbc:TaxExemptionReasonCode>10</cbc:TaxExemptionReasonCode>
+          <cac:TaxScheme><cbc:ID>1000</cbc:ID><cbc:Name>IGV</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme>
+        </cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>CERVEZA 630ML</cbc:Description>
+      <cac:SellersItemIdentification><cbc:ID>CER-630</cbc:ID></cac:SellersItemIdentification>
+    </cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="PEN">5.00</cbc:PriceAmount></cac:Price>
+  </cac:CreditNoteLine>
+</CreditNote>

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/registro-legado.schema.json",
+  "title": "RegistroLegado",
+  "description": "Fila del sistema legado tal como se exporta (entrada de CU-13). Deliberadamente permisivo: los defectos se tratan en la migración.",
+  "type": "object",
+  "required": [
+    "id",
+    "fecha",
+    "ingreso",
+    "salida",
+    "producto",
+    "nro_documento"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "fecha": {
+      "type": "string"
+    },
+    "ingreso": {
+      "type": "string"
+    },
+    "salida": {
+      "type": "string"
+    },
+    "producto": {
+      "type": "string"
+    },
+    "nro_documento": {
+      "type": "string"
+    }
+  }
+}

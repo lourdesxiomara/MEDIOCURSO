@@ -1,0 +1,26 @@
+{
+  "catalogo": "08",
+  "titulo": "Tipos de sistema de cálculo del ISC",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "nota": "UBL: cac:TaxCategory/cbc:TierRange del subtotal con TaxScheme 2000. El ISC forma parte de la base imponible del IGV.",
+  "codigos": [
+    {
+      "codigo": "01",
+      "descripcion": "Sistema al valor (Apéndice IV, lit. A – TUO IGV e ISC)",
+      "base": "valor de venta",
+      "formula": "isc = valorVenta × tasa (tasa según Apéndice IV, lit. A del TUO)"
+    },
+    {
+      "codigo": "02",
+      "descripcion": "Aplicación del monto fijo (Apéndice IV, lit. B – TUO IGV e ISC)",
+      "base": "cantidad",
+      "formula": "isc = cantidad × montoFijo (monto según Apéndice IV, lit. B del TUO)"
+    },
+    {
+      "codigo": "03",
+      "descripcion": "Sistema de precios de venta al público (Apéndice IV, lit. C – TUO IGV e ISC)",
+      "base": "precio de venta sugerido al público",
+      "formula": "isc = precioVentaPublicoSugerido × factor × tasa × cantidad (factor y tasa según Apéndice IV, lit. C del TUO)"
+    }
+  ]
+}

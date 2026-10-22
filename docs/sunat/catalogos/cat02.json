@@ -1,0 +1,20 @@
+{
+  "catalogo": "02",
+  "titulo": "Tipo de moneda (ISO 4217)",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "nota": "Subconjunto de ISO 4217 usado por el negocio.",
+  "codigos": [
+    {
+      "codigo": "PEN",
+      "descripcion": "Sol"
+    },
+    {
+      "codigo": "USD",
+      "descripcion": "Dólar estadounidense"
+    },
+    {
+      "codigo": "EUR",
+      "descripcion": "Euro"
+    }
+  ]
+}

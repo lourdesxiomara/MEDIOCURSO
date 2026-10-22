@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/comprobante-crear.schema.json",
+  "title": "CrearComprobanteRequest",
+  "description": "Entrada para crear factura o boleta (CU-03, CU-04). El cliente NO envía correlativo ni totales: los calcula el dominio (R-03, CU-15).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tipoComprobante",
+    "serie",
+    "moneda",
+    "cliente",
+    "lineas"
+  ],
+  "properties": {
+    "tipoComprobante": {
+      "$ref": "comun.schema.json#/$defs/tipoComprobanteVenta"
+    },
+    "serie": {
+      "$ref": "comun.schema.json#/$defs/serie"
+    },
+    "tipoOperacion": {
+      "allOf": [
+        {
+          "$ref": "comun.schema.json#/$defs/catalogo51"
+        }
+      ],
+      "default": "0101"
+    },
+    "fechaEmision": {
+      "$ref": "comun.schema.json#/$defs/fecha"
+    },
+    "fechaVencimiento": {
+      "$ref": "comun.schema.json#/$defs/fecha"
+    },
+    "moneda": {
+      "$ref": "comun.schema.json#/$defs/catalogo02"
+    },
+    "cliente": {
+      "$ref": "cliente.schema.json"
+    },
+    "lineas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cantidad",
+          "precioUnitario"
+        ],
+        "properties": {
+          "productoId": {
+            "$ref": "comun.schema.json#/$defs/uuid"
+          },
+          "codigoProducto": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "descripcion": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Si se omite se toma del producto."
+          },
+          "unidadMedida": {
+            "$ref": "comun.schema.json#/$defs/catalogo03"
+          },
+          "cantidad": {
+            "$ref": "comun.schema.json#/$defs/cantidad"
+          },
+          "precioUnitario": {
+            "allOf": [
+              {
+                "$ref": "comun.schema.json#/$defs/montoUnitario"
+              }
+            ],
+            "description": "Precio con impuestos (cat. 16 = 01). El sistema calcula el valor unitario."
+          },
+          "afectacionIgv": {
+            "$ref": "comun.schema.json#/$defs/catalogo07"
+          },
+          "descuento": {
+            "$ref": "comun.schema.json#/$defs/montoDecimal"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "productoId"
+            ]
+          },
+          {
+            "required": [
+              "codigoProducto"
+            ]
+          }
+        ]
+      }
+    },
+    "descuentoGlobal": {
+      "$ref": "comun.schema.json#/$defs/montoDecimal"
+    },
+    "observaciones": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "ordenCompra": {
+      "type": "string",
+      "maxLength": 20
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tipoComprobante": {
+            "const": "01"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "serie": {
+            "$ref": "comun.schema.json#/$defs/serieFactura"
+          },
+          "cliente": {
+            "properties": {
+              "documento": {
+                "properties": {
+                  "tipo": {
+                    "const": "6"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoComprobante": {
+            "const": "03"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "serie": {
+            "$ref": "comun.schema.json#/$defs/serieBoleta"
+          }
+        }
+      }
+    }
+  ]
+}

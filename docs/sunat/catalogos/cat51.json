@@ -1,0 +1,33 @@
+{
+  "catalogo": "51",
+  "titulo": "Tipo de operación",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "listURI": "urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo51",
+  "nota": "SUBCONJUNTO aplicable a un comercio de abarrotes (duda D-02). UBL: cbc:InvoiceTypeCode/@listID. Notas de crédito y débito no usan catálogo 51.",
+  "codigos": [
+    {
+      "codigo": "0101",
+      "descripcion": "Venta interna"
+    },
+    {
+      "codigo": "0112",
+      "descripcion": "Venta interna - Sustenta gastos deducibles persona natural"
+    },
+    {
+      "codigo": "0113",
+      "descripcion": "Venta interna - NRUS"
+    },
+    {
+      "codigo": "0200",
+      "descripcion": "Exportación de bienes"
+    },
+    {
+      "codigo": "1001",
+      "descripcion": "Operación sujeta a detracción"
+    },
+    {
+      "codigo": "2001",
+      "descripcion": "Operación sujeta a percepción"
+    }
+  ]
+}

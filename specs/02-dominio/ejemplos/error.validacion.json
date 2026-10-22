@@ -1,0 +1,17 @@
+{
+  "type": "https://abc-software.pe/errores/validacion",
+  "title": "El comprobante no cumple las reglas de emisión",
+  "status": 422,
+  "errores": [
+    {
+      "regla": "R-10",
+      "campo": "/cliente/documento/numero",
+      "mensaje": "El dígito verificador del RUC no es válido"
+    },
+    {
+      "regla": "R-24",
+      "campo": "/lineas/1",
+      "mensaje": "El producto CER-630 está sujeto a ISC y no tiene sistema de cálculo (catálogo 08)"
+    }
+  ]
+}

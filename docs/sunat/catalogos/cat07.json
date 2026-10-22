@@ -1,0 +1,79 @@
+{
+  "catalogo": "07",
+  "titulo": "Tipo de afectación del IGV",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "codigos": [
+    {
+      "codigo": "10",
+      "descripcion": "Gravado - Operación onerosa"
+    },
+    {
+      "codigo": "11",
+      "descripcion": "Gravado - Retiro por premio"
+    },
+    {
+      "codigo": "12",
+      "descripcion": "Gravado - Retiro por donación"
+    },
+    {
+      "codigo": "13",
+      "descripcion": "Gravado - Retiro"
+    },
+    {
+      "codigo": "14",
+      "descripcion": "Gravado - Retiro por publicidad"
+    },
+    {
+      "codigo": "15",
+      "descripcion": "Gravado - Bonificaciones"
+    },
+    {
+      "codigo": "16",
+      "descripcion": "Gravado - Retiro por entrega a trabajadores"
+    },
+    {
+      "codigo": "17",
+      "descripcion": "Gravado - IVAP"
+    },
+    {
+      "codigo": "20",
+      "descripcion": "Exonerado - Operación onerosa"
+    },
+    {
+      "codigo": "21",
+      "descripcion": "Exonerado - Transferencia gratuita"
+    },
+    {
+      "codigo": "30",
+      "descripcion": "Inafecto - Operación onerosa"
+    },
+    {
+      "codigo": "31",
+      "descripcion": "Inafecto - Retiro por bonificación"
+    },
+    {
+      "codigo": "32",
+      "descripcion": "Inafecto - Retiro"
+    },
+    {
+      "codigo": "33",
+      "descripcion": "Inafecto - Retiro por muestras médicas"
+    },
+    {
+      "codigo": "34",
+      "descripcion": "Inafecto - Retiro por convenio colectivo"
+    },
+    {
+      "codigo": "35",
+      "descripcion": "Inafecto - Retiro por premio"
+    },
+    {
+      "codigo": "36",
+      "descripcion": "Inafecto - Retiro por publicidad"
+    },
+    {
+      "codigo": "40",
+      "descripcion": "Exportación"
+    }
+  ]
+}

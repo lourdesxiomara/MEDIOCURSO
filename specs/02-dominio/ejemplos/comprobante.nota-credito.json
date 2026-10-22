@@ -1,0 +1,97 @@
+{
+  "id": "8b1d4e22-5c3a-4f0e-b6a1-2d9e7f3c4b02",
+  "tipoComprobante": "07",
+  "serie": "FC01",
+  "correlativo": 1,
+  "numero": "FC01-1",
+  "estado": "ACEPTADO",
+  "fechaEmision": "2026-10-23",
+  "horaEmision": "09:00:00",
+  "moneda": "PEN",
+  "emisor": {
+    "ruc": "20600123450",
+    "razonSocial": "ABC SOFTWARE CORP S.A.C.",
+    "nombreComercial": "ABC MAYORISTA",
+    "domicilioFiscal": {
+      "direccion": "AV. UNIVERSITARIA 123",
+      "ubigeo": "100601",
+      "departamento": "HUANUCO",
+      "provincia": "LEONCIO PRADO",
+      "distrito": "RUPA-RUPA",
+      "codigoPais": "PE",
+      "codigoEstablecimiento": "0000"
+    },
+    "amazonia": false
+  },
+  "cliente": {
+    "documento": {
+      "tipo": "6",
+      "numero": "20456789014"
+    },
+    "nombre": "BODEGA EJEMPLO S.A.C.",
+    "direccion": {
+      "direccion": "JR. LOS PINOS 456"
+    },
+    "correo": "compras@bodega-ejemplo.pe"
+  },
+  "documentoAfectado": {
+    "tipoComprobante": "01",
+    "numero": "F001-1"
+  },
+  "motivoNota": {
+    "codigo": "07",
+    "sustento": "Devolucion de 2 botellas por rotura"
+  },
+  "lineas": [
+    {
+      "numero": 1,
+      "codigoProducto": "CER-630",
+      "descripcion": "CERVEZA 630ML",
+      "unidadMedida": "NIU",
+      "cantidad": "2",
+      "valorUnitario": "5.00",
+      "precioUnitario": "7.08",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "10.00",
+      "tributos": [
+        {
+          "codigo": "2000",
+          "nombre": "ISC",
+          "codigoInternacional": "EXC",
+          "categoria": "S",
+          "baseImponible": "10.00",
+          "monto": "2.00",
+          "porcentaje": "20.00",
+          "sistemaIsc": "01"
+        },
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "12.00",
+          "monto": "2.16",
+          "porcentaje": "18.00"
+        }
+      ]
+    }
+  ],
+  "totales": {
+    "totalGravado": "10.00",
+    "totalExonerado": "0.00",
+    "totalInafecto": "0.00",
+    "totalIgv": "2.16",
+    "totalIsc": "2.00",
+    "totalIcbper": "0.00",
+    "valorVenta": "10.00",
+    "precioVenta": "14.16",
+    "importeTotal": "14.16"
+  },
+  "leyendas": [
+    {
+      "codigo": "1000",
+      "texto": "CATORCE CON 16/100 SOLES"
+    }
+  ]
+}

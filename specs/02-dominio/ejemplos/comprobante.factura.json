@@ -1,0 +1,158 @@
+{
+  "id": "3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01",
+  "tipoComprobante": "01",
+  "serie": "F001",
+  "correlativo": 1,
+  "numero": "F001-1",
+  "tipoOperacion": "0101",
+  "estado": "ACEPTADO",
+  "fechaEmision": "2026-10-22",
+  "horaEmision": "10:15:00",
+  "moneda": "PEN",
+  "emisor": {
+    "ruc": "20600123450",
+    "razonSocial": "ABC SOFTWARE CORP S.A.C.",
+    "nombreComercial": "ABC MAYORISTA",
+    "domicilioFiscal": {
+      "direccion": "AV. UNIVERSITARIA 123",
+      "ubigeo": "100601",
+      "departamento": "HUANUCO",
+      "provincia": "LEONCIO PRADO",
+      "distrito": "RUPA-RUPA",
+      "codigoPais": "PE",
+      "codigoEstablecimiento": "0000"
+    },
+    "amazonia": false
+  },
+  "cliente": {
+    "documento": {
+      "tipo": "6",
+      "numero": "20456789014"
+    },
+    "nombre": "BODEGA EJEMPLO S.A.C.",
+    "direccion": {
+      "direccion": "JR. LOS PINOS 456"
+    },
+    "correo": "compras@bodega-ejemplo.pe"
+  },
+  "lineas": [
+    {
+      "numero": 1,
+      "codigoProducto": "ARZ-5K",
+      "descripcion": "ARROZ EXTRA 5KG",
+      "unidadMedida": "NIU",
+      "cantidad": "10",
+      "valorUnitario": "22.00",
+      "precioUnitario": "25.96",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "220.00",
+      "tributos": [
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "220.00",
+          "monto": "39.60",
+          "porcentaje": "18.00"
+        }
+      ]
+    },
+    {
+      "numero": 2,
+      "codigoProducto": "CER-630",
+      "descripcion": "CERVEZA 630ML",
+      "unidadMedida": "NIU",
+      "cantidad": "12",
+      "valorUnitario": "5.00",
+      "precioUnitario": "7.08",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "60.00",
+      "tributos": [
+        {
+          "codigo": "2000",
+          "nombre": "ISC",
+          "codigoInternacional": "EXC",
+          "categoria": "S",
+          "baseImponible": "60.00",
+          "monto": "12.00",
+          "porcentaje": "20.00",
+          "sistemaIsc": "01"
+        },
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "72.00",
+          "monto": "12.96",
+          "porcentaje": "18.00"
+        }
+      ]
+    },
+    {
+      "numero": 3,
+      "codigoProducto": "BOL-01",
+      "descripcion": "BOLSA PLASTICA",
+      "unidadMedida": "NIU",
+      "cantidad": "2",
+      "valorUnitario": "0.10",
+      "precioUnitario": "0.118",
+      "tipoPrecio": "01",
+      "afectacionIgv": "10",
+      "valorVenta": "0.20",
+      "tributos": [
+        {
+          "codigo": "1000",
+          "nombre": "IGV",
+          "codigoInternacional": "VAT",
+          "categoria": "S",
+          "baseImponible": "0.20",
+          "monto": "0.04",
+          "porcentaje": "18.00"
+        },
+        {
+          "codigo": "7152",
+          "nombre": "ICBPER",
+          "codigoInternacional": "OTH",
+          "categoria": "S",
+          "baseImponible": "0.00",
+          "monto": "1.00",
+          "cantidadBolsas": 2,
+          "montoPorUnidad": "0.50"
+        }
+      ]
+    }
+  ],
+  "totales": {
+    "totalGravado": "280.20",
+    "totalExonerado": "0.00",
+    "totalInafecto": "0.00",
+    "totalIgv": "52.60",
+    "totalIsc": "12.00",
+    "totalIcbper": "1.00",
+    "valorVenta": "280.20",
+    "precioVenta": "345.80",
+    "importeTotal": "345.80"
+  },
+  "leyendas": [
+    {
+      "codigo": "1000",
+      "texto": "TRESCIENTOS CUARENTA Y CINCO CON 80/100 SOLES"
+    }
+  ],
+  "respuestaSunat": {
+    "codigoRespuesta": "0",
+    "descripcion": "La Factura numero F001-1, ha sido aceptada",
+    "observaciones": [],
+    "fechaRecepcion": "2026-10-22T10:15:07-05:00",
+    "canal": "OSE"
+  },
+  "enlaces": {
+    "xml": "/comprobantes/3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01/xml",
+    "cdr": "/comprobantes/3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01/cdr",
+    "pdf": "/comprobantes/3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01/pdf"
+  }
+}

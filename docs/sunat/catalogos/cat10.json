@@ -1,0 +1,19 @@
+{
+  "catalogo": "10",
+  "titulo": "Tipo de nota de débito",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "codigos": [
+    {
+      "codigo": "01",
+      "descripcion": "Intereses por mora"
+    },
+    {
+      "codigo": "02",
+      "descripcion": "Aumento en el valor"
+    },
+    {
+      "codigo": "03",
+      "descripcion": "Penalidades / otros conceptos"
+    }
+  ]
+}

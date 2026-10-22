@@ -1,0 +1,612 @@
+openapi: 3.1.0
+info:
+  title: ABC Facturación Electrónica – Contratos de servicio
+  version: 0.1.0-spec
+  license:
+    name: Propietario – ABC Software Corp
+    identifier: LicenseRef-Propietario
+  description: |
+    Contrato de los **puertos de entrada** del sistema (ver specs/03-arquitectura).
+    En el monolito estos endpoints los atienden los controladores en proceso (o una API REST local);
+    al migrar a microservicios se exponen tal cual por HTTP. Los cuerpos se definen en
+    specs/02-dominio/schemas (JSON Schema 2020-12). Los errores siguen RFC 9457 e indican la regla
+    violada (R-xx de docs/sunat/reglas-validacion.md o M-xx de specs/06-migracion).
+security:
+  - sesionLocal: []
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Monolito (API local)
+tags:
+  - name: Comprobantes
+    description: Facturas y boletas — creación, cálculo, emisión, consulta, anulación (CU-03, CU-04, CU-07..CU-11, CU-15)
+  - name: Notas
+    description: Notas de crédito (cat. 09) y débito (cat. 10) (CU-05, CU-06)
+  - name: Inventario
+    description: Registro de inventario permanente, Formato 12.1 (CU-14)
+  - name: Maestros
+    description: Clientes, productos y catálogos SUNAT (CU-01, CU-02)
+  - name: Configuracion
+    description: Emisor y series (CU-10)
+  - name: Migracion
+    description: Migración del sistema legado (CU-13)
+  - name: Reportes
+    description: Ventas y kardex (CU-12)
+paths:
+  /comprobantes:
+    post:
+      tags: [Comprobantes]
+      operationId: crearComprobante
+      summary: Crea una factura o boleta en estado BORRADOR/VALIDADO (CU-03, CU-04)
+      description: El sistema calcula valores, tributos (CU-15) y totales. No asigna correlativo hasta emitir.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/comprobante-crear.schema.json' }
+            examples:
+              factura: { externalValue: '../02-dominio/ejemplos/comprobante-crear.factura.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '201':
+          description: Comprobante creado y validado
+          headers:
+            Location: { schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+    get:
+      tags: [Comprobantes]
+      operationId: listarComprobantes
+      summary: Busca comprobantes (CU-08)
+      parameters:
+        - { name: tipoComprobante, in: query, schema: { type: string, enum: ['01', '03', '07', '08'] } }
+        - { name: serie, in: query, schema: { type: string, pattern: '^[FB][A-Z0-9]{3}$' } }
+        - { name: estado, in: query, schema: { type: string } }
+        - { name: desde, in: query, schema: { type: string, format: date } }
+        - { name: hasta, in: query, schema: { type: string, format: date } }
+        - { name: documentoCliente, in: query, schema: { type: string } }
+        - $ref: '#/components/parameters/pagina'
+        - $ref: '#/components/parameters/tamanio'
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Página de comprobantes
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items, total]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+                  total: { type: integer }
+  /comprobantes/validar:
+    post:
+      tags: [Comprobantes]
+      operationId: validarComprobante
+      summary: Previsualiza cálculo y validaciones sin guardar (CU-15)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/comprobante-crear.schema.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Cálculo correcto
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /comprobantes/{id}:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    get:
+      tags: [Comprobantes]
+      operationId: obtenerComprobante
+      summary: Detalle y estado (CU-08)
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Comprobante
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+  /comprobantes/{id}/emitir:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    post:
+      tags: [Comprobantes]
+      operationId: emitirComprobante
+      summary: Asigna correlativo, genera XML UBL 2.1, firma y envía al OSE/SUNAT (CU-03, CU-04)
+      description: Idempotente con la cabecera Idempotency-Key; reintentos no generan nuevo correlativo.
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Emitido; el estado puede ser ACEPTADO, ACEPTADO_CON_OBSERVACIONES o RECHAZADO
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '202':
+          description: Firmado pero el OSE no respondió; queda PENDIENTE_ENVIO (CU-11)
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '409': { $ref: '#/components/responses/EstadoInvalido' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /comprobantes/{id}/anular:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    post:
+      tags: [Comprobantes]
+      operationId: anularComprobante
+      summary: Comunicación de baja o resumen según tipo (CU-07)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [motivo]
+              properties: { motivo: { type: string, minLength: 5, maxLength: 100 } }
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '202':
+          description: Solicitud de baja enviada; el estado cambia a ANULADO al recibir el CDR
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '409': { $ref: '#/components/responses/EstadoInvalido' }
+  /comprobantes/{id}/xml:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    get:
+      tags: [Comprobantes]
+      operationId: descargarXml
+      summary: XML UBL 2.1 firmado
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200': { description: XML firmado, content: { application/xml: { schema: { type: string } } } }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+  /comprobantes/{id}/cdr:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    get:
+      tags: [Comprobantes]
+      operationId: descargarCdr
+      summary: Constancia de recepción (ZIP con ApplicationResponse)
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200': { description: CDR, content: { application/zip: { schema: { type: string, contentEncoding: base64 } } } }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+  /comprobantes/{id}/pdf:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    get:
+      tags: [Comprobantes]
+      operationId: descargarPdf
+      summary: Representación impresa con QR
+      parameters:
+        - { name: formato, in: query, schema: { type: string, enum: [A4, TICKET_80MM], default: A4 } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200': { description: PDF, content: { application/pdf: { schema: { type: string, contentEncoding: base64 } } } }
+  /comprobantes/{id}/enviar-correo:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    post:
+      tags: [Comprobantes]
+      operationId: enviarCorreo
+      summary: Envía PDF y XML al adquirente (CU-09)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: { correo: { type: string, format: email } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '202': { description: Envío encolado }
+  /comprobantes/reenviar-pendientes:
+    post:
+      tags: [Comprobantes]
+      operationId: reenviarPendientes
+      summary: Reintenta comprobantes PENDIENTE_ENVIO (CU-11)
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '200':
+          description: Resultado del lote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  procesados: { type: integer }
+                  aceptados: { type: integer }
+                  rechazados: { type: integer }
+                  pendientes: { type: integer }
+  /comprobantes/{id}/notas-credito:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    post:
+      tags: [Notas]
+      operationId: emitirNotaCredito
+      summary: Emite nota de crédito sobre el comprobante {id} (CU-05). Motivo del catálogo 09
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/nota-crear.schema.json' }
+            examples:
+              devolucion: { externalValue: '../02-dominio/ejemplos/nota-crear.credito.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '201':
+          description: Nota emitida
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '409': { $ref: '#/components/responses/EstadoInvalido' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /comprobantes/{id}/notas-debito:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    post:
+      tags: [Notas]
+      operationId: emitirNotaDebito
+      summary: Emite nota de débito sobre el comprobante {id} (CU-06). Motivo del catálogo 10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/nota-crear.schema.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '201':
+          description: Nota emitida
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
+        '409': { $ref: '#/components/responses/EstadoInvalido' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /clientes:
+    get:
+      tags: [Maestros]
+      operationId: buscarClientes
+      summary: Busca clientes por documento o nombre (CU-01)
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Clientes
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '../02-dominio/schemas/cliente.schema.json' } }
+    post:
+      tags: [Maestros]
+      operationId: crearCliente
+      summary: CU-01 (valida RUC/DNI, R-10 a R-12)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/cliente.schema.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/cliente.schema.json' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /productos:
+    get:
+      tags: [Maestros]
+      operationId: buscarProductos
+      summary: Busca productos por código o descripción (CU-02)
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Productos
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '../02-dominio/schemas/producto.schema.json' } }
+    post:
+      tags: [Maestros]
+      operationId: crearProducto
+      summary: CU-02 (afectación cat. 07, ISC cat. 08, ICBPER)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/producto.schema.json' }
+            examples:
+              cerveza: { externalValue: '../02-dominio/ejemplos/producto-cerveza.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/producto.schema.json' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /catalogos/{numero}:
+    get:
+      tags: [Maestros]
+      operationId: obtenerCatalogo
+      summary: Devuelve un catálogo SUNAT (docs/sunat/catalogos)
+      parameters:
+        - { name: numero, in: path, required: true, schema: { type: string, pattern: '^\d{2}$' } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Catálogo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [catalogo, titulo, codigos]
+                properties:
+                  catalogo: { type: string }
+                  titulo: { type: string }
+                  codigos: { type: array, items: { type: object } }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+  /configuracion/emisor:
+    get:
+      tags: [Configuracion]
+      operationId: obtenerEmisor
+      summary: Datos del emisor configurado (CU-10)
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Emisor
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/emisor.schema.json' }
+    put:
+      tags: [Configuracion]
+      operationId: actualizarEmisor
+      summary: CU-10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/emisor.schema.json' }
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '200':
+          description: Actualizado
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/emisor.schema.json' }
+  /series:
+    get:
+      tags: [Configuracion]
+      operationId: listarSeries
+      summary: Series configuradas con su último correlativo (CU-10)
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Series
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Serie' } }
+    post:
+      tags: [Configuracion]
+      operationId: crearSerie
+      summary: CU-10 (R-02)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Serie' }
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '201':
+          description: Creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Serie' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /inventario/movimientos:
+    post:
+      tags: [Inventario]
+      operationId: registrarMovimiento
+      summary: CU-14 (Formato 12.1, RS 234-2006)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '../02-dominio/schemas/movimiento-inventario.schema.json' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '201':
+          description: Registrado
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/movimiento-inventario.schema.json' }
+        '422': { $ref: '#/components/responses/ReglaIncumplida' }
+  /inventario/kardex:
+    get:
+      tags: [Reportes]
+      operationId: obtenerKardex
+      summary: Registro de Inventario Permanente en Unidades Físicas por producto y período (CU-12)
+      parameters:
+        - { name: productoId, in: query, required: true, schema: { type: string, format: uuid } }
+        - { name: periodo, in: query, required: true, schema: { type: string, pattern: '^\d{4}-(0[1-9]|1[0-2])$' } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Movimientos con saldo inicial, entradas, salidas y saldo final
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [saldoInicial, movimientos, saldoFinal]
+                properties:
+                  saldoInicial: { type: string }
+                  movimientos:
+                    type: array
+                    items: { $ref: '../02-dominio/schemas/movimiento-inventario.schema.json' }
+                  saldoFinal: { type: string }
+  /reportes/ventas:
+    get:
+      tags: [Reportes]
+      operationId: reporteVentas
+      summary: CU-12
+      parameters:
+        - { name: desde, in: query, required: true, schema: { type: string, format: date } }
+        - { name: hasta, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200': { description: Reporte, content: { application/json: { schema: { type: object } } } }
+  /migraciones:
+    post:
+      tags: [Migracion]
+      operationId: iniciarMigracion
+      summary: Importa el CSV del legado y aplica reglas M-01..M-07 (CU-13)
+      parameters:
+        - { name: simulacion, in: query, description: 'true = dry-run, no escribe', schema: { type: boolean, default: true } }
+      requestBody:
+        required: true
+        content:
+          text/csv:
+            schema: { type: string }
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '202':
+          description: Migración iniciada
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/migracion.schema.json' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
+  /migraciones/{id}:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    get:
+      tags: [Migracion]
+      operationId: obtenerMigracion
+      summary: Estado y resumen de una migración (CU-13)
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Estado y resumen
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/migracion.schema.json' }
+  /migraciones/{id}/trazabilidad:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    get:
+      tags: [Migracion]
+      operationId: obtenerTrazabilidadMigracion
+      summary: Traza fila legada → entidades nuevas, con reglas M-xx aplicadas (M-07)
+      parameters:
+        - { name: resultado, in: query, schema: { type: string, enum: [MIGRADO, CUARENTENA, DESCARTADO] } }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Trazas de la ejecución
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TrazaMigracion' }
+  /migraciones/{id}/revertir:
+    parameters: [ { $ref: '#/components/parameters/id' } ]
+    post:
+      tags: [Migracion]
+      operationId: revertirMigracion
+      summary: Elimina lo creado por esa ejecución (origen = MIGRACION) y marca REVERTIDA
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '200':
+          description: Revertida
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/migracion.schema.json' }
+components:
+  securitySchemes:
+    sesionLocal:
+      type: http
+      scheme: bearer
+      description: |
+        Token de sesión emitido al iniciar sesión en la app (monolito) o por el API Gateway (microservicios).
+        Roles: VENDEDOR, ALMACENERO, CONTADOR, ADMINISTRADOR (ver specs/01-casos-uso, actores).
+        Las operaciones marcadas con [ADMINISTRADOR] requieren ese rol.
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    pagina:
+      name: pagina
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    tamanio:
+      name: tamanio
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+  schemas:
+    Serie:
+      type: object
+      additionalProperties: false
+      required: [codigo, tipoComprobante]
+      properties:
+        codigo: { type: string, pattern: '^[FB][A-Z0-9]{3}$' }
+        tipoComprobante: { type: string, enum: ['01', '03', '07', '08'] }
+        ultimoCorrelativo: { type: integer, minimum: 0, maximum: 99999999, readOnly: true }
+        activa: { type: boolean, default: true }
+    TrazaMigracion:
+      type: object
+      required: [idLegado, resultado]
+      properties:
+        idLegado: { type: string }
+        resultado: { type: string, enum: [MIGRADO, CUARENTENA, DESCARTADO] }
+        reglas: { type: array, items: { type: string, pattern: '^M-\d{2}$' } }
+        idsNuevos: { type: array, items: { type: string, format: uuid } }
+        motivo: { type: string }
+  responses:
+    NoAutorizado:
+      description: Sin sesión válida
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }
+    SinPermiso:
+      description: El rol del usuario no permite la operación
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }
+    SolicitudInvalida:
+      description: El cuerpo no cumple el JSON Schema
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }
+    ReglaIncumplida:
+      description: Cumple el schema pero incumple una regla de negocio (R-xx)
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }
+          examples:
+            validacion: { externalValue: '../02-dominio/ejemplos/error.validacion.json' }
+    EstadoInvalido:
+      description: La operación no está permitida en el estado actual del comprobante
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }
+    NoEncontrado:
+      description: No existe
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }

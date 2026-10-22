@@ -1,0 +1,12 @@
+{
+  "serie": "FC01",
+  "motivo": "07",
+  "sustento": "Devolucion de 2 botellas por rotura",
+  "lineas": [
+    {
+      "codigoProducto": "CER-630",
+      "cantidad": "2",
+      "precioUnitario": "7.08"
+    }
+  ]
+}

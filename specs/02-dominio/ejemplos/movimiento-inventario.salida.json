@@ -1,0 +1,12 @@
+{
+  "fecha": "2026-10-22",
+  "tipo": "SALIDA",
+  "productoId": "0a9e1c3b-2d4f-4e6a-8b7c-1f2e3d4c5b6a",
+  "cantidad": "12",
+  "documentoSustento": {
+    "tipo": "01",
+    "numero": "F001-1",
+    "comprobanteId": "3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01"
+  },
+  "origen": "SISTEMA"
+}

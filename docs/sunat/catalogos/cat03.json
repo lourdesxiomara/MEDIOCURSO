@@ -1,0 +1,48 @@
+{
+  "catalogo": "03",
+  "titulo": "Unidad de medida comercial (UN/ECE Rec. 20)",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "nota": "Subconjunto aplicable a abarrotes.",
+  "codigos": [
+    {
+      "codigo": "NIU",
+      "descripcion": "Unidad (bienes)"
+    },
+    {
+      "codigo": "ZZ",
+      "descripcion": "Unidad (servicios)"
+    },
+    {
+      "codigo": "KGM",
+      "descripcion": "Kilogramo"
+    },
+    {
+      "codigo": "GRM",
+      "descripcion": "Gramo"
+    },
+    {
+      "codigo": "LTR",
+      "descripcion": "Litro"
+    },
+    {
+      "codigo": "MLT",
+      "descripcion": "Mililitro"
+    },
+    {
+      "codigo": "BX",
+      "descripcion": "Caja"
+    },
+    {
+      "codigo": "BG",
+      "descripcion": "Bolsa"
+    },
+    {
+      "codigo": "PK",
+      "descripcion": "Paquete"
+    },
+    {
+      "codigo": "DZN",
+      "descripcion": "Docena"
+    }
+  ]
+}
