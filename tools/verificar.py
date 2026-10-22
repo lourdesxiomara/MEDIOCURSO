@@ -544,7 +544,7 @@ def v_aceptacion():
     cubiertas = set()
     for b in bloques:
         cid = b.split()[0]
-        m = re.search(r"\*\*Reglas:\*\*\s*([^·\n]+)", b)
+        m = re.search(r"\*\*Rules:\*\*\s*([^·\n]+)", b)
         if not m:
             errores.append(f"{cid}: sin reglas")
             continue
@@ -552,7 +552,7 @@ def v_aceptacion():
         for r in rs - reglas:
             errores.append(f"{cid}: regla {r} no existe")
         cubiertas |= rs
-        for paso in ("**Dado**", "**Cuando**", "**Entonces**"):
+        for paso in ("**Given**", "**When**", "**Then**"):
             if paso not in b:
                 errores.append(f"{cid}: falta {paso}")
         for ej in re.findall(r"`ejemplos/([^`]+)`", b):
