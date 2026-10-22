@@ -63,6 +63,7 @@ EJEMPLO_SCHEMA = {
     "comprobante.nota-debito.json": "comprobante.schema.json",
     "producto-cerveza-monto-fijo.json": "producto.schema.json",
     "producto-cigarrillos.json": "producto.schema.json",
+    "evento.comprobante-aceptado.json": "evento.schema.json",
 }
 
 # XML de ejemplo -> JSON equivalente (se comprueba que digan lo mismo)
@@ -399,6 +400,40 @@ def _expandir(ruta: str) -> list[str]:
         return [ruta]
     base, _, alts = ruta.rpartition("/")
     return [f"{base}/{a}" for a in alts.split("|")]
+
+
+# ---------------------------------------------------------------- AsyncAPI (eventos)
+ASYNCAPI = RAIZ / "specs/04-api/asyncapi.yaml"
+
+
+def v_asyncapi():
+    doc = yaml.safe_load(ASYNCAPI.read_text(encoding="utf-8"))
+    if doc.get("asyncapi") != "3.0.0":
+        errores.append("asyncapi.yaml: se espera AsyncAPI 3.0.0")
+    texto = ASYNCAPI.read_text(encoding="utf-8")
+    for ref in re.findall(r"\$ref:\s*'([^']+)'", texto):
+        if ref.startswith("#/"):
+            nodo = doc
+            for parte in ref[2:].split("/"):
+                nodo = nodo.get(parte) if isinstance(nodo, dict) else None
+            if nodo is None:
+                errores.append(f"asyncapi.yaml: $ref no resuelve {ref}")
+        elif not (ASYNCAPI.parent / ref).resolve().is_file():
+            errores.append(f"asyncapi.yaml: archivo no existe {ref}")
+    tipos = set(leer_json(SCHEMAS / "evento.schema.json")["properties"]["tipo"]["enum"])
+    mensajes = set(doc["components"]["messages"])
+    if tipos != mensajes:
+        errores.append(f"asyncapi.yaml: mensajes {sorted(mensajes)} ≠ tipos de evento.schema.json {sorted(tipos)}")
+    publicados = {c for op in doc["operations"].values() if op["action"] == "send"
+                  for c in doc["channels"][op["channel"]["$ref"].split("/")[-1]]["messages"]}
+    for m in sorted(mensajes - publicados):
+        errores.append(f"asyncapi.yaml: el evento {m} no tiene quien lo publique")
+    reg = cargar_registro()
+    val = Draft202012Validator(leer_json(SCHEMAS / "evento.schema.json"), registry=reg, format_checker=FormatChecker())
+    for m in doc["components"]["messages"].values():
+        for ej in m.get("examples", []):
+            for e in val.iter_errors(ej["payload"]):
+                errores.append(f"asyncapi.yaml ejemplo {ej['name']}: {e.message}")
 
 
 # ---------------------------------------------------------------- matriz de trazabilidad

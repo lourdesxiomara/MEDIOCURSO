@@ -19,6 +19,10 @@ Las funciones que se usan como referencia para descubrir casos de uso son:
 | Series y numeración automática | CU-10 |
 | Reportes de ventas | CU-12 |
 
+## Evidencia pública encontrada
+- La integración oficial de Nubefact para Odoo confirma que emite facturas (01), boletas (03), notas de crédito (07) y débito (08), comprobantes de retención (20) y percepción (40), los envía por API y remite PDF + XML al cliente por correo (https://apps.odoo.com/apps/modules/18.0/l10n_pe_edi_odoofact). → CU-03 a CU-06, CU-09.
+- DPL News (2021), citando a CONTA PERÚ: SUNAT tipificó al menos 59 errores frecuentes en la facturación electrónica; los más comunes son campos incompletos y datos del cliente mal digitados, que impiden la validación por SUNAT/OSE (https://dplnews.com/peru-6-recomendaciones-para-emitir-tus-facturas-electronicas-de-forma-eficiente/). → validación previa R-10/R-11, CA-07 a CA-10.
+
 ## Dolores frecuentes a verificar en opiniones de usuarios
 Hipótesis que el equipo debe confirmar o descartar revisando reseñas reales:
 - Rechazos por RUC mal digitado o no habido → validación previa (R-10, R-13).

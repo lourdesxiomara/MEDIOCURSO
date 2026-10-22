@@ -28,6 +28,9 @@ Requisitos del caso que también se cubren:
 | Normativa SUNAT, catálogos (incl. **catálogo 08**) y reglas | [`docs/sunat/`](docs/sunat) |
 | Estándar UBL 2.1 (`UBL-Invoice-2.1.xsd`) | [`docs/ubl/`](docs/ubl) |
 | Distribución Windows **MSI** + Android **APK** | [`specs/adr/ADR-002-stack-y-distribucion-msi-apk.md`](specs/adr/ADR-002-stack-y-distribucion-msi-apk.md) |
+| **Criterios de aceptación** (37, cubren todas las reglas) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
+| Contratos de eventos (microservicios) | [`specs/04-api/eventos.md`](specs/04-api/eventos.md) |
+| Requisitos no funcionales | [`specs/00-contexto/requisitos-no-funcionales.md`](specs/00-contexto/requisitos-no-funcionales.md) |
 | Contexto, supuestos, glosario y dudas abiertas | [`specs/00-contexto/`](specs/00-contexto) |
 
 ## Cómo verificar que todo es consistente

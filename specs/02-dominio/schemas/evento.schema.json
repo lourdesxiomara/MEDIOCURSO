@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/evento.schema.json",
+  "title": "Evento de dominio",
+  "description": "Sobre común de los eventos entre microservicios (specs/04-api/eventos.md). En el monolito van por un bus en memoria con el mismo contrato.",
+  "type": "object",
+  "required": [
+    "id",
+    "tipo",
+    "version",
+    "fecha",
+    "origen",
+    "datos"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "ComprobanteFirmado",
+        "ComprobanteAceptado",
+        "ComprobanteRechazado",
+        "ComprobanteAnulado"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "fecha": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "origen": {
+      "type": "string",
+      "enum": [
+        "ms-emision",
+        "ms-envio-cpe",
+        "ms-inventario",
+        "monolito"
+      ]
+    },
+    "datos": {
+      "type": "object"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "ComprobanteFirmado"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "datos": {
+            "$ref": "#/$defs/ComprobanteFirmado"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "ComprobanteAceptado"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "datos": {
+            "$ref": "#/$defs/ComprobanteAceptado"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "ComprobanteRechazado"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "datos": {
+            "$ref": "#/$defs/ComprobanteRechazado"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipo": {
+            "const": "ComprobanteAnulado"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "datos": {
+            "$ref": "#/$defs/ComprobanteAnulado"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "ComprobanteFirmado": {
+      "type": "object",
+      "required": [
+        "comprobanteId",
+        "numero",
+        "importeTotal"
+      ],
+      "description": "ms-emision → ms-envio-cpe: XML firmado listo para enviar al OSE.",
+      "properties": {
+        "comprobanteId": {
+          "$ref": "comun.schema.json#/$defs/uuid"
+        },
+        "numero": {
+          "$ref": "comun.schema.json#/$defs/numeroComprobante"
+        },
+        "importeTotal": {
+          "$ref": "comun.schema.json#/$defs/montoDecimal"
+        },
+        "hashFirma": {
+          "type": "string"
+        }
+      }
+    },
+    "ComprobanteAceptado": {
+      "type": "object",
+      "required": [
+        "comprobanteId",
+        "numero",
+        "codigoRespuesta",
+        "lineas"
+      ],
+      "description": "ms-envio-cpe → ms-inventario (salidas, CU-14) y ms-emision (estado).",
+      "properties": {
+        "comprobanteId": {
+          "$ref": "comun.schema.json#/$defs/uuid"
+        },
+        "numero": {
+          "$ref": "comun.schema.json#/$defs/numeroComprobante"
+        },
+        "codigoRespuesta": {
+          "type": "string"
+        },
+        "lineas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "codigoProducto",
+              "cantidad"
+            ],
+            "properties": {
+              "codigoProducto": {
+                "type": "string"
+              },
+              "cantidad": {
+                "$ref": "comun.schema.json#/$defs/cantidad"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ComprobanteRechazado": {
+      "type": "object",
+      "required": [
+        "comprobanteId",
+        "numero",
+        "codigoRespuesta"
+      ],
+      "description": "ms-envio-cpe → ms-emision (R-53).",
+      "properties": {
+        "comprobanteId": {
+          "$ref": "comun.schema.json#/$defs/uuid"
+        },
+        "numero": {
+          "$ref": "comun.schema.json#/$defs/numeroComprobante"
+        },
+        "codigoRespuesta": {
+          "type": "string"
+        },
+        "descripcion": {
+          "type": "string"
+        }
+      }
+    },
+    "ComprobanteAnulado": {
+      "type": "object",
+      "required": [
+        "comprobanteId",
+        "numero"
+      ],
+      "description": "ms-envio-cpe → ms-inventario revierte salidas (CU-07).",
+      "properties": {
+        "comprobanteId": {
+          "$ref": "comun.schema.json#/$defs/uuid"
+        },
+        "numero": {
+          "$ref": "comun.schema.json#/$defs/numeroComprobante"
+        },
+        "motivo": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

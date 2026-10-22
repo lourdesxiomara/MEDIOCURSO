@@ -1,0 +1,18 @@
+{
+  "id": "9a1b2c3d-4e5f-4a6b-8c7d-0e1f2a3b4c06",
+  "tipo": "ComprobanteAceptado",
+  "version": "1.0",
+  "fecha": "2026-10-22T10:15:07-05:00",
+  "origen": "ms-envio-cpe",
+  "datos": {
+    "comprobanteId": "3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01",
+    "numero": "F001-1",
+    "codigoRespuesta": "0",
+    "lineas": [
+      {
+        "codigoProducto": "ARZ-5K",
+        "cantidad": "10"
+      }
+    ]
+  }
+}
