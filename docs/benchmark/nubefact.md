@@ -1,37 +1,37 @@
-# Benchmark: Nubefact (referencia para casos de uso)
+# Benchmark: Nubefact (reference for use cases)
 
-> **Pendiente de completar por el equipo** con una cuenta DEMO propia (la creación de cuentas no la
-> hace el agente). Usar la plantilla del final y guardar capturas en `docs/benchmark/capturas/`.
+> **To be completed by the team** with its own DEMO account (the agent does not create accounts).
+> Use the template at the end and store screenshots in `docs/benchmark/capturas/`.
 
-## Funciones públicas de referencia
-Nubefact es un proveedor peruano de facturación electrónica con portal web y API JSON
-(operaciones de generar comprobante, consultar comprobante, generar anulación y consultar anulación).
-Las funciones que se usan como referencia para descubrir casos de uso son:
+## Public reference features
+Nubefact is a Peruvian electronic invoicing provider with a web portal and a JSON API
+(operations to generate a document, query a document, generate a void and query a void).
+The features used as reference to discover use cases are:
 
-| Función observada | Caso de uso derivado (ver `specs/01-casos-uso/`) |
+| Observed feature | Derived use case (see `specs/01-casos-uso/`) |
 |---|---|
-| Emitir factura / boleta desde formulario | CU-03, CU-04 |
-| Emitir nota de crédito / débito referenciando un comprobante | CU-05, CU-06 |
-| Anular comprobantes (comunicación de baja / resumen) | CU-07 |
-| Consultar estado y descargar XML, PDF y CDR | CU-08 |
-| Enviar comprobante al cliente por correo | CU-09 |
-| Mantener clientes y productos (con afectación IGV por producto) | CU-01, CU-02 |
-| Series y numeración automática | CU-10 |
-| Reportes de ventas | CU-12 |
+| Issue invoice / receipt from a form | CU-03, CU-04 |
+| Issue credit / debit note referencing a document | CU-05, CU-06 |
+| Void documents (voiding communication / summary) | CU-07 |
+| Check status and download XML, PDF and CDR | CU-08 |
+| Email the document to the customer | CU-09 |
+| Maintain customers and products (with IGV treatment per product) | CU-01, CU-02 |
+| Series and automatic numbering | CU-10 |
+| Sales reports | CU-12 |
 
-## Evidencia pública encontrada
-- La integración oficial de Nubefact para Odoo confirma que emite facturas (01), boletas (03), notas de crédito (07) y débito (08), comprobantes de retención (20) y percepción (40), los envía por API y remite PDF + XML al cliente por correo (https://apps.odoo.com/apps/modules/18.0/l10n_pe_edi_odoofact). → CU-03 a CU-06, CU-09.
-- DPL News (2021), citando a CONTA PERÚ: SUNAT tipificó al menos 59 errores frecuentes en la facturación electrónica; los más comunes son campos incompletos y datos del cliente mal digitados, que impiden la validación por SUNAT/OSE (https://dplnews.com/peru-6-recomendaciones-para-emitir-tus-facturas-electronicas-de-forma-eficiente/). → validación previa R-10/R-11, CA-07 a CA-10.
+## Public evidence found
+- Nubefact's official Odoo integration confirms that it issues invoices (01), receipts (03), credit notes (07) and debit notes (08), withholding (20) and perception (40) documents, sends them through its API and emails PDF + XML to the customer (https://apps.odoo.com/apps/modules/18.0/l10n_pe_edi_odoofact). → CU-03 to CU-06, CU-09.
+- DPL News (2021), quoting CONTA PERÚ: SUNAT classified at least 59 frequent errors in electronic invoicing; the most common are incomplete fields and mistyped customer data, which prevent validation by SUNAT/OSE (https://dplnews.com/peru-6-recomendaciones-para-emitir-tus-facturas-electronicas-de-forma-eficiente/). → pre-validation R-10/R-11, CA-07 to CA-10.
 
-## Dolores frecuentes a verificar en opiniones de usuarios
-Hipótesis que el equipo debe confirmar o descartar revisando reseñas reales:
-- Rechazos por RUC mal digitado o no habido → validación previa (R-10, R-13).
-- Errores de redondeo entre precio con IGV y valor de venta → regla R-28.
-- Indisponibilidad del OSE/SUNAT al momento de emitir → cola de reenvío (CU-11).
-- Necesidad de emitir sin internet en ferias o almacén → modo fuera de línea con envío diferido.
-- Bolsas plásticas olvidadas en la boleta → producto "bolsa" con ICBPER automático.
+## Frequent pain points to verify in user reviews
+Hypotheses the team must confirm or discard by reading real reviews:
+- Rejections due to mistyped or non-registered RUC → pre-validation (R-10, R-13).
+- Rounding errors between IGV-inclusive price and sale value → rule R-28.
+- OSE/SUNAT unavailable when issuing → resend queue (CU-11).
+- Need to issue without internet at fairs or in the warehouse → offline mode with deferred submission.
+- Plastic bags forgotten on the receipt → "bag" product with automatic ICBPER.
 
-## Plantilla de observación (DEMO)
-| Pantalla / flujo | Campos que pide | Validaciones que muestra | Mensajes de error | Captura |
+## Observation template (DEMO)
+| Screen / flow | Fields requested | Validations shown | Error messages | Screenshot |
 |---|---|---|---|---|
 | | | | | |

@@ -1,25 +1,25 @@
-# Sistema legado — descripción y muestra
+# Legacy system — description and sample
 
-`legado-almacen-muestra.csv` es una **muestra sintética** que reproduce la estructura del software actual
-(`fecha, ingreso, salida, producto, nro_documento`) e incluye a propósito los defectos típicos de un
-registro informal, para que la especificación de migración (`specs/06-migracion/`) los trate uno por uno.
-Se reemplaza por la exportación real cuando esté disponible (duda D-06).
+`legado-almacen-muestra.csv` is a **synthetic sample** that reproduces the structure of the current software
+(`fecha, ingreso, salida, producto, nro_documento`) and deliberately includes the typical defects of an
+informal record, so that the migration spec (`specs/06-migracion/`) handles them one by one.
+It is replaced by the real export when available (question D-06). Data values stay in Spanish, as in the source system.
 
-`id` es la clave interna del registro legado; se conserva para la trazabilidad.
+`id` is the internal key of the legacy row; it is kept for traceability.
 
-## Defectos sembrados en la muestra
-| Fila (id) | Defecto | Regla de migración |
+## Defects seeded in the sample
+| Row (id) | Defect | Migration rule |
 |---|---|---|
-| 3 | Fecha en formato `dd/mm/aaaa` | M-01 normalizar fecha |
-| 4, 5 | Mismo producto con distinto texto / mayúsculas | M-03 normalizar y deduplicar producto |
-| 5 | `nro_documento` sin serie (`88`) | M-04 documento no identificable |
-| 6 | `nro_documento` vacío en un ingreso | M-04 |
-| 7 | Serie mal escrita (`b1-89`) | M-04 reparación con revisión manual |
-| 8 | Producto sujeto a ISC (cerveza) | M-06 marcar para catálogo 08 |
-| 9 | Bolsas plásticas vendidas | M-06 marcar como sujeto a ICBPER |
-| 10 | Cantidad negativa en `ingreso` y documento `AJUSTE` | M-02 / M-05 convertir en ajuste de inventario |
-| 11 | Movimiento con ingreso y salida en 0 | M-02 descartar con registro en bitácora |
-| 12 | Ingreso y salida en la misma fila | M-02 dividir en dos movimientos |
-| 13 | Fecha vacía | M-01 cuarentena |
-| 14 | Cantidad decimal en un producto por unidad | M-02 revisar unidad de medida |
-| 15 | Documento `F001-125` repetido en otra fecha | M-04 posible duplicado |
+| 3 | Date in `dd/mm/yyyy` format | M-01 normalize date |
+| 4, 5 | Same product with different text / case | M-03 normalize and deduplicate product |
+| 5 | `nro_documento` without series (`88`) | M-04 unidentifiable document |
+| 6 | Empty `nro_documento` on an input | M-04 |
+| 7 | Mistyped series (`b1-89`) | M-04 repair with manual review |
+| 8 | Product subject to ISC (beer) | M-06 flag for catalog 08 |
+| 9 | Plastic bags sold | M-06 flag as subject to ICBPER |
+| 10 | Negative `ingreso` and document `AJUSTE` | M-02 / M-05 convert into an inventory adjustment |
+| 11 | Movement with input and output both 0 | M-02 discard and log |
+| 12 | Input and output on the same row | M-02 split into two movements |
+| 13 | Empty date | M-01 quarantine |
+| 14 | Decimal quantity on a per-unit product | M-02 review unit of measure |
+| 15 | Document `F001-125` repeated on another date | M-04 possible duplicate |
