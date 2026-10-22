@@ -1,14 +1,14 @@
-# ADR-003 · Persistencia
+# ADR-003 · Persistence
 
-- **Estado:** Propuesto (duda D-08)
-- **Contexto:** El monolito corre en Windows y Android. Los correlativos deben ser únicos por serie (R-03)
-  aunque haya varios dispositivos emitiendo.
-- **Decisión propuesta:**
-  1. Base de datos local **SQLite** en cada dispositivo, accedida solo por el puerto `RepositorioComprobantes`.
-  2. **Cada dispositivo tiene sus propias series** (ej. Windows mostrador `F001`/`B001`, Android ruta `F002`/`B002`).
-     Así los correlativos nunca colisionan sin necesidad de un servidor central.
-  3. El XML firmado y el CDR se guardan íntegros (son documentos legales) junto con su hash.
-  4. Cuando exista un servidor central (fase microservicios), se agrega un adaptador PostgreSQL
-     y sincronización; el dominio no cambia.
-- **Consecuencias:** (+) Funciona sin conexión permanente y sin infraestructura nueva.
-  (−) Reportes consolidados requieren exportar/sincronizar hasta que exista el servidor central.
+- **Status:** Proposed (question D-08)
+- **Context:** The monolith runs on Windows and Android. Numbers must be unique per series (R-03)
+  even with several devices issuing.
+- **Proposed decision:**
+  1. Local **SQLite** database on each device, accessed only through the `RepositorioComprobantes` port.
+  2. **Each device has its own series** (e.g. Windows counter `F001`/`B001`, Android route `F002`/`B002`),
+     so numbers never collide without a central server.
+  3. The signed XML and the CDR are stored intact (they are legal documents) together with their hash.
+  4. When a central server exists (microservices phase), a PostgreSQL adapter and synchronization are
+     added; the domain does not change.
+- **Consequences:** (+) Works without a permanent connection and without new infrastructure.
+  (−) Consolidated reports require export/sync until the central server exists.

@@ -1,38 +1,38 @@
-# ADR-002 · Stack multiplataforma y distribución (MSI + APK)
+# ADR-002 · Cross-platform stack and distribution (MSI + APK)
 
-- **Estado:** Propuesto (requiere aprobación de gerencia)
-- **Contexto:** La app debe ejecutarse de forma nativa en Windows y Android, empaquetarse como
-  **instalador MSI** (escritorio) y **APK** (Android), y compartir un único dominio y reglas tributarias.
+- **Status:** Proposed (requires management approval)
+- **Context:** The app must run natively on Windows and Android, be packaged as an **MSI installer**
+  (desktop) and an **APK** (Android), and share a single domain and tax rules.
 
-## Opciones evaluadas
-| Criterio | **Kotlin Multiplatform + Compose Multiplatform** | Tauri 2 (Rust + web) | Flutter | .NET MAUI |
+## Options evaluated
+| Criterion | **Kotlin Multiplatform + Compose Multiplatform** | Tauri 2 (Rust + web) | Flutter | .NET MAUI |
 |---|---|---|---|---|
-| Windows nativo | Sí (JVM empaquetada) | Sí (WebView2) | Sí | Sí |
-| Android nativo | Sí | Sí | Sí | Sí |
-| **MSI** | Nativo vía `jpackage` (`TargetFormat.Msi`, requiere WiX) | Nativo vía WiX | No nativo (requiere WiX/herramienta externa) | Por defecto MSIX; MSI requiere proyecto WiX aparte |
-| **APK** | Nativo (Gradle) | Nativo | Nativo | Nativo |
-| Dominio compartido | Un módulo Kotlin común | Rust compartido; UI web | Dart compartido | C# compartido |
-| XML + XSD + XMLDSig | Ecosistema JVM maduro (JAXP, Apache Santuario) | Crates menos maduros | Paquetes limitados | System.Security.Cryptography.Xml |
-| Encaje MVC → Hexagonal | Módulos Gradle = capas | Bueno | Bueno | Bueno |
+| Native Windows | Yes (bundled JVM) | Yes (WebView2) | Yes | Yes |
+| Native Android | Yes | Yes | Yes | Yes |
+| **MSI** | Native via `jpackage` (`TargetFormat.Msi`, needs WiX) | Native via WiX | Not native (needs WiX/external tool) | MSIX by default; MSI needs a separate WiX project |
+| **APK** | Native (Gradle) | Native | Native | Native |
+| Shared domain | One common Kotlin module | Shared Rust; web UI | Shared Dart | Shared C# |
+| XML + XSD + XMLDSig | Mature JVM ecosystem (JAXP, Apache Santuario) | Less mature crates | Limited packages | System.Security.Cryptography.Xml |
+| MVC → Hexagonal fit | Gradle modules = layers | Good | Good | Good |
 
-## Decisión propuesta
-**Kotlin Multiplatform + Compose Multiplatform**, con la estructura de módulos de
+## Proposed decision
+**Kotlin Multiplatform + Compose Multiplatform**, with the module structure of
 `specs/03-arquitectura` §5:
-- `app-desktop` → `./gradlew packageMsi` produce `ABC-Facturacion-x.y.z.msi`.
-- `app-android` → `./gradlew assembleRelease` produce `app-release.apk` firmado.
+- `app-desktop` → `./gradlew packageMsi` produces `ABC-Facturacion-x.y.z.msi`.
+- `app-android` → `./gradlew assembleRelease` produces a signed `app-release.apk`.
 
-## Requisitos de empaquetado
-| Requisito | MSI (Windows) | APK (Android) |
+## Packaging requirements
+| Requirement | MSI (Windows) | APK (Android) |
 |---|---|---|
-| Firma del instalador | Certificado de firma de código (Authenticode) | Keystore de la empresa (apksigner) |
-| Versión | `versionName` común; MSI exige formato `MAJOR.MINOR.BUILD` | `versionCode` incremental |
-| Actualización | `upgradeUuid` fijo para que el MSI reemplace versiones previas | Misma firma y `applicationId` |
-| Datos locales | `%LOCALAPPDATA%\ABC\Facturacion` (no en Program Files) | Almacenamiento interno de la app |
-| Certificado digital (.pfx) de facturación | Almacén protegido del usuario; nunca dentro del instalador | Android Keystore; nunca dentro del APK |
-| Requisito de build | JDK 17+ y WiX Toolset en la máquina que empaqueta | Android SDK |
+| Installer signing | Code-signing certificate (Authenticode) | Company keystore (apksigner) |
+| Version | Shared `versionName`; MSI requires `MAJOR.MINOR.BUILD` | Incremental `versionCode` |
+| Updates | Fixed `upgradeUuid` so the MSI replaces previous versions | Same signature and `applicationId` |
+| Local data | `%LOCALAPPDATA%\ABC\Facturacion` (not Program Files) | App internal storage |
+| Invoicing certificate (.pfx) | User's protected store; never inside the installer | Android Keystore; never inside the APK |
+| Build requirement | JDK 17+ and WiX Toolset on the packaging machine | Android SDK |
 
-## Consecuencias
-- (+) Un solo lenguaje para dominio, UI y adaptadores; reglas tributarias idénticas en ambas plataformas.
-- (+) MSI y APK salen del mismo build (`./gradlew packageMsi assembleRelease`).
-- (−) El MSI incluye un runtime JVM (tamaño mayor que una app nativa C++).
-- (−) La firma XMLDSig en Android debe probarse con la librería elegida (riesgo técnico a validar en un *spike*).
+## Consequences
+- (+) One language for domain, UI and adapters; identical tax rules on both platforms.
+- (+) MSI and APK come from the same build (`./gradlew packageMsi assembleRelease`).
+- (−) The MSI bundles a JVM runtime (larger than a native C++ app).
+- (−) XMLDSig signing on Android must be proven with the chosen library (technical risk for a *spike*).

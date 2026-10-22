@@ -1,11 +1,11 @@
-# ADR-004 · Canal de envío: OSE principal, SUNAT alternativo
+# ADR-004 · Submission channel: OSE as primary, SUNAT as fallback
 
-- **Estado:** Propuesto (duda D-03)
-- **Contexto:** El caso permite enviar a un OSE o directamente a SUNAT. Ambos reciben el XML firmado
-  en ZIP y devuelven un CDR.
-- **Decisión:** El núcleo solo conoce el puerto `CanalEnvioCpe` (`specs/04-api/puertos-salida.md`).
-  Se implementan dos adaptadores intercambiables por configuración: `CanalOse` (principal) y
-  `CanalSunatDirecto` (alternativo). Si el canal no responde, el comprobante queda `PENDIENTE_ENVIO`
-  y la cola de reenvío (CU-11) lo reintenta dentro del plazo permitido.
-- **Consecuencias:** (+) Cambiar de proveedor OSE no toca el dominio. (+) Emisión posible sin conexión
-  con envío diferido. (−) Hay que vigilar el plazo máximo de envío (R-05).
+- **Status:** Proposed (question D-03)
+- **Context:** The case allows sending to an OSE or directly to SUNAT. Both receive the signed XML in a ZIP
+  and return a CDR.
+- **Decision:** The core only knows the `CanalEnvioCpe` port (`specs/04-api/puertos-salida.md`).
+  Two interchangeable adapters are implemented and chosen by configuration: `CanalOse` (primary) and
+  `CanalSunatDirecto` (fallback). If the channel does not respond, the document stays `PENDIENTE_ENVIO`
+  and the resend queue (CU-11) retries it within the allowed deadline.
+- **Consequences:** (+) Changing OSE provider does not touch the domain. (+) Issuing is possible offline
+  with deferred submission. (−) The maximum submission deadline must be monitored (R-05).

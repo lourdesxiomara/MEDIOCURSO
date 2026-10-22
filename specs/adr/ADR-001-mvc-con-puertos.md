@@ -1,19 +1,19 @@
-# ADR-001 · Monolito MVC con puertos y adaptadores
+# ADR-001 · MVC monolith with ports and adapters
 
-- **Estado:** Aceptado (fase Spec-First)
-- **Contexto:** La gerencia exige arrancar con un monolito MVC limpio, pero que permita migrar a
-  Hexagonal/Clean y luego a microservicios sin reescritura.
-- **Decisión:**
-  1. El *Modelo* del MVC se divide en tres capas: dominio puro, servicios de aplicación y adaptadores.
-  2. Cada servicio de aplicación implementa una **interfaz de puerto de entrada** (`EmitirComprobante`, …).
-  3. Toda dependencia técnica (BD, XML, firma, OSE, correo, reloj) se accede por un **puerto de salida**
+- **Status:** Accepted (Spec-First phase)
+- **Context:** Management requires starting with a clean MVC monolith that can later move to
+  Hexagonal/Clean and then to microservices without a rewrite.
+- **Decision:**
+  1. The MVC *Model* is split into three layers: pure domain, application services and adapters.
+  2. Each application service implements an **input port interface** (`EmitirComprobante`, …).
+  3. Every technical dependency (DB, XML, signature, OSE, mail, clock) is reached through an **output port**
      (`specs/04-api/puertos-salida.md`).
-  4. Los Controllers solo traducen eventos de la Vista a DTOs (`specs/02-dominio/schemas`) y llaman a puertos.
-  5. Regla de dependencias verificada por prueba de arquitectura: `dominio` no depende de nada.
-- **Consecuencias:**
-  - (+) Migrar a Hexagonal es renombrar capas, no reescribir: ver tabla en `specs/03-arquitectura` §4.
-  - (+) El dominio (cálculo de tributos, reglas R-xx) se prueba sin BD ni red.
-  - (+) Cambiar de OSE o de BD = escribir otro adaptador.
-  - (−) Algo más de código inicial (interfaces) que un MVC "plano".
-- **Alternativas descartadas:** MVC con lógica en Controllers (bloquea la migración); Hexagonal pleno
-  desde el día uno (contradice la condición de la gerencia).
+  4. Controllers only translate View events into DTOs (`specs/02-dominio/schemas`) and call ports.
+  5. Dependency rule checked by an architecture test: `dominio` depends on nothing.
+- **Consequences:**
+  - (+) Moving to Hexagonal means renaming layers, not rewriting: see the table in `specs/03-arquitectura` §4.
+  - (+) The domain (tax calculation, rules R-xx) is tested without DB or network.
+  - (+) Changing OSE or DB = writing another adapter.
+  - (−) Slightly more initial code (interfaces) than a "flat" MVC.
+- **Rejected alternatives:** MVC with logic in Controllers (blocks the migration); full Hexagonal from day
+  one (contradicts management's condition).
