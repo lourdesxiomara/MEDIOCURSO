@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Envoltorio de validacion: carga primero los esquemas de soporte (CCTS, XMLDSig, XAdES)
+     que la edicion OASIS UBL 2.1 importa sin schemaLocation, y luego el documento principal.
+     Los XSD oficiales en docs/ubl/common y docs/ubl/maindoc NO se modifican. -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" schemaLocation="../../docs/ubl/soporte/CCTS_CCT_SchemaModule.xsd"/>
+  <xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="../../docs/ubl/soporte/xmldsig-core-schema.xsd"/>
+  <xsd:import namespace="http://uri.etsi.org/01903/v1.3.2#" schemaLocation="../../docs/ubl/soporte/XAdES01903v132-201601.xsd"/>
+  <xsd:import namespace="http://uri.etsi.org/01903/v1.4.1#" schemaLocation="../../docs/ubl/soporte/XAdES01903v141-201601.xsd"/>
+  <xsd:import namespace="urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2" schemaLocation="../../docs/ubl/maindoc/UBL-DebitNote-2.1.xsd"/>
+</xsd:schema>
