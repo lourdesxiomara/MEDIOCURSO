@@ -1,43 +1,43 @@
 openapi: 3.1.0
 info:
-  title: ABC Facturación Electrónica – Contratos de servicio
+  title: ABC Electronic Invoicing – Service contracts
   version: 0.1.0-spec
   license:
-    name: Propietario – ABC Software Corp
+    name: Proprietary – ABC Software Corp
     identifier: LicenseRef-Propietario
   description: |
-    Contrato de los **puertos de entrada** del sistema (ver specs/03-arquitectura).
-    En el monolito estos endpoints los atienden los controladores en proceso (o una API REST local);
-    al migrar a microservicios se exponen tal cual por HTTP. Los cuerpos se definen en
-    specs/02-dominio/schemas (JSON Schema 2020-12). Los errores siguen RFC 9457 e indican la regla
-    violada (R-xx de docs/sunat/reglas-validacion.md o M-xx de specs/06-migracion).
+    Contract of the system's **input ports** (see specs/03-arquitectura).
+    In the monolith these endpoints are served in-process by the controllers (or a local REST API);
+    when migrating to microservices they are exposed as-is over HTTP. Bodies are defined in
+    specs/02-dominio/schemas (JSON Schema 2020-12). Errors follow RFC 9457 and name the broken rule
+    (R-xx in docs/sunat/reglas-validacion.md or M-xx in specs/06-migracion).
 security:
   - sesionLocal: []
 servers:
   - url: http://localhost:8080/api/v1
-    description: Monolito (API local)
+    description: Monolith (local API)
 tags:
   - name: Comprobantes
-    description: Facturas y boletas — creación, cálculo, emisión, consulta, anulación (CU-03, CU-04, CU-07..CU-11, CU-15)
+    description: Invoices and receipts — creation, calculation, issuing, query, voiding (CU-03, CU-04, CU-07..CU-11, CU-15)
   - name: Notas
-    description: Notas de crédito (cat. 09) y débito (cat. 10) (CU-05, CU-06)
+    description: Credit notes (cat. 09) and debit notes (cat. 10) (CU-05, CU-06)
   - name: Inventario
-    description: Registro de inventario permanente, Formato 12.1 (CU-14)
+    description: Permanent inventory record, Format 12.1 (CU-14)
   - name: Maestros
-    description: Clientes, productos y catálogos SUNAT (CU-01, CU-02)
+    description: Customers, products and SUNAT catalogs (CU-01, CU-02)
   - name: Configuracion
-    description: Emisor y series (CU-10)
+    description: Issuer and series (CU-10)
   - name: Migracion
-    description: Migración del sistema legado (CU-13)
+    description: Legacy system migration (CU-13)
   - name: Reportes
-    description: Ventas y kardex (CU-12)
+    description: Sales and kardex (CU-12)
 paths:
   /comprobantes:
     post:
       tags: [Comprobantes]
       operationId: crearComprobante
-      summary: Crea una factura o boleta en estado BORRADOR/VALIDADO (CU-03, CU-04)
-      description: El sistema calcula valores, tributos (CU-15) y totales. No asigna correlativo hasta emitir.
+      summary: Creates an invoice or receipt in status BORRADOR/VALIDADO (CU-03, CU-04)
+      description: The system computes values, taxes (CU-15) and totals. No number is assigned until issuing.
       requestBody:
         required: true
         content:
@@ -48,7 +48,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '201':
-          description: Comprobante creado y validado
+          description: Document created and validated
           headers:
             Location: { schema: { type: string } }
           content:
@@ -59,7 +59,7 @@ paths:
     get:
       tags: [Comprobantes]
       operationId: listarComprobantes
-      summary: Busca comprobantes (CU-08)
+      summary: Searches documents (CU-08)
       parameters:
         - { name: tipoComprobante, in: query, schema: { type: string, enum: ['01', '03', '07', '08'] } }
         - { name: serie, in: query, schema: { type: string, pattern: '^[FB][A-Z0-9]{3}$' } }
@@ -72,7 +72,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Página de comprobantes
+          description: Page of documents
           content:
             application/json:
               schema:
@@ -87,7 +87,7 @@ paths:
     post:
       tags: [Comprobantes]
       operationId: validarComprobante
-      summary: Previsualiza cálculo y validaciones sin guardar (CU-15)
+      summary: Previews calculation and validations without saving (CU-15)
       requestBody:
         required: true
         content:
@@ -96,7 +96,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Cálculo correcto
+          description: Calculation OK
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
@@ -106,11 +106,11 @@ paths:
     get:
       tags: [Comprobantes]
       operationId: obtenerComprobante
-      summary: Detalle y estado (CU-08)
+      summary: Detail and status (CU-08)
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Comprobante
+          description: Document
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
@@ -120,19 +120,19 @@ paths:
     post:
       tags: [Comprobantes]
       operationId: emitirComprobante
-      summary: Asigna correlativo, genera XML UBL 2.1, firma y envía al OSE/SUNAT (CU-03, CU-04)
-      description: Idempotente con la cabecera Idempotency-Key; reintentos no generan nuevo correlativo.
+      summary: Assigns the number, generates UBL 2.1 XML, signs and sends to OSE/SUNAT (CU-03, CU-04)
+      description: Idempotent with the Idempotency-Key header; retries do not generate a new number.
       parameters:
         - { name: Idempotency-Key, in: header, required: true, schema: { type: string, format: uuid } }
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Emitido; el estado puede ser ACEPTADO, ACEPTADO_CON_OBSERVACIONES o RECHAZADO
+          description: Issued; status may be ACEPTADO, ACEPTADO_CON_OBSERVACIONES or RECHAZADO
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
         '202':
-          description: Firmado pero el OSE no respondió; queda PENDIENTE_ENVIO (CU-11)
+          description: Signed but the OSE did not respond; stays PENDIENTE_ENVIO (CU-11)
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
@@ -143,7 +143,7 @@ paths:
     post:
       tags: [Comprobantes]
       operationId: anularComprobante
-      summary: Comunicación de baja o resumen según tipo (CU-07)
+      summary: Voiding communication or summary depending on type (CU-07)
       requestBody:
         required: true
         content:
@@ -157,7 +157,7 @@ paths:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '403': { $ref: '#/components/responses/SinPermiso' }
         '202':
-          description: Solicitud de baja enviada; el estado cambia a ANULADO al recibir el CDR
+          description: Voiding request sent; status changes to ANULADO when the CDR arrives
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
@@ -167,7 +167,7 @@ paths:
     get:
       tags: [Comprobantes]
       operationId: descargarXml
-      summary: XML UBL 2.1 firmado
+      summary: Signed UBL 2.1 XML
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200': { description: XML firmado, content: { application/xml: { schema: { type: string } } } }
@@ -177,7 +177,7 @@ paths:
     get:
       tags: [Comprobantes]
       operationId: descargarCdr
-      summary: Constancia de recepción (ZIP con ApplicationResponse)
+      summary: Receipt confirmation (ZIP with ApplicationResponse)
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200': { description: CDR, content: { application/zip: { schema: { type: string, contentEncoding: base64 } } } }
@@ -187,7 +187,7 @@ paths:
     get:
       tags: [Comprobantes]
       operationId: descargarPdf
-      summary: Representación impresa con QR
+      summary: Printed representation with QR code
       parameters:
         - { name: formato, in: query, schema: { type: string, enum: [A4, TICKET_80MM], default: A4 } }
       responses:
@@ -198,7 +198,7 @@ paths:
     post:
       tags: [Comprobantes]
       operationId: enviarCorreo
-      summary: Envía PDF y XML al adquirente (CU-09)
+      summary: Sends PDF and XML to the customer (CU-09)
       requestBody:
         content:
           application/json:
@@ -212,13 +212,13 @@ paths:
     post:
       tags: [Comprobantes]
       operationId: reenviarPendientes
-      summary: Reintenta comprobantes PENDIENTE_ENVIO (CU-11)
+      summary: Retries PENDIENTE_ENVIO documents (CU-11)
       security: [ { sesionLocal: [ADMINISTRADOR] } ]
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '403': { $ref: '#/components/responses/SinPermiso' }
         '200':
-          description: Resultado del lote
+          description: Batch result
           content:
             application/json:
               schema:
@@ -233,7 +233,7 @@ paths:
     post:
       tags: [Notas]
       operationId: emitirNotaCredito
-      summary: Emite nota de crédito sobre el comprobante {id} (CU-05). Motivo del catálogo 09
+      summary: Issues a credit note on document {id} (CU-05). Reason from catalog 09
       requestBody:
         required: true
         content:
@@ -244,7 +244,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '201':
-          description: Nota emitida
+          description: Note issued
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
@@ -255,7 +255,7 @@ paths:
     post:
       tags: [Notas]
       operationId: emitirNotaDebito
-      summary: Emite nota de débito sobre el comprobante {id} (CU-06). Motivo del catálogo 10
+      summary: Issues a debit note on document {id} (CU-06). Reason from catalog 10
       requestBody:
         required: true
         content:
@@ -264,7 +264,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '201':
-          description: Nota emitida
+          description: Note issued
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/comprobante.schema.json' }
@@ -274,20 +274,20 @@ paths:
     get:
       tags: [Maestros]
       operationId: buscarClientes
-      summary: Busca clientes por documento o nombre (CU-01)
+      summary: Searches customers by document or name (CU-01)
       parameters:
         - { name: q, in: query, schema: { type: string } }
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Clientes
+          description: Customers
           content:
             application/json:
               schema: { type: array, items: { $ref: '../02-dominio/schemas/cliente.schema.json' } }
     post:
       tags: [Maestros]
       operationId: crearCliente
-      summary: CU-01 (valida RUC/DNI, R-10 a R-12)
+      summary: Creates a customer – CU-01 (validates RUC/DNI, R-10 to R-12)
       requestBody:
         required: true
         content:
@@ -296,7 +296,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '201':
-          description: Creado
+          description: Created
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/cliente.schema.json' }
@@ -305,20 +305,20 @@ paths:
     get:
       tags: [Maestros]
       operationId: buscarProductos
-      summary: Busca productos por código o descripción (CU-02)
+      summary: Searches products by code or description (CU-02)
       parameters:
         - { name: q, in: query, schema: { type: string } }
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Productos
+          description: Products
           content:
             application/json:
               schema: { type: array, items: { $ref: '../02-dominio/schemas/producto.schema.json' } }
     post:
       tags: [Maestros]
       operationId: crearProducto
-      summary: CU-02 (afectación cat. 07, ISC cat. 08, ICBPER)
+      summary: Creates a product – CU-02 (IGV treatment cat. 07, ISC cat. 08, ICBPER)
       requestBody:
         required: true
         content:
@@ -329,7 +329,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '201':
-          description: Creado
+          description: Created
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/producto.schema.json' }
@@ -338,13 +338,13 @@ paths:
     get:
       tags: [Maestros]
       operationId: obtenerCatalogo
-      summary: Devuelve un catálogo SUNAT (docs/sunat/catalogos)
+      summary: Returns a SUNAT catalog (docs/sunat/catalogos)
       parameters:
         - { name: numero, in: path, required: true, schema: { type: string, pattern: '^\d{2}$' } }
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Catálogo
+          description: Catalog
           content:
             application/json:
               schema:
@@ -359,18 +359,18 @@ paths:
     get:
       tags: [Configuracion]
       operationId: obtenerEmisor
-      summary: Datos del emisor configurado (CU-10)
+      summary: Configured issuer data (CU-10)
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Emisor
+          description: Issuer
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/emisor.schema.json' }
     put:
       tags: [Configuracion]
       operationId: actualizarEmisor
-      summary: CU-10
+      summary: Updates the issuer (CU-10)
       requestBody:
         required: true
         content:
@@ -381,7 +381,7 @@ paths:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '403': { $ref: '#/components/responses/SinPermiso' }
         '200':
-          description: Actualizado
+          description: Updated
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/emisor.schema.json' }
@@ -389,7 +389,7 @@ paths:
     get:
       tags: [Configuracion]
       operationId: listarSeries
-      summary: Series configuradas con su último correlativo (CU-10)
+      summary: Configured series with their last number (CU-10)
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
@@ -400,7 +400,7 @@ paths:
     post:
       tags: [Configuracion]
       operationId: crearSerie
-      summary: CU-10 (R-02)
+      summary: Creates a series – CU-10 (R-02)
       requestBody:
         required: true
         content:
@@ -411,7 +411,7 @@ paths:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '403': { $ref: '#/components/responses/SinPermiso' }
         '201':
-          description: Creada
+          description: Created
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Serie' }
@@ -420,7 +420,7 @@ paths:
     post:
       tags: [Inventario]
       operationId: registrarMovimiento
-      summary: CU-14 (Formato 12.1, RS 234-2006)
+      summary: Records an inventory movement – CU-14 (Format 12.1, RS 234-2006)
       requestBody:
         required: true
         content:
@@ -429,7 +429,7 @@ paths:
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '201':
-          description: Registrado
+          description: Recorded
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/movimiento-inventario.schema.json' }
@@ -438,14 +438,14 @@ paths:
     get:
       tags: [Reportes]
       operationId: obtenerKardex
-      summary: Registro de Inventario Permanente en Unidades Físicas por producto y período (CU-12)
+      summary: Permanent Inventory Record in Physical Units per product and period (CU-12)
       parameters:
         - { name: productoId, in: query, required: true, schema: { type: string, format: uuid } }
         - { name: periodo, in: query, required: true, schema: { type: string, pattern: '^\d{4}-(0[1-9]|1[0-2])$' } }
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Movimientos con saldo inicial, entradas, salidas y saldo final
+          description: Movements with opening balance, inputs, outputs and closing balance
           content:
             application/json:
               schema:
@@ -461,7 +461,7 @@ paths:
     get:
       tags: [Reportes]
       operationId: reporteVentas
-      summary: CU-12
+      summary: Sales report (CU-12)
       parameters:
         - { name: desde, in: query, required: true, schema: { type: string, format: date } }
         - { name: hasta, in: query, required: true, schema: { type: string, format: date } }
@@ -472,9 +472,9 @@ paths:
     post:
       tags: [Migracion]
       operationId: iniciarMigracion
-      summary: Importa el CSV del legado y aplica reglas M-01..M-07 (CU-13)
+      summary: Imports the legacy CSV and applies rules M-01..M-07 (CU-13)
       parameters:
-        - { name: simulacion, in: query, description: 'true = dry-run, no escribe', schema: { type: boolean, default: true } }
+        - { name: simulacion, in: query, description: 'true = dry run, writes nothing', schema: { type: boolean, default: true } }
       requestBody:
         required: true
         content:
@@ -485,7 +485,7 @@ paths:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '403': { $ref: '#/components/responses/SinPermiso' }
         '202':
-          description: Migración iniciada
+          description: Migration started
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/migracion.schema.json' }
@@ -495,11 +495,11 @@ paths:
     get:
       tags: [Migracion]
       operationId: obtenerMigracion
-      summary: Estado y resumen de una migración (CU-13)
+      summary: Status and summary of a migration (CU-13)
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Estado y resumen
+          description: Status and summary
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/migracion.schema.json' }
@@ -508,13 +508,13 @@ paths:
     get:
       tags: [Migracion]
       operationId: obtenerTrazabilidadMigracion
-      summary: Traza fila legada → entidades nuevas, con reglas M-xx aplicadas (M-07)
+      summary: Traces each legacy row → new entities, with M-xx rules applied (M-07)
       parameters:
         - { name: resultado, in: query, schema: { type: string, enum: [MIGRADO, CUARENTENA, DESCARTADO] } }
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Trazas de la ejecución
+          description: Run traces
           content:
             application/json:
               schema:
@@ -525,13 +525,13 @@ paths:
     post:
       tags: [Migracion]
       operationId: revertirMigracion
-      summary: Elimina lo creado por esa ejecución (origen = MIGRACION) y marca REVERTIDA
+      summary: Deletes what that run created (origen = MIGRACION) and marks it REVERTIDA
       security: [ { sesionLocal: [ADMINISTRADOR] } ]
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '403': { $ref: '#/components/responses/SinPermiso' }
         '200':
-          description: Revertida
+          description: Rolled back
           content:
             application/json:
               schema: { $ref: '../02-dominio/schemas/migracion.schema.json' }
@@ -541,9 +541,9 @@ components:
       type: http
       scheme: bearer
       description: |
-        Token de sesión emitido al iniciar sesión en la app (monolito) o por el API Gateway (microservicios).
-        Roles: VENDEDOR, ALMACENERO, CONTADOR, ADMINISTRADOR (ver specs/01-casos-uso, actores).
-        Las operaciones marcadas con [ADMINISTRADOR] requieren ese rol.
+        Session token issued at app login (monolith) or by the API Gateway (microservices).
+        Roles: VENDEDOR, ALMACENERO, CONTADOR, ADMINISTRADOR (see specs/01-casos-uso, actors).
+        Operations marked [ADMINISTRADOR] require that role.
   parameters:
     id:
       name: id
@@ -579,34 +579,34 @@ components:
         motivo: { type: string }
   responses:
     NoAutorizado:
-      description: Sin sesión válida
+      description: No valid session
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }
     SinPermiso:
-      description: El rol del usuario no permite la operación
+      description: The user's role does not allow the operation
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }
     SolicitudInvalida:
-      description: El cuerpo no cumple el JSON Schema
+      description: The body does not match the JSON Schema
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }
     ReglaIncumplida:
-      description: Cumple el schema pero incumple una regla de negocio (R-xx)
+      description: Matches the schema but breaks a business rule (R-xx)
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }
           examples:
             validacion: { externalValue: '../02-dominio/ejemplos/error.validacion.json' }
     EstadoInvalido:
-      description: La operación no está permitida en el estado actual del comprobante
+      description: The operation is not allowed in the document's current status
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }
     NoEncontrado:
-      description: No existe
+      description: Not found
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }
