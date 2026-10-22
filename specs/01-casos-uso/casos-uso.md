@@ -1,43 +1,43 @@
-# 01 · Casos de uso
+# 01 · Use cases
 
-Fuente: análisis del caso, brechas del legado (`specs/00-contexto`) y benchmark Nubefact (`docs/benchmark`).
+Sources: case analysis, legacy gaps (`specs/00-contexto`) and the Nubefact benchmark (`docs/benchmark`).
 
-## Actores
-| Actor | Descripción |
+## Actors
+| Actor | Description |
 |---|---|
-| **Vendedor** | Emite comprobantes en mostrador (Windows) o en ruta (Android). |
-| **Almacenero** | Registra ingresos y salidas de mercadería. |
-| **Administrador** | Configura emisor, series, certificado, OSE y catálogos; ejecuta la migración. |
-| **Contador** | Consulta comprobantes, reportes y el registro de inventario (Formato 12.1). |
-| **OSE / SUNAT** | Sistema externo que valida el CPE y devuelve el CDR. |
-| **Padrón RUC** | Fuente externa para validar estado/condición del contribuyente (opcional). |
+| **Seller** | Issues documents at the counter (Windows) or on route (Android). |
+| **Warehouse clerk** | Records goods inputs and outputs. |
+| **Administrator** | Configures issuer, series, certificate, OSE and catalogs; runs the migration. |
+| **Accountant** | Queries documents, reports and the inventory record (Format 12.1). |
+| **OSE / SUNAT** | External system that validates the document and returns the CDR. |
+| **RUC registry** | External source to validate taxpayer status (optional). |
 
-## Diagrama
+## Diagram
 ```mermaid
 flowchart LR
-  V([Vendedor]); A([Almacenero]); AD([Administrador]); C([Contador]); O[[OSE / SUNAT]]
-  subgraph Sistema de facturación ABC
-    CU01(CU-01 Gestionar clientes)
-    CU02(CU-02 Gestionar productos)
-    CU03(CU-03 Emitir factura)
-    CU04(CU-04 Emitir boleta)
-    CU05(CU-05 Emitir nota de crédito)
-    CU06(CU-06 Emitir nota de débito)
-    CU07(CU-07 Anular comprobante)
-    CU08(CU-08 Consultar estado y CDR)
-    CU09(CU-09 Enviar comprobante al cliente)
-    CU10(CU-10 Configurar emisor y series)
-    CU11(CU-11 Reenviar pendientes)
-    CU12(CU-12 Reportes y registro de inventario)
-    CU13(CU-13 Migrar datos del legado)
-    CU14(CU-14 Registrar movimiento de almacén)
+  V([Seller]); A([Warehouse clerk]); AD([Administrator]); C([Accountant]); O[[OSE / SUNAT]]
+  subgraph ABC invoicing system
+    CU01(CU-01 Manage customers)
+    CU02(CU-02 Manage products)
+    CU03(CU-03 Issue invoice)
+    CU04(CU-04 Issue receipt)
+    CU05(CU-05 Issue credit note)
+    CU06(CU-06 Issue debit note)
+    CU07(CU-07 Void document)
+    CU08(CU-08 Query status and CDR)
+    CU09(CU-09 Send document to customer)
+    CU10(CU-10 Configure issuer and series)
+    CU11(CU-11 Resend pending documents)
+    CU12(CU-12 Reports and inventory record)
+    CU13(CU-13 Migrate legacy data)
+    CU14(CU-14 Record warehouse movement)
   end
   V --> CU03 & CU04 & CU05 & CU06 & CU08 & CU09 & CU01
   A --> CU14 & CU02
   AD --> CU10 & CU13 & CU07 & CU11
   C --> CU12 & CU08
   CU03 & CU04 & CU05 & CU06 & CU07 & CU11 --> O
-  CU03 -. include .-> CU15(CU-15 Validar y calcular tributos)
+  CU03 -. include .-> CU15(CU-15 Validate and calculate taxes)
   CU04 -. include .-> CU15
   CU05 -. include .-> CU15
   CU06 -. include .-> CU15
@@ -45,85 +45,85 @@ flowchart LR
   CU04 -. include .-> CU14
 ```
 
-## Casos de uso detallados
+## Detailed use cases
 
-### CU-03 Emitir factura (caso principal)
-| Campo | Detalle |
+### CU-03 Issue invoice (main use case)
+| Field | Detail |
 |---|---|
-| Actor | Vendedor; secundario: OSE/SUNAT |
-| Precondiciones | Emisor configurado con RUC, certificado y serie `F###` activa (CU-10). Productos con afectación IGV definida. |
-| Disparador | El cliente con RUC solicita factura. |
-| Contrato API | `POST /comprobantes` con `tipoComprobante = "01"` → `POST /comprobantes/{id}/emitir` |
-| Flujo principal | 1. Vendedor busca o registra al cliente por RUC (R-10, R-11). 2. Agrega ítems: producto, cantidad, precio. 3. El sistema calcula por línea ISC (si aplica, cat. 08), IGV (cat. 07) e ICBPER (CU-15). 4. Muestra totales y leyenda en letras. 5. Vendedor confirma. 6. El sistema asigna correlativo (R-03), genera XML UBL 2.1 y lo valida contra el XSD (R-50). 7. Firma (R-51) y envía al OSE (R-52). 8. Recibe CDR aceptado: estado `ACEPTADO`. 9. Registra la salida de almacén (CU-14) referenciando el comprobante. 10. Genera PDF con QR. |
-| Flujos alternos | A1 RUC inválido → mensaje y no permite continuar. A2 Producto sujeto a ISC sin sistema cat. 08 → error de configuración. A3 OSE no responde → estado `PENDIENTE_ENVIO`, entra a la cola (CU-11). A4 CDR rechazado → estado `RECHAZADO` con código y descripción SUNAT; no descuenta stock. A5 CDR con observaciones → `ACEPTADO_CON_OBSERVACIONES`. |
-| Postcondiciones | Comprobante persistido con XML firmado, hash, CDR y estado. Movimiento de inventario trazable al comprobante. |
-| Reglas | R-01–R-03, R-10, R-11, R-20–R-34, R-50–R-53 |
+| Actor | Seller; secondary: OSE/SUNAT |
+| Preconditions | Issuer configured with RUC, certificate and an active `F###` series (CU-10). Products with IGV treatment defined. |
+| Trigger | A customer with RUC requests an invoice. |
+| API contract | `POST /comprobantes` with `tipoComprobante = "01"` → `POST /comprobantes/{id}/emitir` |
+| Main flow | 1. Seller finds or registers the customer by RUC (R-10, R-11). 2. Adds items: product, quantity, price. 3. The system computes per line ISC (if any, cat. 08), IGV (cat. 07) and ICBPER (CU-15). 4. Shows totals and amount-in-words legend. 5. Seller confirms. 6. The system assigns the number (R-03), generates UBL 2.1 XML and validates it against the XSD (R-50). 7. Signs (R-51) and sends to the OSE (R-52). 8. Receives an accepted CDR: status `ACEPTADO`. 9. Records the warehouse output (CU-14) referencing the document. 10. Generates a PDF with QR code. |
+| Alternative flows | A1 Invalid RUC → message, cannot continue. A2 ISC product without a cat. 08 system → configuration error. A3 OSE does not respond → status `PENDIENTE_ENVIO`, queued (CU-11). A4 Rejected CDR → status `RECHAZADO` with SUNAT code and description; stock is not deducted. A5 CDR with observations → `ACEPTADO_CON_OBSERVACIONES`. |
+| Postconditions | Document stored with signed XML, hash, CDR and status. Inventory movement traceable to the document. |
+| Rules | R-01–R-03, R-10, R-11, R-20–R-34, R-50–R-53 |
 
-### CU-04 Emitir boleta
-Igual que CU-03 con estas diferencias: serie `B###`; adquirente con DNI u otro documento del cat. 06
-(R-12); en mostrador puede ser "cliente varios" bajo el umbral. Contrato: `POST /comprobantes` con `tipoComprobante = "03"`.
+### CU-04 Issue receipt (boleta)
+Same as CU-03 with these differences: series `B###`; customer with DNI or another cat. 06 document
+(R-12); at the counter it can be a generic customer below the threshold. Contract: `POST /comprobantes` with `tipoComprobante = "03"`.
 
-### CU-05 Emitir nota de crédito
-| Campo | Detalle |
+### CU-05 Issue credit note
+| Field | Detail |
 |---|---|
-| Precondiciones | Existe el comprobante afectado en estado `ACEPTADO` (R-41). |
-| Flujo principal | 1. Selecciona el comprobante afectado. 2. Elige motivo del cat. 09 y escribe el sustento (R-40). 3. Según motivo: anulación total (01, 02, 06), parcial por ítem (05, 07) o descuento (04, 09). 4. El sistema valida importe ≤ saldo (R-42). 5. Genera `CreditNote` UBL con `cac:BillingReference` y `cac:DiscrepancyResponse`, firma y envía. 6. Si es devolución (06, 07), registra ingreso de almacén (CU-14). |
-| Contrato API | `POST /comprobantes/{id}/notas-credito` |
+| Preconditions | The affected document exists with status `ACEPTADO` (R-41). |
+| Main flow | 1. Select the affected document. 2. Choose a cat. 09 reason and write the justification (R-40). 3. Depending on the reason: full void (01, 02, 06), partial per item (05, 07) or discount (04, 09). 4. The system checks amount ≤ balance (R-42). 5. Generates a UBL `CreditNote` with `cac:BillingReference` and `cac:DiscrepancyResponse`, signs and sends it. 6. For returns (06, 07), records a warehouse input (CU-14). |
+| API contract | `POST /comprobantes/{id}/notas-credito` |
 
-### CU-06 Emitir nota de débito
-Como CU-05 con motivo del cat. 10 (intereses por mora, aumento de valor, penalidades). Genera `DebitNote`.
-Contrato: `POST /comprobantes/{id}/notas-debito`.
+### CU-06 Issue debit note
+Like CU-05 with a cat. 10 reason (late-payment interest, price increase, penalties). Generates a `DebitNote`.
+Contract: `POST /comprobantes/{id}/notas-debito`.
 
-### CU-07 Anular comprobante
-Anulación de un comprobante aceptado por comunicación de baja (facturas) o resumen diario (boletas),
-según canal y norma vigente. Contrato: `POST /comprobantes/{id}/anular`. Restringido al Administrador.
+### CU-07 Void document
+Voiding an accepted document through a voiding communication (invoices) or daily summary (receipts),
+depending on channel and current regulation. Contract: `POST /comprobantes/{id}/anular`. Administrator only.
 
-### CU-08 Consultar estado y CDR
-Busca por tipo, serie, correlativo, fecha o cliente. Muestra estado y permite descargar XML, PDF y CDR.
-Contratos: `GET /comprobantes`, `GET /comprobantes/{id}`, `GET /comprobantes/{id}/xml|cdr|pdf`.
+### CU-08 Query status and CDR
+Search by type, series, number, date or customer. Shows status and allows downloading XML, PDF and CDR.
+Contracts: `GET /comprobantes`, `GET /comprobantes/{id}`, `GET /comprobantes/{id}/xml|cdr|pdf`.
 
-### CU-09 Enviar comprobante al cliente
-Envía PDF + XML al correo del cliente. Contrato: `POST /comprobantes/{id}/enviar-correo`.
+### CU-09 Send document to customer
+Sends PDF + XML to the customer's email. Contract: `POST /comprobantes/{id}/enviar-correo`.
 
-### CU-10 Configurar emisor y series
-Registra RUC, razón social, domicilio fiscal (ubigeo), certificado digital, credenciales del OSE y series
-por tipo de comprobante y punto de venta. Contratos: `GET|PUT /configuracion/emisor`, `GET|POST /series`.
+### CU-10 Configure issuer and series
+Registers RUC, legal name, registered address (ubigeo), digital certificate, OSE credentials and series
+per document type and point of sale. Contracts: `GET|PUT /configuracion/emisor`, `GET|POST /series`.
 
-### CU-11 Reenviar pendientes
-Proceso que reintenta los comprobantes `PENDIENTE_ENVIO` respetando el plazo de envío (R-05).
-Contrato: `POST /comprobantes/reenviar-pendientes`.
+### CU-11 Resend pending documents
+Process that retries `PENDIENTE_ENVIO` documents within the submission deadline (R-05).
+Contract: `POST /comprobantes/reenviar-pendientes`.
 
-### CU-12 Reportes y registro de inventario
-Reporte de ventas por período y **Registro de Inventario Permanente en Unidades Físicas (Formato 12.1,
-RS 234-2006)** por producto y almacén. Contratos: `GET /reportes/ventas`, `GET /inventario/kardex`.
+### CU-12 Reports and inventory record
+Sales report per period and **Permanent Inventory Record in Physical Units (Format 12.1,
+RS 234-2006)** per product and warehouse. Contracts: `GET /reportes/ventas`, `GET /inventario/kardex`.
 
-### CU-13 Migrar datos del legado
-Importa el histórico del almacén, aplica reglas M-01…M-07, deja en cuarentena lo no migrable y produce
-un reporte de trazabilidad legado → nuevo. Contratos: `POST /migraciones`, `GET /migraciones/{id}`,
-`GET /migraciones/{id}/trazabilidad`. Detalle en `specs/06-migracion/`.
+### CU-13 Migrate legacy data
+Imports the warehouse history, applies rules M-01…M-07, quarantines what cannot be migrated and produces
+a legacy → new traceability report. Contracts: `POST /migraciones`, `GET /migraciones/{id}`,
+`GET /migraciones/{id}/trazabilidad`. Details in `specs/06-migracion/`.
 
-### CU-14 Registrar movimiento de almacén
-Registra ingreso, salida o ajuste. Toda salida por venta referencia un comprobante; los ingresos
-referencian guía o comprobante de compra. Contrato: `POST /inventario/movimientos`.
+### CU-14 Record warehouse movement
+Records an input, output or adjustment. Every sales output references a document; inputs reference a
+dispatch guide or purchase document. Contract: `POST /inventario/movimientos`.
 
-### CU-15 Validar y calcular tributos (incluido)
-Para cada ítem: 1) determina tributo por afectación (R-22, R-23); 2) calcula ISC según cat. 08 (R-24);
-3) calcula IGV sobre (valor + ISC) (R-25); 4) calcula ICBPER (R-26); 5) redondea (R-28);
-6) totaliza (R-30, R-31). Contrato: `POST /comprobantes/validar` (previsualización sin emitir).
+### CU-15 Validate and calculate taxes (included)
+For each line: 1) determine the tax by IGV treatment (R-22, R-23); 2) compute ISC per cat. 08 (R-24);
+3) compute IGV on (value + ISC) (R-25); 4) compute ICBPER (R-26); 5) round (R-28);
+6) total (R-30, R-31). Contract: `POST /comprobantes/validar` (preview without issuing).
 
-## Estados del comprobante
+## Document states
 ```mermaid
 stateDiagram-v2
   [*] --> BORRADOR: POST /comprobantes
-  BORRADOR --> VALIDADO: validar (schema + reglas)
-  VALIDADO --> FIRMADO: emitir (correlativo + XML + firma)
-  FIRMADO --> ACEPTADO: CDR aceptado
-  FIRMADO --> ACEPTADO_CON_OBSERVACIONES: CDR con observaciones
-  FIRMADO --> RECHAZADO: CDR rechazado
-  FIRMADO --> PENDIENTE_ENVIO: OSE no disponible
-  PENDIENTE_ENVIO --> FIRMADO: reenviar
-  ACEPTADO --> ANULADO: anular
-  ACEPTADO_CON_OBSERVACIONES --> ANULADO: anular
+  BORRADOR --> VALIDADO: validate (schema + rules)
+  VALIDADO --> FIRMADO: issue (number + XML + signature)
+  FIRMADO --> ACEPTADO: CDR accepted
+  FIRMADO --> ACEPTADO_CON_OBSERVACIONES: CDR with observations
+  FIRMADO --> RECHAZADO: CDR rejected
+  FIRMADO --> PENDIENTE_ENVIO: OSE unavailable
+  PENDIENTE_ENVIO --> FIRMADO: resend
+  ACEPTADO --> ANULADO: void
+  ACEPTADO_CON_OBSERVACIONES --> ANULADO: void
   RECHAZADO --> [*]
   ANULADO --> [*]
 ```
