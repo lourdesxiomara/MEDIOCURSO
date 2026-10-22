@@ -1,52 +1,56 @@
-# ABC Software Corp · Facturación Electrónica SUNAT (UBL 2.1)
+# ABC Software Corp · SUNAT Electronic Invoicing (UBL 2.1)
 
-**Fase 1 – Spec-First.** Este repositorio contiene las especificaciones técnicas que se definen *antes*
-de escribir una sola línea de lógica de negocio. Examen de medio curso de Arquitectura de Software,
-UNAS – Facultad de Ingeniería en Informática y Sistemas.
+**Phase 1 – Spec-First.** This repository contains the technical specifications defined *before*
+writing a single line of business logic. Midterm exam, Software Architecture course,
+UNAS – School of Computer and Systems Engineering.
 
 | | |
 |---|---|
-| **Alumna** | Lourdes Xiomara López Gonzalez |
-| **Grupo** | "A" |
-| **Curso** | Arquitectura de Software – Examen de medio curso |
-| **Universidad** | Universidad Nacional Agraria de la Selva |
-| **Fecha** | 19 de octubre de 2026 |
+| **Student** | Lourdes Xiomara López Gonzalez |
+| **Group** | "A" |
+| **Course** | Software Architecture – Midterm exam |
+| **University** | Universidad Nacional Agraria de la Selva |
+| **Date** | October 19, 2026 |
 
-## Entregables
-| # | Entregable solicitado | Dónde está |
+## Deliverables
+| # | Required deliverable | Location |
 |---|---|---|
-| 1 | **Modelo de dominio y contratos (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (11 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (JSON + XML UBL 2.1 validados) |
-| 2 | **Diagramas de arquitectura MVC con visión a Hexagonal** | [`specs/03-arquitectura/arquitectura.md`](specs/03-arquitectura/arquitectura.md) · decisiones en [`specs/adr/`](specs/adr) |
-| 3 | **Especificación de endpoints / servicios (contratos API)** | [`specs/04-api/openapi.yaml`](specs/04-api/openapi.yaml) (OpenAPI 3.1) · [`puertos-salida.md`](specs/04-api/puertos-salida.md) |
-| 4 | **Matriz de trazabilidad normativa SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (52 filas) |
+| 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (12 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (JSON + UBL 2.1 XML, validated) |
+| 2 | **MVC architecture diagrams with a Hexagonal vision** | [`specs/03-arquitectura/arquitectura.md`](specs/03-arquitectura/arquitectura.md) · decisions in [`specs/adr/`](specs/adr) |
+| 3 | **Endpoint / service specification (API contracts)** | [`specs/04-api/openapi.yaml`](specs/04-api/openapi.yaml) (OpenAPI 3.1) · [`puertos-salida.md`](specs/04-api/puertos-salida.md) · [`eventos.md`](specs/04-api/eventos.md) |
+| 4 | **Regulatory traceability matrix SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (52 rows) |
 
-Requisitos del caso que también se cubren:
-| Requisito | Dónde |
+Other case requirements also covered:
+| Requirement | Location |
 |---|---|
-| Casos de uso (benchmark Nubefact) | [`specs/01-casos-uso/`](specs/01-casos-uso/casos-uso.md) · [`docs/benchmark/`](docs/benchmark/nubefact.md) |
-| Legado y migración de datos con trazabilidad | [`specs/06-migracion/`](specs/06-migracion/migracion.md) · [`docs/legado/`](docs/legado) |
-| Normativa SUNAT, catálogos (incl. **catálogo 08**) y reglas | [`docs/sunat/`](docs/sunat) |
-| Estándar UBL 2.1 (`UBL-Invoice-2.1.xsd`) | [`docs/ubl/`](docs/ubl) |
-| Distribución Windows **MSI** + Android **APK** | [`specs/adr/ADR-002-stack-y-distribucion-msi-apk.md`](specs/adr/ADR-002-stack-y-distribucion-msi-apk.md) |
-| **Criterios de aceptación** (37, cubren todas las reglas) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
-| Contratos de eventos (microservicios) | [`specs/04-api/eventos.md`](specs/04-api/eventos.md) |
-| Requisitos no funcionales | [`specs/00-contexto/requisitos-no-funcionales.md`](specs/00-contexto/requisitos-no-funcionales.md) |
-| Contexto, supuestos, glosario y dudas abiertas | [`specs/00-contexto/`](specs/00-contexto) |
+| **Acceptance criteria** (37, covering every rule) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
+| Use cases (Nubefact benchmark) | [`specs/01-casos-uso/`](specs/01-casos-uso/casos-uso.md) · [`docs/benchmark/`](docs/benchmark/nubefact.md) |
+| Legacy system and data migration with traceability | [`specs/06-migracion/`](specs/06-migracion/migracion.md) · [`docs/legado/`](docs/legado) |
+| SUNAT regulations, catalogs (incl. **catalog 08**: ISC systems 01, 02, 03) and rules | [`docs/sunat/`](docs/sunat) |
+| UBL 2.1 standard (`UBL-Invoice-2.1.xsd`) | [`docs/ubl/`](docs/ubl) |
+| Windows **MSI** + Android **APK** distribution | [`specs/adr/ADR-002-stack-y-distribucion-msi-apk.md`](specs/adr/ADR-002-stack-y-distribucion-msi-apk.md) |
+| Non-functional requirements | [`specs/00-contexto/requisitos-no-funcionales.md`](specs/00-contexto/requisitos-no-funcionales.md) |
+| Context, assumptions, glossary and open questions | [`specs/00-contexto/`](specs/00-contexto) |
 
-## Cómo verificar que todo es consistente
+> UBL 2.1 (OASIS) defines the XML **structure**; SUNAT's customization 2.0 defines the **values** for Peru
+> (RUC, `F001-1` series-number, PEN, IGV 18 %…). This project validates against both.
+
+## How to verify consistency
 ```bash
 python -m pip install -r tools/requirements.txt
-python tools/verificar.py                 # 13 comprobaciones; debe terminar en "TODO CORRECTO"
+python tools/verificar.py                 # must end with "TODO CORRECTO" (all checks pass)
 
 cd tools && npm install
-npm run mermaid                           # parsea los diagramas con el parser oficial de Mermaid
-npm run openapi                           # lint del contrato con Redocly
+npm run mermaid                           # parses diagrams with the official Mermaid parser
+npm run openapi                           # lints the API contract with Redocly
 ```
-`verificar.py` comprueba, entre otras cosas, que los XML de ejemplo validan contra el XSD UBL 2.1,
-que los cálculos de IGV/ISC/ICBPER de los ejemplos son correctos, que cada fila de la matriz apunta a
-un campo real del schema y a un nodo real del XML, y que los enums de los schemas coinciden con los
-catálogos SUNAT.
+`verificar.py` checks, among other things, that the example XMLs validate against the UBL 2.1 XSD,
+that IGV/ISC/ICBPER calculations are correct, that every matrix row points to a real schema field and
+XML node, that every rule has an acceptance criterion, and that schema enums match SUNAT catalogs.
 
-## Trabajar con Claude en este repo
-El agente lee [`CLAUDE.md`](CLAUDE.md) automáticamente: reglas Spec-First, mapa del repo y verificación
-obligatoria antes de cada commit.
+## Working with Claude in this repo
+The agent automatically reads [`CLAUDE.md`](CLAUDE.md): Spec-First rules, repo map and mandatory
+verification before each commit.
+
+> Note: field names in schemas and API (`tipoComprobante`, `importeTotal`…) are kept in Spanish because they
+> mirror SUNAT's official terminology.
