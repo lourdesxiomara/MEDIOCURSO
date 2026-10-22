@@ -1,74 +1,74 @@
-# 03 · Arquitectura: MVC monolítico con visión Hexagonal
+# 03 · Architecture: monolithic MVC with a Hexagonal vision
 
-## 1. Principio rector
-El sistema se construye como **un monolito MVC**, pero el código se separa desde el día uno en
-**núcleo (dominio + casos de uso)** y **detalles técnicos (UI, BD, XML, firma, OSE)**, comunicados por
-**interfaces (puertos)**. Así:
+## 1. Guiding principle
+The system is built as **an MVC monolith**, but from day one the code is split into the
+**core (domain + use cases)** and **technical details (UI, DB, XML, signature, OSE)**, connected through
+**interfaces (ports)**. Therefore:
 
-- Hoy: el *Controlador* del MVC llama a un *Servicio de aplicación*; la *Vista* es Compose (Windows/Android).
-- Mañana: ese mismo servicio es un **puerto de entrada** hexagonal y cada dependencia técnica es un **adaptador**.
-- Después: cada grupo de puertos puede separarse en un **microservicio** sin reescribir el dominio.
+- Today: the MVC *Controller* calls an *Application Service*; the *View* is Compose (Windows/Android).
+- Tomorrow: that same service is a hexagonal **input port** and every technical dependency is an **adapter**.
+- Later: each group of ports can be split into a **microservice** without rewriting the domain.
 
-La regla que lo hace posible (y que se verifica en revisión de código): **las dependencias apuntan hacia
-el dominio**. El dominio no importa nada de UI, BD, HTTP, XML ni firma.
+The rule that makes this possible (enforced in code review and by an architecture test): **dependencies
+point towards the domain**. The domain imports nothing from UI, DB, HTTP, XML or signature libraries.
 
-## 2. Contexto (C4 nivel 1)
+## 2. Context (C4 level 1)
 ```mermaid
 flowchart TB
-  vend([Vendedor / Almacenero / Admin / Contador])
-  subgraph ABC[Sistema de facturación ABC · monolito]
-    app[App Windows MSI / Android APK]
+  vend([Seller / Warehouse clerk / Admin / Accountant])
+  subgraph ABC[ABC invoicing system · monolith]
+    app[Windows MSI / Android APK app]
   end
-  ose[[OSE · Operador de Servicios Electrónicos]]
-  sunat[[SUNAT · SEE / consulta CPE]]
-  padron[[Padrón RUC]]
-  correo[[Servidor de correo]]
-  legado[(Sistema legado de almacén)]
+  ose[[OSE · Electronic Services Operator]]
+  sunat[[SUNAT · SEE / document query]]
+  padron[[RUC registry]]
+  correo[[Mail server]]
+  legado[(Legacy warehouse system)]
   vend --> app
-  app -- XML UBL 2.1 firmado / CDR --> ose
-  app -. canal alternativo .-> sunat
-  app -. consulta RUC .-> padron
+  app -- signed UBL 2.1 XML / CDR --> ose
+  app -. alternative channel .-> sunat
+  app -. RUC lookup .-> padron
   app -- PDF + XML --> correo
-  legado -- exportación CSV --> app
+  legado -- CSV export --> app
 ```
 
-## 3. Vista MVC actual (monolito)
+## 3. Current MVC view (monolith)
 ```mermaid
 flowchart LR
-  subgraph V[Vista · Compose Multiplatform]
-    VF[PantallaFactura]
-    VN[PantallaNota]
-    VC[PantallaConsulta]
-    VI[PantallaInventario]
-    VM[PantallaMigracion]
+  subgraph V[View · Compose Multiplatform]
+    VF[InvoiceScreen]
+    VN[NoteScreen]
+    VC[QueryScreen]
+    VI[InventoryScreen]
+    VM[MigrationScreen]
   end
-  subgraph C[Controlador]
+  subgraph C[Controller]
     CC[ComprobanteController]
     IC[InventarioController]
     MC[MigracionController]
     CFG[ConfiguracionController]
   end
-  subgraph M[Modelo]
+  subgraph M[Model]
     direction TB
-    subgraph APP[Servicios de aplicación = futuros puertos de entrada]
+    subgraph APP[Application services = future input ports]
       S1[EmitirComprobanteService]
       S2[EmitirNotaService]
       S3[ConsultarComprobanteService]
       S4[RegistrarMovimientoService]
       S5[MigrarLegadoService]
     end
-    subgraph DOM[Dominio puro]
-      D1[Comprobante · Linea · Tributo]
-      D2[CalculadoraTributos]
-      D3[ValidadorReglas R-xx]
-      D4[Producto · Cliente · Serie]
+    subgraph DOM[Pure domain]
+      D1[Comprobante · Line · Tax]
+      D2[TaxCalculator]
+      D3[Rule validator R-xx]
+      D4[Product · Customer · Series]
     end
-    subgraph INF[Infraestructura = futuros adaptadores]
-      R1[(Repositorio SQLite)]
-      X1[GeneradorXmlUbl]
-      F1[FirmadorXmlDsig]
-      O1[ClienteOse SOAP]
-      P1[GeneradorPdf]
+    subgraph INF[Infrastructure = future adapters]
+      R1[(SQLite repository)]
+      X1[UBL XML generator]
+      F1[XMLDSig signer]
+      O1[OSE SOAP client]
+      P1[PDF generator]
     end
   end
   VF & VN & VC --> CC
@@ -81,16 +81,16 @@ flowchart LR
   S1 --> R1 & X1 & F1 & O1 & P1
 ```
 
-## 4. La misma aplicación vista como Hexagonal
+## 4. The same application seen as Hexagonal
 ```mermaid
 flowchart LR
-  subgraph AE[Adaptadores de entrada]
-    UI[UI Compose · Controllers MVC]
-    REST[API REST local · openapi.yaml]
-    CLI[Importador CSV legado]
+  subgraph AE[Input adapters]
+    UI[Compose UI · MVC Controllers]
+    REST[Local REST API · openapi.yaml]
+    CLI[Legacy CSV importer]
   end
-  subgraph NUCLEO[Núcleo]
-    subgraph PE[Puertos de entrada]
+  subgraph NUCLEO[Core]
+    subgraph PE[Input ports]
       P1[EmitirComprobante]
       P2[EmitirNota]
       P3[ConsultarComprobante]
@@ -98,8 +98,8 @@ flowchart LR
       P5[RegistrarMovimiento]
       P6[MigrarLegado]
     end
-    DOM[Dominio: Comprobante, Tributos, Reglas R-xx]
-    subgraph PS[Puertos de salida]
+    DOM[Domain: Comprobante, Taxes, Rules R-xx]
+    subgraph PS[Output ports]
       Q1[RepositorioComprobantes]
       Q2[RepositorioProductos]
       Q3[GeneradorDocumentoUbl]
@@ -107,16 +107,16 @@ flowchart LR
       Q5[CanalEnvioCpe]
       Q6[ValidadorRuc]
       Q7[Notificador]
-      Q8[RelojYNumeracion]
+      Q8[ClockAndNumbering]
     end
   end
-  subgraph AS[Adaptadores de salida]
+  subgraph AS[Output adapters]
     A1[(SQLite / PostgreSQL)]
-    A2[UBL 2.1 + validación XSD]
-    A3[XMLDSig con certificado .pfx]
+    A2[UBL 2.1 + XSD validation]
+    A3[XMLDSig with .pfx certificate]
     A4[OSE SOAP billService]
-    A5[SUNAT SEE directo]
-    A6[Padrón RUC]
+    A5[SUNAT SEE direct]
+    A6[RUC registry]
     A7[SMTP]
   end
   UI & REST & CLI --> PE
@@ -126,93 +126,93 @@ flowchart LR
   Q3 --> A2
   Q4 --> A3
   Q5 --> A4
-  Q5 -.alternativa.-> A5
+  Q5 -.alternative.-> A5
   Q6 --> A6
   Q7 --> A7
 ```
 
-### Correspondencia MVC → Hexagonal (lo que se mantiene y lo que cambia)
-| Pieza en el MVC de hoy | Rol en Hexagonal | ¿Cambia al migrar? |
+### MVC → Hexagonal mapping (what stays and what changes)
+| Piece in today's MVC | Role in Hexagonal | Changes when migrating? |
 |---|---|---|
-| Vista Compose | Adaptador de entrada (UI) | No |
-| Controller | Adaptador de entrada (traduce eventos UI → DTO) | No |
-| Servicio de aplicación (`EmitirComprobanteService`) | Implementación del puerto de entrada | No; se le extrae la interfaz |
-| Dominio (`Comprobante`, `CalculadoraTributos`) | Núcleo | **Nunca** |
-| Repositorio, XML, firma, cliente OSE | Adaptadores de salida detrás de interfaces | Solo se cambian implementaciones |
-| DTOs (`specs/02-dominio/schemas`) | Contratos de los puertos | No |
+| Compose View | Input adapter (UI) | No |
+| Controller | Input adapter (translates UI events → DTO) | No |
+| Application service (`EmitirComprobanteService`) | Input port implementation | No; its interface is extracted |
+| Domain (`Comprobante`, tax calculator) | Core | **Never** |
+| Repository, XML, signature, OSE client | Output adapters behind interfaces | Only implementations change |
+| DTOs (`specs/02-dominio/schemas`) | Port contracts | No |
 
-## 5. Estructura de módulos (aplicable desde el primer commit de código)
+## 5. Module structure (applies from the first code commit)
 ```
 abc-facturacion/
-├── dominio/            # Kotlin puro. Sin dependencias externas. Entidades, VO, reglas R-xx, cálculo.
-├── aplicacion/         # Casos de uso + interfaces de puertos (entrada y salida). Depende solo de dominio.
+├── dominio/            # Pure Kotlin. No external deps. Entities, VOs, rules R-xx, calculation.
+├── aplicacion/         # Use cases + port interfaces (input and output). Depends only on dominio.
 ├── adaptadores/
-│   ├── persistencia/   # SQLite (SQLDelight) → implementa RepositorioComprobantes…
-│   ├── ubl/            # Generación XML UBL 2.1 + validación XSD (R-50)
+│   ├── persistencia/   # SQLite (SQLDelight) → implements RepositorioComprobantes…
+│   ├── ubl/            # UBL 2.1 XML generation + XSD validation (R-50)
 │   ├── firma/          # XMLDSig (R-51)
 │   ├── envio-ose/      # SOAP sendBill / getStatus → CanalEnvioCpe
-│   ├── pdf/            # Representación impresa
-│   └── migracion/      # Lector CSV legado + reglas M-xx
-├── ui/                 # Compose Multiplatform: Vistas + Controllers (MVC)
-├── app-desktop/        # Punto de entrada Windows → instalador MSI
-└── app-android/        # Punto de entrada Android → APK
+│   ├── pdf/            # Printed representation
+│   └── migracion/      # Legacy CSV reader + rules M-xx
+├── ui/                 # Compose Multiplatform: Views + Controllers (MVC)
+├── app-desktop/        # Windows entry point → MSI installer
+└── app-android/        # Android entry point → APK
 ```
-Regla de dependencias, verificable con una prueba de arquitectura (ArchUnit/Konsist):
-`ui → aplicacion → dominio` y `adaptadores → aplicacion → dominio`. `dominio` no depende de nada.
+Dependency rule, checked by an architecture test (ArchUnit/Konsist):
+`ui → aplicacion → dominio` and `adaptadores → aplicacion → dominio`. `dominio` depends on nothing.
 
-## 6. Secuencia: emitir factura (CU-03)
+## 6. Sequence: issue an invoice (CU-03)
 ```mermaid
 sequenceDiagram
-  actor V as Vendedor
-  participant UI as Vista + Controller
-  participant S as EmitirComprobante (puerto)
-  participant D as Dominio
+  actor V as Seller
+  participant UI as View + Controller
+  participant S as EmitirComprobante (port)
+  participant D as Domain
   participant R as RepositorioComprobantes
   participant X as GeneradorDocumentoUbl
   participant F as FirmadorDigital
   participant O as CanalEnvioCpe (OSE)
-  V->>UI: Completa factura y confirma
+  V->>UI: Fills in the invoice and confirms
   UI->>S: CrearComprobanteRequest
-  S->>D: validar(R-01..R-34) y calcularTributos()
-  D-->>S: Comprobante VALIDADO + totales
-  S->>R: siguienteCorrelativo(serie)
-  S->>X: generar(comprobante)
-  X-->>S: XML UBL 2.1 (validado contra XSD, R-50)
-  S->>F: firmar(xml)
-  F-->>S: XML firmado + hash
-  S->>R: guardar(FIRMADO)
-  S->>O: enviar(zip)
-  alt CDR aceptado
-    O-->>S: CDR código 0
-    S->>R: guardar(ACEPTADO, cdr)
-  else OSE no disponible
+  S->>D: validate(R-01..R-34) and calculateTaxes()
+  D-->>S: Comprobante VALIDADO + totals
+  S->>R: nextNumber(series)
+  S->>X: generate(document)
+  X-->>S: UBL 2.1 XML (validated against XSD, R-50)
+  S->>F: sign(xml)
+  F-->>S: Signed XML + hash
+  S->>R: save(FIRMADO)
+  S->>O: send(zip)
+  alt CDR accepted
+    O-->>S: CDR code 0
+    S->>R: save(ACEPTADO, cdr)
+  else OSE unavailable
     O--xS: timeout
-    S->>R: guardar(PENDIENTE_ENVIO)
-  else CDR rechazado
-    O-->>S: CDR con código de error
-    S->>R: guardar(RECHAZADO, cdr)
+    S->>R: save(PENDIENTE_ENVIO)
+  else CDR rejected
+    O-->>S: CDR with error code
+    S->>R: save(RECHAZADO, cdr)
   end
   S-->>UI: Comprobante (comprobante.schema.json)
-  UI-->>V: Estado + PDF
+  UI-->>V: Status + PDF
 ```
 
-## 7. Evolución a microservicios (cuando la empresa crezca)
+## 7. Evolution to microservices (when the company grows)
 ```mermaid
 flowchart LR
   GW[API Gateway] --> MS1 & MS2 & MS3 & MS4
-  MS1[ms-emision<br/>EmitirComprobante · EmitirNota · Anular]
-  MS2[ms-catalogos<br/>Productos · Clientes · Catálogos SUNAT]
-  MS3[ms-envio-cpe<br/>Firma · Envío OSE · CDR · Reintentos]
-  MS4[ms-inventario<br/>Movimientos · Formato 12.1 · Migración]
-  MS1 -- evento ComprobanteFirmado --> BUS{{Bus de eventos}}
+  MS1[ms-emision<br/>Issue document · Issue note · Void]
+  MS2[ms-catalogos<br/>Products · Customers · SUNAT catalogs]
+  MS3[ms-envio-cpe<br/>Signature · OSE submission · CDR · Retries]
+  MS4[ms-inventario<br/>Movements · Format 12.1 · Migration]
+  MS1 -- event ComprobanteFirmado --> BUS{{Event bus}}
   BUS --> MS3
-  MS3 -- evento ComprobanteAceptado --> BUS
+  MS3 -- event ComprobanteAceptado --> BUS
   BUS --> MS4
 ```
-Cada microservicio es **un grupo de puertos de entrada que ya existe en el monolito**. Las llamadas
-en proceso entre servicios se reemplazan por los contratos de `specs/04-api/openapi.yaml` y por eventos.
-El dominio y los DTOs no cambian.
+Each microservice is **a group of input ports that already exists in the monolith**. In-process calls
+between services are replaced by the contracts in `specs/04-api/openapi.yaml` and by the events in
+`specs/04-api/eventos.md`. The domain and the DTOs do not change.
 
-## 8. Decisiones relacionadas
-ADR-001 (MVC con puertos), ADR-002 (stack multiplataforma), ADR-003 (persistencia),
-ADR-004 (canal OSE/SUNAT), ADR-005 (Amazonía) en `specs/adr/`.
+## 8. Related decisions
+ADR-001 (MVC with ports), ADR-002 (cross-platform stack), ADR-003 (persistence),
+ADR-004 (OSE/SUNAT channel), ADR-005 (Amazon region) in `specs/adr/`.
