@@ -3,7 +3,7 @@
 `legado-almacen-muestra.csv` is a **synthetic sample** that reproduces the structure of the current software
 (`fecha, ingreso, salida, producto, nro_documento`) and deliberately includes the typical defects of an
 informal record, so that the migration spec (`specs/06-migracion/`) handles them one by one.
-It is replaced by the real export when available (question D-06). Data values stay in Spanish, as in the source system.
+As the exam case states, the legacy record has **no prices and no customers** (D-06); the real export replaces this sample during the migration. Data values stay in Spanish, as in the source system.
 
 `id` is the internal key of the legacy row; it is kept for traceability.
 

@@ -14,10 +14,10 @@
     "nombreComercial": "ABC MAYORISTA",
     "domicilioFiscal": {
       "direccion": "AV. UNIVERSITARIA 123",
-      "ubigeo": "100601",
-      "departamento": "HUANUCO",
-      "provincia": "LEONCIO PRADO",
-      "distrito": "RUPA-RUPA",
+      "ubigeo": "150117",
+      "departamento": "LIMA",
+      "provincia": "LIMA",
+      "distrito": "LOS OLIVOS",
       "codigoPais": "PE",
       "codigoEstablecimiento": "0000"
     },

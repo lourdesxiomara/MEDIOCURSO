@@ -19,9 +19,9 @@ movements (`fecha, ingreso, salida, producto, nro_documento`) and:
 | **RS 097-2012/SUNAT** | Creates the *SEE – Del Contribuyente* (issuing from the taxpayer's own systems). Its annexes define mandatory fields per document (Annexes 1–4) and **Annex 8: catalogs**. |
 | **RS 234-2006/SUNAT** | Books and records. The legacy system is in practice a **Permanent Inventory Record in Physical Units (Format 12.1)**: inputs, outputs and balance per item, with the supporting document of each movement. |
 | **RS 112-2021/SUNAT** (SIRE) and **RS 000125-2026/SUNAT** | The Sales Record (RVIE) is kept in SIRE from October 2026 for every obligated taxpayer; the system reconciles SUNAT's proposal with its own 14.1 record (ADR-007, R-76). |
-| **RS 117-2017/SUNAT** | Electronic Services Operator (OSE). See question D-03. |
+| **RS 117-2017/SUNAT** | Electronic Services Operator (OSE). Submission contract decided in ADR-004 (D-03). |
 | **Law 30884** | ICBPER (plastic bag consumption tax), tax code 7152. |
-| **Law 27037** | IGV exemption in the Amazon region (relevant if the issuer operates in the jungle region). See ADR-005. |
+| **Law 27037** | IGV exemption in the Amazon region (relevant if the issuer operates in the jungle region). The issuer is in Lima (D-04); see ADR-005. |
 | **OASIS UBL 2.1** | XML standard of the document (`UBL-Invoice-2.1.xsd`, `CreditNote`, `DebitNote`). |
 
 Details and links: `docs/sunat/fuentes.md`.

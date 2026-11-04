@@ -30,7 +30,7 @@
     "amazonia": {
       "type": "boolean",
       "default": false,
-      "description": "Issuer under Law 27037 (ADR-005, D-04)."
+      "description": "Issuer under Law 27037 art. 3.1 (ADR-005, D-04). false for the Lima address of the examples."
     }
   }
 }

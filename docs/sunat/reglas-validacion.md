@@ -31,9 +31,9 @@ the acceptance criteria and the API errors.
 | R-21 | `afectacionIgv` ∈ cat. 07 | E | Cat. 07 |
 | R-22 | Treatment 10–17 → tax 1000 (IGV), category S, rate 18 % | N | Cat. 05/07 |
 | R-23 | Treatment 20–21 → tax 9997, category E, IGV 0; 30–36 → 9998, O; 40 → 9995, G | N | Cat. 05/07 |
-| R-24 | If the product is subject to ISC: `sistemaIsc` ∈ cat. 08 mandatory and tax 2000 (EXC) | N | Cat. 08 |
+| R-24 | If the product is subject to ISC: `sistemaIsc` ∈ cat. 08 mandatory and tax 2000 (EXC). XML line subtotal only with `TaxableAmount`, `TaxAmount`, `Percent`, `TierRange` (Annex 9-A item 37); for system 02 `Percent` = amount ÷ base × 100 (D-11) | N | Cat. 08, Annex 9-A |
 | R-25 | ISC is computed before IGV and **is part of the IGV tax base** | N | TUO IGV and ISC law |
-| R-26 | ICBPER: `cantidadBolsas` integer ≥ 1, amount = bags × current rate (D-01); not part of the IGV base | N | Law 30884, Annex 1 |
+| R-26 | ICBPER: `cantidadBolsas` integer ≥ 1, amount = bags × amount in force on the issue date (`docs/sunat/tasas-icbper.json`, D-01); XML: `cbc:BaseUnitMeasure` + `cac:TaxCategory/cbc:PerUnitAmount` (Annex 9-A item 37-A); not part of the IGV base nor of the unit price (field 22, D-10) | N | Law 30884 art. 12, DS 244-2019-EF art. 5, Annex 1 |
 | R-27 | `precioTipo` ∈ cat. 16; free-of-charge operations use `02` and legend 1002 | N | Cat. 16/52 |
 | R-28 | Round to 2 decimals, half-up, per line; totals = sum of rounded lines | N | Annex 1 |
 

@@ -47,7 +47,7 @@
           },
           "codigoSunat": {
             "type": "string",
-            "description": "Code returned in the CDR, if the error is external (D-07)."
+            "description": "Code returned in the CDR (cbc:ResponseCode), stored verbatim and classified by range R-54 (D-07)."
           }
         }
       }

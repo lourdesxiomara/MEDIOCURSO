@@ -18,8 +18,12 @@
 | RS 169-2015/SUNAT Annex 3 – official SPIJ publication | Full table 6, including `PK PAQUETE` (D-14) | https://spij.minjus.gob.pe/Graficos/Peru/2015/Junio/30/RS-169-2015-SUNAT-ANX-3.pdf |
 | SUNAT – Manual del servicio API del Registro de Ventas e Información Electrónica (SIRE), v30, June 2026 | Official endpoints for token, proposal download, ticket, acceptance and replacement (port `PropuestaRegistroVentas`) | https://cpe.sunat.gob.pe/sites/default/files/2026-06/Manual%20del%20servicio%20API%20del%20Registro%20de%20Ventas%20e%20Informaci%C3%B3n%20Electr%C3%B3nica.%20v30.pdf |
 | RS 112-2021/SUNAT (text) | RVIE proposal: accept, complement or replace (art. 8); CAR; Annex 2 = proposal structure | https://www.sunat.gob.pe/legislacion/superin/2021/112-2021.pdf |
-| Law 30884 | ICBPER | Diario El Peruano |
-| Law 27037 | IGV exemption in the Amazon region | Diario El Peruano |
+| Law 30884 · DS 244-2019-EF (regulation), art. 5 | ICBPER amount per bag by year (`docs/sunat/tasas-icbper.json`, D-01) | https://www.mef.gob.pe/es/por-instrumento/decreto-supremo/20678-decreto-supremo-n-244-2019-ef/file |
+| Annex 8 published with RS 000005-2023/SUNAT | Full catalog 51 (D-02) | https://www.sunat.gob.pe/legislacion/superin/2023/anexo-000005-2023.pdf |
+| Annex 1 field 22 / Annex 9-A items 37 and 37-A (RS 123-2022) | Unit price includes IGV/IVAP, not ICBPER (D-10); ISC and ICBPER line tags (D-11) | https://www.sunat.gob.pe/legislacion/superin/2022/anexo-123-2022.pdf |
+| SUNAT Annex C – Technical aspects of the OSE | `sendBill`, `sendSummary`, `getStatus` (D-03) | https://cpe.sunat.gob.pe/sites/default/files/inline-files/Aspectos%20t%C3%A9cnicos%20-%20OSE.pdf |
+| INEI ubigeo 150117 (Los Olivos, Lima) | Issuer address in the examples (D-04) | https://citypopulation.de/en/peru/lima/admin/lima/150117__los_olivos/ |
+| Law 27037, art. 3.1 | Definition of the Amazon region (D-04, ADR-005) | https://faolex.fao.org/docs/pdf/per21100.pdf |
 | OASIS UBL 2.1 | XSDs in `docs/ubl/` | http://docs.oasis-open.org/ubl/os-UBL-2.1/ |
 | Support schemas (CCTS, XMLDSig, XAdES) | `docs/ubl/soporte/` | https://github.com/phax/ph-xsds |
 
@@ -35,4 +39,6 @@
 - The guide writes `cac:TierRange` in one example and `cbc:TierRange` in the table. The UBL 2.1 XSD defines
   **`cbc:TierRange`** inside `cac:TaxCategory`; that one is used.
 - The 2017 Annex 8 does not yet list tax 7152 (ICBPER), which was added later.
+- The return-code ranges come from a secondary transcription of the SEE programmer manual; the system does not
+  depend on the per-code list, it stores the CDR code and text verbatim (D-07).
 - Catalog descriptions in `docs/sunat/catalogos/` are kept in Spanish, exactly as SUNAT publishes them.

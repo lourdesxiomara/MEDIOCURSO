@@ -1,0 +1,29 @@
+{
+  "tributo": "7152",
+  "nombre": "ICBPER - Impuesto al consumo de las bolsas de plástico",
+  "fuente": "Ley 30884, art. 12; DS 244-2019-EF (Reglamento), art. 5: https://www.mef.gob.pe/es/por-instrumento/decreto-supremo/20678-decreto-supremo-n-244-2019-ef/file",
+  "unidad": "PEN por bolsa",
+  "nota": "Desde 2023 el monto queda en 0.50 por bolsa. Si una norma posterior lo cambia, se agrega una fila con su año de inicio y su fuente.",
+  "cronograma": [
+    {
+      "desde": "2019-08-01",
+      "monto": "0.10"
+    },
+    {
+      "desde": "2020-01-01",
+      "monto": "0.20"
+    },
+    {
+      "desde": "2021-01-01",
+      "monto": "0.30"
+    },
+    {
+      "desde": "2022-01-01",
+      "monto": "0.40"
+    },
+    {
+      "desde": "2023-01-01",
+      "monto": "0.50"
+    }
+  ]
+}

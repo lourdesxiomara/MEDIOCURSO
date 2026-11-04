@@ -34,12 +34,12 @@
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>ABC SOFTWARE CORP S.A.C.</cbc:RegistrationName>
         <cac:RegistrationAddress>
-          <cbc:ID>100601</cbc:ID>
+          <cbc:ID>150117</cbc:ID>
           <cbc:AddressTypeCode>0000</cbc:AddressTypeCode>
           <cbc:CitySubdivisionName>-</cbc:CitySubdivisionName>
-          <cbc:CityName>LEONCIO PRADO</cbc:CityName>
-          <cbc:CountrySubentity>HUANUCO</cbc:CountrySubentity>
-          <cbc:District>RUPA-RUPA</cbc:District>
+          <cbc:CityName>LIMA</cbc:CityName>
+          <cbc:CountrySubentity>LIMA</cbc:CountrySubentity>
+          <cbc:District>LOS OLIVOS</cbc:District>
           <cac:AddressLine><cbc:Line>AV. UNIVERSITARIA 123</cbc:Line></cac:AddressLine>
           <cac:Country><cbc:IdentificationCode>PE</cbc:IdentificationCode></cac:Country>
         </cac:RegistrationAddress>

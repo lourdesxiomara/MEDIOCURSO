@@ -55,8 +55,8 @@ interface Reloj        { fun ahora(): ZonedDateTime }  // America/Lima; enables 
 | `getStatus` | `ticket` | Status + CDR | Summary status query |
 
 Protocol: SOAP 1.1 with WS-Security UsernameToken (secondary SOL user or OSE credential).
-The exact endpoint and credentials depend on the chosen OSE (open question D-03); that is why the core
-only knows `CanalEnvioCpe`.
+Decision (D-03, ADR-004): the adapter implements this SUNAT SEE contract; the endpoint URL and credentials of the chosen OSE
+are configuration. An OSE with its own REST API is added as another adapter; the core only knows `CanalEnvioCpe`.
 
 ## Return-code ranges → status, number and retry (R-53, R-54, R-55)
 Source: SUNAT SEE programmer manual, return-code list.

@@ -89,14 +89,14 @@ Input: `cantidad`, `precioUnitario` (tax-inclusive, catalog 16 = 01), product (I
 4. `valorVenta = round2(cantidad × valorUnitario − discount)`.
 5. `isc = round2(catalog 08 formula)`: 01 value × rate · 02 quantity × fixed amount · 03 retail price × 0.847 × rate × quantity.
 6. `igv = round2((valorVenta + isc) × 0.18)` only if taxed (R-25).
-7. `icbper = bags × ICBPER rate` if the product is a plastic bag (R-26, D-01).
+7. `icbper = bags × ICBPER amount in force on the issue date` (S/ 0.50 since 2023, `docs/sunat/tasas-icbper.json`) if the product is a plastic bag (R-26, D-01).
 
 Verified examples:
 - `ejemplos/comprobante.factura.json` line 2 (system 01): price 7.08 → value 5.00 · sale value 60.00 · ISC 12.00 · IGV 12.96.
 - `ejemplos/comprobante.factura-isc.json` line 1 (system 02): 12 × 1.50 = ISC 18.00 · IGV (48 + 18) × 18 % = 11.88.
 - `ejemplos/comprobante.factura-isc.json` line 2 (system 03): 12.00 × 0.847 × 20 % × 5 = ISC 10.16 · IGV 9.03.
 
-The displayed unit price includes IGV and ISC; ICBPER is totalled separately (D-10).
+The displayed unit price includes IGV and ISC; ICBPER is not part of it and is totalled separately (Annex 1 field 22: "Incluye IGV o IVAP"; fields 40-A and 42; D-10).
 
 ## 3b. From the domain to the UBL XML
 The `GeneradorDocumentoUbl` output port turns a `Comprobante` into UBL 2.1 XML using **classes generated from the

@@ -34,7 +34,7 @@ Other case requirements also covered:
 | **CDR return-code ranges** and retry policy | [`specs/04-api/puertos-salida.md`](specs/04-api/puertos-salida.md), rules R-53 to R-55 |
 | **XML generation from the XSD** (JAXB / xjc) | [`specs/adr/ADR-006-generacion-xml-jaxb-xjc.md`](specs/adr/ADR-006-generacion-xml-jaxb-xjc.md) |
 | Non-functional requirements | [`specs/00-contexto/requisitos-no-funcionales.md`](specs/00-contexto/requisitos-no-funcionales.md) |
-| Context, assumptions, glossary and open questions | [`specs/00-contexto/`](specs/00-contexto) |
+| Context, assumptions, glossary and question log (all closed, with sources) | [`specs/00-contexto/`](specs/00-contexto) |
 
 > UBL 2.1 (OASIS) defines the XML **structure**; SUNAT customization 2.0 defines the **values** for Peru
 > (RUC, `F001-1` series-number, PEN, IGV 18 %…). This project validates against both.

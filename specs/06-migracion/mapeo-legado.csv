@@ -10,7 +10,7 @@ producto,text,producto,/descripcion,M-03,"Uppercase, no accents, single spaces",
 producto,text,producto,/codigo,M-03,Stable code generated after grouping variants,ARROZ COSTEÑO 5KG,PRD-0001
 producto,text,producto,/idLegado,M-03,Most frequent original text in the group,ARROZ COSTEÑO 5KG,ARROZ COSTEÑO 5KG
 producto,text,producto,/esBolsaPlastica,M-06,true if the normalized description contains BOLSA (bag),BOLSA PLASTICA,true
-producto,text,producto,/isc,M-06,Pending decision (D-05) for alcoholic drinks and cigarettes,CERVEZA PILSEN 630ML,(product inactive until cat. 08 is configured)
+producto,text,producto,/isc,M-06,ISC configured per product (D-05) for alcoholic drinks and cigarettes,CERVEZA PILSEN 630ML,(product inactive until cat. 08 is configured)
 producto,text,movimiento-inventario,/productoId,M-03,UUID of the grouped product,ARROZ COSTEÑO 5KG,(uuid)
 nro_documento,text,movimiento-inventario,/documentoSustento/tipoTabla10,M-04,"Table 10: F###-n → 01, B###-n → 03, GR-* → 09, AJUSTE/empty/no series → 00",F001-125,01
 nro_documento,text,movimiento-inventario,/documentoSustento/serie,M-04,Series part of the number; 0 when absent,F001-125,F001

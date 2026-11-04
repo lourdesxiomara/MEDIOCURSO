@@ -1,9 +1,9 @@
 {
   "catalogo": "51",
   "titulo": "Tipo de operación",
-  "fuente": "RS 097-2012/SUNAT, Anexo 8 (versión UBL 2.1: anexo E de RS 245-2017/SUNAT)",
+  "fuente": "RS 097-2012/SUNAT, Anexo 8, versión publicada con la RS 000005-2023/SUNAT: https://www.sunat.gob.pe/legislacion/superin/2023/anexo-000005-2023.pdf",
   "listURI": "urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo51",
-  "nota": "SUBCONJUNTO aplicable a un comercio de abarrotes (duda D-02). UBL: cbc:InvoiceTypeCode/@listID. Notas de crédito y débito no usan catálogo 51.",
+  "nota": "Catálogo COMPLETO (30 códigos). UBL: cbc:InvoiceTypeCode/@listID. Notas de crédito y débito no usan catálogo 51. El negocio de abarrotes usa normalmente 0101; los demás quedan disponibles por configuración.",
   "codigos": [
     {
       "codigo": "0101",
@@ -22,12 +22,108 @@
       "descripcion": "Exportación de bienes"
     },
     {
+      "codigo": "0201",
+      "descripcion": "Exportación de servicios - Prestación servicios realizados íntegramente en el país"
+    },
+    {
+      "codigo": "0202",
+      "descripcion": "Exportación de servicios - Prestación de servicios de hospedaje a no domiciliados"
+    },
+    {
+      "codigo": "0203",
+      "descripcion": "Exportación de servicios - Transporte de navieras"
+    },
+    {
+      "codigo": "0204",
+      "descripcion": "Exportación de servicios - Servicios a naves y aeronaves de bandera extranjera"
+    },
+    {
+      "codigo": "0205",
+      "descripcion": "Exportación de servicios - Servicios que conformen un paquete turístico"
+    },
+    {
+      "codigo": "0206",
+      "descripcion": "Exportación de servicios - Servicios complementarios al transporte de carga"
+    },
+    {
+      "codigo": "0207",
+      "descripcion": "Exportación de servicios - Suministro de energía eléctrica a favor de sujetos domiciliados en ZED"
+    },
+    {
+      "codigo": "0208",
+      "descripcion": "Exportación de servicios - Prestación servicios realizados parcialmente en el extranjero"
+    },
+    {
+      "codigo": "0301",
+      "descripcion": "Operaciones con carta de porte aéreo (emitidas en el ámbito nacional)"
+    },
+    {
+      "codigo": "0302",
+      "descripcion": "Operaciones de transporte ferroviario de pasajeros"
+    },
+    {
+      "codigo": "0401",
+      "descripcion": "Ventas a no domiciliados que no califican como exportación"
+    },
+    {
+      "codigo": "0501",
+      "descripcion": "Compra interna"
+    },
+    {
+      "codigo": "0502",
+      "descripcion": "Anticipos"
+    },
+    {
+      "codigo": "0503",
+      "descripcion": "Compra de oro"
+    },
+    {
       "codigo": "1001",
       "descripcion": "Operación sujeta a detracción"
     },
     {
+      "codigo": "1002",
+      "descripcion": "Operación sujeta a detracción - Recursos hidrobiológicos"
+    },
+    {
+      "codigo": "1003",
+      "descripcion": "Operación sujeta a detracción - Servicios de transporte pasajeros"
+    },
+    {
+      "codigo": "1004",
+      "descripcion": "Operación sujeta a detracción - Servicios de transporte carga"
+    },
+    {
       "codigo": "2001",
       "descripcion": "Operación sujeta a percepción"
+    },
+    {
+      "codigo": "2100",
+      "descripcion": "Créditos a empresas"
+    },
+    {
+      "codigo": "2101",
+      "descripcion": "Créditos de consumo revolvente"
+    },
+    {
+      "codigo": "2102",
+      "descripcion": "Créditos de consumo no revolvente"
+    },
+    {
+      "codigo": "2103",
+      "descripcion": "Otras operaciones no gravadas - Empresas del sistema financiero y cooperativas de ahorro y crédito no autorizadas a captar recursos del público"
+    },
+    {
+      "codigo": "2104",
+      "descripcion": "Otras operaciones no gravadas - Empresas del sistema de seguros"
+    },
+    {
+      "codigo": "2105",
+      "descripcion": "Operaciones que realizan las Administradoras Privadas de Fondos de Pensiones que estén comprendidas en el inciso j) del artículo 2 del TUO de la Ley del IGV e ISC"
+    },
+    {
+      "codigo": "2106",
+      "descripcion": "Venta nacional a turistas - Tax Free"
     }
   ]
 }

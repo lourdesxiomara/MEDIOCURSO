@@ -85,9 +85,7 @@
       <cbc:TaxAmount currencyID="PEN">29.88</cbc:TaxAmount>
       <cac:TaxSubtotal>
         <cbc:TaxableAmount currencyID="PEN">48.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">18.00</cbc:TaxAmount>
-        <cbc:BaseUnitMeasure unitCode="NIU">12</cbc:BaseUnitMeasure>
-        <cbc:PerUnitAmount currencyID="PEN">1.50</cbc:PerUnitAmount>
-        <cac:TaxCategory><cbc:TierRange>02</cbc:TierRange><cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+        <cac:TaxCategory><cbc:Percent>37.50</cbc:Percent><cbc:TierRange>02</cbc:TierRange><cac:TaxScheme><cbc:ID>2000</cbc:ID><cbc:Name>ISC</cbc:Name><cbc:TaxTypeCode>EXC</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
       </cac:TaxSubtotal>
       <cac:TaxSubtotal>
         <cbc:TaxableAmount currencyID="PEN">66.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">11.88</cbc:TaxAmount>

@@ -249,6 +249,15 @@ def ruc_valido(ruc: str) -> bool:
     return dv == int(ruc[10])
 
 
+def tasa_icbper(fecha: str) -> Decimal:
+    """Monto del ICBPER por bolsa vigente en la fecha de emisión (Ley 30884 art. 12, DS 244-2019-EF art. 5; D-01)."""
+    cron = leer_json(RAIZ / "docs/sunat/tasas-icbper.json")["cronograma"]
+    vigentes = [f for f in cron if f["desde"] <= fecha]
+    if not vigentes:
+        raise ValueError(f"ICBPER no existía en {fecha}")
+    return Decimal(max(vigentes, key=lambda f: f["desde"])["monto"])
+
+
 def isc_esperado(x: dict, cantidad: Decimal, vv: Decimal) -> Decimal:
     """Catálogo 08: 01 al valor, 02 monto fijo, 03 precio de venta al público × factor."""
     s = x["sistemaIsc"]
@@ -309,6 +318,8 @@ def reglas_comprobante(c: dict, nombre: str) -> list[str]:
             x = trib["7152"]
             if Decimal(x["cantidadBolsas"]) * Decimal(x["montoPorUnidad"]) != Decimal(x["monto"]):
                 errores.append(f"{n}: ICBPER ≠ bolsas × monto (R-26)")
+            if Decimal(x["montoPorUnidad"]) != tasa_icbper(c["fechaEmision"]):
+                errores.append(f"{n}: ICBPER montoPorUnidad ≠ monto vigente {tasa_icbper(c['fechaEmision'])} (R-26, docs/sunat/tasas-icbper.json)")
             t["icb"] += Decimal(x["monto"])
         t["isc"] += isc
         t["vv"] += vv
@@ -711,6 +722,27 @@ def v_xml_coincide_json():
             sis = [x.get("sistemaIsc") for x in lj["tributos"] if x["codigo"] == "2000"]
             if sis and lx.xpath(".//cbc:TierRange/text()", namespaces=NS) != sis:
                 errores.append(f"{xmlf} línea {lj['numero']}: TierRange ≠ sistemaIsc {sis}")
+            # Anexo 9-A, ítems 37 (ISC) y 37-A (ICBPER): etiquetas de cada subtotal de línea (D-10, D-11)
+            for st in lx.xpath("cac:TaxTotal/cac:TaxSubtotal", namespaces=NS):
+                cod = st.xpath("cac:TaxCategory/cac:TaxScheme/cbc:ID/text()", namespaces=NS)[0]
+                monto = Decimal(st.xpath("cbc:TaxAmount/text()", namespaces=NS)[0])
+                pct = st.xpath("cac:TaxCategory/cbc:Percent/text()", namespaces=NS)
+                if cod == "2000":
+                    if st.xpath("cbc:BaseUnitMeasure | cbc:PerUnitAmount | cac:TaxCategory/cbc:PerUnitAmount", namespaces=NS):
+                        errores.append(f"{xmlf} línea {lj['numero']}: ISC con BaseUnitMeasure/PerUnitAmount (solo del ICBPER, Anexo 9-A ítem 37-A; R-24)")
+                    if not pct or not st.xpath("cbc:TaxableAmount", namespaces=NS):
+                        errores.append(f"{xmlf} línea {lj['numero']}: ISC sin TaxableAmount o Percent (Anexo 9-A ítem 37; R-24)")
+                    elif st.xpath("cac:TaxCategory/cbc:TierRange/text()", namespaces=NS) in (["01"], ["02"]):
+                        base = Decimal(st.xpath("cbc:TaxableAmount/text()", namespaces=NS)[0])
+                        if r2(base * Decimal(pct[0]) / 100) != monto:
+                            errores.append(f"{xmlf} línea {lj['numero']}: ISC TaxAmount ≠ TaxableAmount × Percent (R-24)")
+                if cod == "7152":
+                    bolsas = st.xpath("cbc:BaseUnitMeasure/text()", namespaces=NS)
+                    tasa = st.xpath("cac:TaxCategory/cbc:PerUnitAmount/text()", namespaces=NS)
+                    if not bolsas or not tasa:
+                        errores.append(f"{xmlf} línea {lj['numero']}: ICBPER sin BaseUnitMeasure o PerUnitAmount (Anexo 9-A ítem 37-A; R-26)")
+                    elif Decimal(tasa[0]) != tasa_icbper(c["fechaEmision"]) or r2(Decimal(bolsas[0]) * Decimal(tasa[0])) != monto:
+                        errores.append(f"{xmlf} línea {lj['numero']}: ICBPER ≠ bolsas × monto vigente (R-26)")
         # TaxTotal global = Σ subtotales
         tot = Decimal(val(f"/{raiz}/cac:TaxTotal/cbc:TaxAmount/text()"))
         subs = sum(Decimal(s) for s in d.xpath(xp_ns(f"/{raiz}/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxAmount/text()"), namespaces=NS))
