@@ -326,7 +326,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-70, R-71 · **API:** `GET /reportes/ventas`
 - **Given** the CPEs issued in October 2026 (`F001-1`, `F001-2`, `B001-1`, `FC01-1`)
 - **When** `GET /reportes/ventas?periodo=202610` is called
-- **Then** it returns `ejemplos/registro-ventas.2026-10.json`: four rows ordered by date, type, series and number; each row's amounts equal the CPE totals and field 25 = Σ fields 13–24; `F001-2` carries the last instalment date (2026-12-21) in field 5; `FD01-1` (November) is not included.
+- **Then** it returns `ejemplos/registro-ventas.2026-10.json`: four rows ordered by date, type, series and number; each row's amounts equal the CPE totals and field 25 = Σ fields 13–24; field 5 stays empty (only for type 14 receipts, official PLE structure); `FD01-1` (November) is not included.
 
 ### CA-51 Credit note recorded negative and linked
 - **Rules:** R-72 · **API:** `GET /reportes/ventas`
@@ -344,7 +344,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-74 · **API:** `POST /comprobantes/{id}/anular`, `GET /reportes/ventas`
 - **Given** an invoice of the period voided through a voiding communication
 - **When** the sales record is generated
-- **Then** its row has field 35 = `2`; documents of the period have `1`.
+- **Then** its row has field 35 = `2` and amounts 0.00 (RS 112-2021 Annex 2 note 4); documents of the period have `1`.
 
 ### CA-54 PLE export of Format 14.1
 - **Rules:** R-75 · **API:** `GET /reportes/ventas`
@@ -354,7 +354,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 
 ### CA-55 SIRE proposal reconciled with the company's record
 - **Rules:** R-76 · **API:** `POST /reportes/ventas/conciliaciones-sire`, `GET /reportes/ventas/conciliaciones-sire/{periodo}`
-- **Given** the company's record `ejemplos/registro-ventas.2026-10.json` (4 documents) and SUNAT's proposal `ejemplos/propuesta-sire.2026-10.json`, where credit note `FC01-1` is missing and receipt `B001-1` shows ICBPER 0.00 and total 59.04
+- **Given** the company's record `ejemplos/registro-ventas.2026-10.json` (4 documents) and SUNAT's proposal as delivered (`ejemplos/propuesta-sire.2026-10.txt`, 40 fields of RS 112-2021 Annex 2, parsed into `ejemplos/propuesta-sire.2026-10.json` with each CAR), where credit note `FC01-1` is missing and receipt `B001-1` shows ICBPER 0.00 and total 59.04
 - **When** the period 202610 is reconciled
 - **Then** the result is `ejemplos/conciliacion-sire.2026-10.json`: state `CON_DIFERENCIAS`, 2 matching documents, `FC01-1` `FALTA_EN_PROPUESTA`, `B001-1` `CAMPOS_DIFERENTES` (icbper 0.50 vs 0.00, total 59.54 vs 59.04).
 

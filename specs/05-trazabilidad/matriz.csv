@@ -70,7 +70,7 @@ T-68,12.1: entry status,,,R-66,(not in the XML),movimiento-inventario,/estadoOpe
 T-69,14.1: period,,,R-70,(not in the XML: AAAAMM00 of the issue date),registro-ventas,/filas/*/periodo,,AAAAMM00,RS 234-2006 Format 14.1 (PLE 5.2) field 1
 T-70,14.1: unique operation code (CUO),,,R-70,(not in the XML: accounting voucher),registro-ventas,/filas/*/cuo,,≤ 40 characters,RS 234-2006 Format 14.1 (PLE 5.2) field 2
 T-71,14.1: issue date,"01,03,07,08",,R-70,/Invoice/cbc:IssueDate,registro-ventas,/filas/*/fechaEmision,,DD/MM/AAAA in PLE,RS 234-2006 Format 14.1 (PLE 5.2) field 4
-T-72,14.1: due date,01,,R-71,"/Invoice/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]/cbc:PaymentDueDate",registro-ventas,/filas/*/fechaVencimiento,,Last instalment of a credit invoice,RS 234-2006 Format 14.1 (PLE 5.2) field 5
+T-72,14.1: due date,14,,R-71,"(not in the XML: only for utility receipts, type 14)",registro-ventas,/filas/*/fechaVencimiento,,Empty for this business; ≤ month after the period,"Official PLE structure, Format 14.1 field 5"
 T-73,14.1: document type,"01,03,07,08",T10,R-70,/Invoice/cbc:InvoiceTypeCode,registro-ventas,/filas/*/tipoComprobanteTabla10,,∈ table 10,RS 234-2006 Format 14.1 (PLE 5.2) field 6
 T-74,14.1: document series,"01,03,07,08",,R-70,/Invoice/cbc:ID,registro-ventas,/filas/*/serie,,Series part of cbc:ID,RS 234-2006 Format 14.1 (PLE 5.2) field 7
 T-75,14.1: document number,"01,03,07,08",,R-70,/Invoice/cbc:ID,registro-ventas,/filas/*/numero,,Number part of cbc:ID,RS 234-2006 Format 14.1 (PLE 5.2) field 8
@@ -88,5 +88,8 @@ T-86,14.1: currency,"01,03,07,08",02,R-73,/Invoice/cbc:DocumentCurrencyCode,regi
 T-87,14.1: exchange rate,,,R-73,(not in the XML: 1.000 for PEN; SBS rate for USD),registro-ventas,/filas/*/tipoCambio,,9.999,RS 234-2006 Format 14.1 (PLE 5.2) field 27
 T-88,14.1: modified document series and number,"07,08",,R-72,/CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID,registro-ventas,/filas/*/modificadoSerie,,Mandatory for notes,"RS 234-2006 Format 14.1 (PLE 5.2) field 30, 31"
 T-89,14.1: modified document type,"07,08",T10,R-72,/CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentTypeCode,registro-ventas,/filas/*/modificadoTipo,,01 or 03,RS 234-2006 Format 14.1 (PLE 5.2) field 29
-T-90,14.1: status,,,R-74,(not in the XML: 2 when the CPE is voided),registro-ventas,/filas/*/estado,,1 | 2 | 8 | 9,RS 234-2006 Format 14.1 (PLE 5.2) field 35
+T-90,14.1: status,,,R-74,(not in the XML: 2 when the CPE is voided),registro-ventas,/filas/*/estado,,0 | 1 | 2 (void: amounts 0.00) | 8 | 9,Official PLE structure field 35; RS 112-2021 Annex 2 note 4
 T-91,"14.1: exports, IVAP, other concepts",,,R-71,"(not in the XML: 0.00 — no exports, no rice milling, S-03)",registro-ventas,/filas/*/valorExportacion,,0.00,"RS 234-2006 Format 14.1 (PLE 5.2) field 13, 21, 22, 24"
+T-92,SIRE proposal: CAR (registration code),"01,03,07,08",,R-76,"(not in the XML: RUC + type + series + number, Annex 1 table 7)",registro-ventas,/filas/*/car,,"27 characters, zero-padded",RS 112-2021 Annex 1 table 7; Annex 2 field 4
+T-93,SIRE proposal: total of the document,"01,03,07,08",,R-76,/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount,registro-ventas,/filas/*/importeTotal,,Proposal field 26 = 14.1 field 25 = CPE PayableAmount,RS 112-2021 Annex 2 field 26
+T-94,SIRE proposal: taxed base without ISC,"01,03,07,08",,R-76,/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxableAmount,registro-ventas,/filas/*/baseImponibleGravada,,Proposal field 15 = 14.1 field 14; excludes ISC,RS 112-2021 Annex 2 field 15

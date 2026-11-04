@@ -92,5 +92,5 @@ Source: SUNAT, *Manual del servicio API del Registro de Ventas e Información El
 | — | Replace proposal | `…/v1/contribuyente/migeigv/libros/rvierce/receptorpropuesta/web/propuesta/upload` (TUS upload, `codLibro=140000`) | Replacement file `LE` + RUC + AAAAMM + `0014040002` + O I M `2.txt`, zipped; structure in RS 112-2021 Annex (not used while the internal record and the CPEs agree) |
 
 All calls use `Authorization: Bearer {token}` and must be made from the server-side adapter (the manual warns against
-browser clients). The proposal columns are mapped to `registro-ventas.schema.json` rows inside the adapter, so the
-reconciliation (`conciliacion-sire.schema.json`) compares like with like.
+browser clients). The proposal file (40 fields, RS 112-2021 Annex 2) is mapped field by field to `registro-ventas.schema.json` rows by
+`tools/sire.py` (mapping table in ADR-007), so the reconciliation (`conciliacion-sire.schema.json`) compares like with like.

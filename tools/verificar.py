@@ -436,6 +436,8 @@ def v_registros():
             if m["codigoEstablecimiento"] != emisor["domicilioFiscal"]["codigoEstablecimiento"]:
                 errores.append(f"{f.name} row {i}: establishment ≠ CPE AddressTypeCode (R-64)")
             doc = m["documentoSustento"]
+            if m["tipoOperacionTabla12"] in ("01", "02", "03", "04", "05", "06") and doc["tipoTabla10"] == "00":
+                errores.append(f"{f.name} row {i}: operation types 01–06 need a real document, not 00 (official PLE 12.1 field 11, R-62)")
             if doc["tipoTabla10"] == "00":
                 if (doc["serie"], doc["numero"]) != ("0", "0") and m["tipo"] == "SALDO_INICIAL":
                     errores.append(f"{f.name} row {i}: opening balance uses document 00 / 0 / 0 (R-62)")
@@ -497,10 +499,11 @@ def v_registros():
                 errores.append(f"{n}: customer ≠ CPE (R-71)")
             if fila["periodo"] != rv["periodo"] or fila["fechaEmision"][:4] + fila["fechaEmision"][5:7] + "00" != rv["periodo"]:
                 errores.append(f"{n}: period ≠ issue date (R-70)")
-            fp = c.get("formaPago", {})
-            venc = fp["cuotas"][-1]["fechaVencimiento"] if fp.get("tipo") == "Credito" else None
-            if fila.get("fechaVencimiento") != venc:
-                errores.append(f"{n}: field 5 should be the last instalment due date ({venc}) (R-71)")
+            if fila.get("fechaVencimiento") and fila["tipoComprobanteTabla10"] != "14":
+                errores.append(f"{n}: field 5 is only for type 14 utility receipts (official PLE structure, R-71)")
+            for campo in ("cuo", "correlativoAsiento", "nombreCliente"):
+                if any(ch in fila.get(campo, "") for ch in "|/\\") or "&" in fila.get(campo, ""):
+                    errores.append(f"{n}: {campo} must not contain | / \\ or & (official PLE general rules, R-75)")
             if fila["moneda"] != c["moneda"] or (c["moneda"] == "PEN" and fila["tipoCambio"] != "1.000"):
                 errores.append(f"{n}: currency / exchange rate (R-73)")
             if c["tipoComprobante"] in ("07", "08"):
@@ -511,6 +514,8 @@ def v_registros():
                     errores.append(f"{n}: fields 28–31 must reference {af['numero']} (R-72)")
             if fila["estado"] != ("2" if c["estado"] == "ANULADO" else "1"):
                 errores.append(f"{n}: field 35 status (R-74)")
+            if fila["estado"] == "2" and any(Decimal(fila[x]) != 0 for x in ("baseImponibleGravada", "igv", "importeTotal")):
+                errores.append(f"{n}: a voided document is entered with amounts 0.00 (RS 112-2021 Annex 2 note 4, R-74)")
         if claves != sorted(claves):
             errores.append(f"{f.name}: rows must be ordered by date, type, series and number (R-70)")
         en_periodo = {k for k, c in comps.items() if c["fechaEmision"][:4] + c["fechaEmision"][5:7] + "00" == rv["periodo"]}
@@ -613,6 +618,18 @@ def v_conciliacion():
             errores.append(f"{f.name}: a period with differences cannot be {c['estado']} (R-76)")
         if c["estado"] == "CON_DIFERENCIAS" and not esperado:
             errores.append(f"{f.name}: no differences, state should be CONCILIADA (R-76)")
+        # proposal file as SUNAT delivers it (RS 112-2021 Annex 2) → same rows as the normalized JSON
+        sys.path.insert(0, str(RAIZ / "tools"))
+        import sire
+        txt = EJEMPLOS / f"propuesta-sire.{per}.txt"
+        lineas = [l for l in txt.read_text(encoding="utf-8").splitlines() if l.strip()]
+        if any(len(l.split("|")) != sire.N_CAMPOS + 1 for l in lineas):
+            errores.append(f"{txt.name}: each line must have the 40 fields of RS 112-2021 Annex 2")
+        if sire.leer_propuesta(txt.read_text(encoding="utf-8")) != [dict(x) for x in prop["filas"]]:
+            errores.append(f"{txt.name}: parsing it does not give propuesta-sire.{per}.json (Annex 2 mapping, tools/sire.py)")
+        for x in prop["filas"]:
+            if x.get("car") != sire.car(prop["ruc"], x["tipoComprobanteTabla10"], x["serie"], x["numero"]):
+                errores.append(f"{txt.name}: CAR of {x['serie']}-{x['numero']} must be RUC+type+series+number (Annex 1 table 7)")
 
 
 def v_xml_xsd():

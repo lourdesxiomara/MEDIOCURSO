@@ -23,6 +23,12 @@
 | OASIS UBL 2.1 | XSDs in `docs/ubl/` | http://docs.oasis-open.org/ubl/os-UBL-2.1/ |
 | Support schemas (CCTS, XMLDSig, XAdES) | `docs/ubl/soporte/` | https://github.com/phax/ph-xsds |
 
+## Official documents kept in the repository (`docs/fuentes-oficiales/`)
+| File | Content | Origin | SHA-256 |
+|---|---|---|---|
+| `SUNAT-Estructura-PLE-v5-Anexo2.xls` | SUNAT, Annex 2 – structures of electronic books (PLE 5): naming rules, general rules, table 2 lengths, Formats 12.1 and 14.1 field by field | https://cdn.www.gob.pe/uploads/document/file/1763321/Estructura%20del%20PLE.xls | `76dcad111b8d07a0cc2931ac058b88224717e43879959abc6125491ee6b5742c` |
+| `RS-112-2021-SUNAT-separata-El-Peruano.pdf` | RS 112-2021/SUNAT with annexes (El Peruano, 31/07/2021): RVIE proposal structure (Annex 2), CAR (Annex 1 table 7), document status (table 9) | https://cdn.www.gob.pe/uploads/document/file/2131205/RS%20112-2021.pdf.pdf | `6d437e28d6c60c789428b87361283947baa01aaf50b804bac15ed045fc33b1ab` |
+
 ## Notes on the sources
 - The invoice XML guide (version 1.0) used `cbc:ProfileID` for the operation type; the updated Annex 1
   places it in **`cbc:InvoiceTypeCode/@listID`**. This project follows the updated Annex 1.
