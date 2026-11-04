@@ -352,11 +352,17 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **When** it is requested with `formato=ple`
 - **Then** the file is `LE2060012345020261000140100001111.txt`, identical to `ejemplos/LE2060012345020261000140100001111.txt`: 35 pipe-separated fields per line, dates `DD/MM/AAAA`, amounts with 2 decimals; an invalid period (e.g. `2026-13`) returns `400`.
 
-### CA-55 SIRE proposal reconciled before acceptance
-- **Rules:** R-76 · **API:** `GET /reportes/ventas`
-- **Given** the SIRE proposal for 2026-10 and the internal record `ejemplos/registro-ventas.2026-10.json`
-- **When** the period is reconciled
-- **Then** if both have the same four documents with the same fields 14–25 the proposal can be accepted; if the proposal lacks `F001-2` or shows a different total, acceptance is blocked and the difference is listed by document.
+### CA-55 SIRE proposal reconciled with the company's record
+- **Rules:** R-76 · **API:** `POST /reportes/ventas/conciliaciones-sire`, `GET /reportes/ventas/conciliaciones-sire/{periodo}`
+- **Given** the company's record `ejemplos/registro-ventas.2026-10.json` (4 documents) and SUNAT's proposal `ejemplos/propuesta-sire.2026-10.json`, where credit note `FC01-1` is missing and receipt `B001-1` shows ICBPER 0.00 and total 59.04
+- **When** the period 202610 is reconciled
+- **Then** the result is `ejemplos/conciliacion-sire.2026-10.json`: state `CON_DIFERENCIAS`, 2 matching documents, `FC01-1` `FALTA_EN_PROPUESTA`, `B001-1` `CAMPOS_DIFERENTES` (icbper 0.50 vs 0.00, total 59.54 vs 59.04).
+
+### CA-57 A proposal with differences cannot be accepted
+- **Rules:** R-76 · **API:** `POST /reportes/ventas/conciliaciones-sire/{periodo}/aceptar`
+- **Given** the period 202610 in state `CON_DIFERENCIAS` (CA-55)
+- **When** an administrator tries to accept the proposal
+- **Then** it returns `409` and nothing is sent to SIRE; after the differences are fixed at the source (re-sending `FC01-1`, correcting `B001-1`) the state becomes `CONCILIADA` and the acceptance returns `202` with SUNAT's ticket.
 
 ## I. Negative examples (executable)
 

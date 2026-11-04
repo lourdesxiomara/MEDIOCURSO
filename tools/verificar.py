@@ -67,6 +67,8 @@ EJEMPLO_SCHEMA = {
     "evento.comprobante-aceptado.json": "evento.schema.json",
     "kardex.CER-630.2026-10.json": "kardex.schema.json",
     "registro-ventas.2026-10.json": "registro-ventas.schema.json",
+    "propuesta-sire.2026-10.json": "registro-ventas.schema.json",
+    "conciliacion-sire.2026-10.json": "conciliacion-sire.schema.json",
 }
 
 # XML de ejemplo -> JSON equivalente (se comprueba que digan lo mismo)
@@ -468,6 +470,8 @@ def v_registros():
         claves = []
         for i, fila in enumerate(rv["filas"], 1):
             n = f"{f.name} row {i}"
+            if not fila.get("cuo") or not fila.get("correlativoAsiento"):
+                errores.append(f"{n}: fields 2–3 (CUO, entry number) are mandatory in the company's record (R-75)")
             num = f"{fila['serie']}-{fila['numero']}"
             c = comps.get(num)
             if not c:
@@ -563,6 +567,52 @@ def v_firma():
         quitar_espacios = lambda b: b"".join(b.split())
         if quitar_espacios(norm(doc)) != quitar_espacios(norm(sin)):
             errores.append(f"{f.name}: content differs from the unsigned example (signing must not change the document)")
+
+
+def conciliar(registro: dict, propuesta: dict, campos: list[str]) -> list[dict]:
+    """R-76: reconcile the SIRE proposal with the company's record. Key = (table 10 type, series, number)."""
+    clave = lambda x: (x["tipoComprobanteTabla10"], x["serie"], x["numero"])
+    r = {clave(x): x for x in registro["filas"]}
+    p = {clave(x): x for x in propuesta["filas"]}
+    out = []
+    for k in sorted(set(r) | set(p)):
+        base = {"tipoComprobanteTabla10": k[0], "serie": k[1], "numero": k[2]}
+        if k not in p:
+            out.append(dict(base, tipo="FALTA_EN_PROPUESTA"))
+        elif k not in r:
+            out.append(dict(base, tipo="SOBRA_EN_PROPUESTA"))
+        else:
+            cs = [{"campo": c, "registro": r[k].get(c, ""), "propuesta": p[k].get(c, "")} for c in campos
+                  if r[k].get(c, "") != p[k].get(c, "")]
+            if cs:
+                out.append(dict(base, tipo="CAMPOS_DIFERENTES", campos=cs))
+    return out
+
+
+def v_conciliacion():
+    for f in sorted(EJEMPLOS.glob("conciliacion-sire.*.json")):
+        c = leer_json(f)
+        per = f.name.split(".")[1]
+        reg = leer_json(EJEMPLOS / f"registro-ventas.{per}.json")
+        prop = leer_json(EJEMPLOS / f"propuesta-sire.{per}.json")
+        campos = leer_json(SCHEMAS / "conciliacion-sire.schema.json")["properties"]["diferencias"]["items"]["properties"]["campos"]["items"]["properties"]["campo"]["enum"]
+        if c.get("camposComparados") != campos:
+            errores.append(f"{f.name}: camposComparados must be the schema's list (R-76)")
+        esperado = conciliar(reg, prop, campos)
+        if c["diferencias"] != esperado:
+            errores.append(f"{f.name}: differences do not match the reconciliation of {reg and 'registro'} vs proposal (R-76)")
+        tipos = [d["tipo"] for d in esperado]
+        comunes = len({(x["tipoComprobanteTabla10"], x["serie"], x["numero"]) for x in reg["filas"]} &
+                      {(x["tipoComprobanteTabla10"], x["serie"], x["numero"]) for x in prop["filas"]})
+        resumen = {"filasRegistro": len(reg["filas"]), "filasPropuesta": len(prop["filas"]),
+                   "coincidentes": comunes - tipos.count("CAMPOS_DIFERENTES"), "faltanEnPropuesta": tipos.count("FALTA_EN_PROPUESTA"),
+                   "sobranEnPropuesta": tipos.count("SOBRA_EN_PROPUESTA"), "conDiferencias": tipos.count("CAMPOS_DIFERENTES")}
+        if c["resumen"] != resumen:
+            errores.append(f"{f.name}: summary should be {resumen} (R-76)")
+        if c["estado"] in ("CONCILIADA", "ACEPTADA_EN_SIRE") and esperado:
+            errores.append(f"{f.name}: a period with differences cannot be {c['estado']} (R-76)")
+        if c["estado"] == "CON_DIFERENCIAS" and not esperado:
+            errores.append(f"{f.name}: no differences, state should be CONCILIADA (R-76)")
 
 
 def v_xml_xsd():
@@ -929,6 +979,7 @@ def main() -> int:
     check("Example XMLs match their JSON", v_xml_coincide_json)
     check("Signed example: valid enveloped XMLDSig in ext:UBLExtensions (R-51)", v_firma)
     check("Books 12.1 (kardex) and 14.1 (sales): balances, CPE cross-check, PLE files", v_registros)
+    check("SIRE: proposal vs company record reconciliation (R-76)", v_conciliacion)
     check("OpenAPI 3.1: structure, $refs, examples and use-case routes", v_openapi)
     check("Traceability matrix: schema, XPath, rules and catalogs", v_matriz)
     check("Migration: legacy sample coverage and mapping", v_migracion)

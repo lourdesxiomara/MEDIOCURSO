@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/conciliacion-sire.schema.json",
+  "title": "ConciliacionSire",
+  "description": "Result of reconciling SUNAT's RVIE proposal (SIRE) with the company's own Sales Record (registro-ventas.schema.json). Key: document type, series and number; compared fields: issue date, customer document and fields 13–26 of Format 14.1. Only a CONCILIADA period can be accepted in SIRE (R-76, ADR-007).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "periodo",
+    "estado",
+    "resumen",
+    "diferencias"
+  ],
+  "properties": {
+    "periodo": {
+      "$ref": "comun.schema.json#/$defs/periodoPle"
+    },
+    "estado": {
+      "type": "string",
+      "enum": [
+        "EN_PROCESO",
+        "CONCILIADA",
+        "CON_DIFERENCIAS",
+        "ACEPTADA_EN_SIRE"
+      ],
+      "description": "EN_PROCESO while the SUNAT ticket is pending; ACEPTADA_EN_SIRE after aceptapropuesta."
+    },
+    "ticketSunat": {
+      "type": "string",
+      "pattern": "^\\d{4}\\d{8}$",
+      "description": "numTicket returned by the SIRE API (format AAAA99999999)."
+    },
+    "camposComparados": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "fechaEmision",
+          "numeroDocumentoCliente",
+          "valorExportacion",
+          "baseImponibleGravada",
+          "descuentoBaseImponible",
+          "igv",
+          "descuentoIgv",
+          "importeExonerado",
+          "importeInafecto",
+          "isc",
+          "baseIvap",
+          "ivap",
+          "icbper",
+          "otrosConceptos",
+          "importeTotal",
+          "moneda"
+        ]
+      }
+    },
+    "resumen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "filasRegistro",
+        "filasPropuesta",
+        "coincidentes",
+        "faltanEnPropuesta",
+        "sobranEnPropuesta",
+        "conDiferencias"
+      ],
+      "properties": {
+        "filasRegistro": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "filasPropuesta": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coincidentes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "faltanEnPropuesta": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sobranEnPropuesta": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conDiferencias": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "diferencias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tipoComprobanteTabla10",
+          "serie",
+          "numero",
+          "tipo"
+        ],
+        "properties": {
+          "tipoComprobanteTabla10": {
+            "$ref": "comun.schema.json#/$defs/tabla10"
+          },
+          "serie": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "FALTA_EN_PROPUESTA",
+              "SOBRA_EN_PROPUESTA",
+              "CAMPOS_DIFERENTES"
+            ],
+            "description": "FALTA: issued and accepted by OSE/SUNAT but not in the proposal; SOBRA: in the proposal but not in the company's record; CAMPOS_DIFERENTES: same document, different values."
+          },
+          "campos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "campo",
+                "registro",
+                "propuesta"
+              ],
+              "properties": {
+                "campo": {
+                  "type": "string",
+                  "enum": [
+                    "fechaEmision",
+                    "numeroDocumentoCliente",
+                    "valorExportacion",
+                    "baseImponibleGravada",
+                    "descuentoBaseImponible",
+                    "igv",
+                    "descuentoIgv",
+                    "importeExonerado",
+                    "importeInafecto",
+                    "isc",
+                    "baseIvap",
+                    "ivap",
+                    "icbper",
+                    "otrosConceptos",
+                    "importeTotal",
+                    "moneda"
+                  ]
+                },
+                "registro": {
+                  "type": "string"
+                },
+                "propuesta": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

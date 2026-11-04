@@ -1,0 +1,57 @@
+{
+  "periodo": "20261000",
+  "estado": "CON_DIFERENCIAS",
+  "ticketSunat": "202600000123",
+  "camposComparados": [
+    "fechaEmision",
+    "numeroDocumentoCliente",
+    "valorExportacion",
+    "baseImponibleGravada",
+    "descuentoBaseImponible",
+    "igv",
+    "descuentoIgv",
+    "importeExonerado",
+    "importeInafecto",
+    "isc",
+    "baseIvap",
+    "ivap",
+    "icbper",
+    "otrosConceptos",
+    "importeTotal",
+    "moneda"
+  ],
+  "resumen": {
+    "filasRegistro": 4,
+    "filasPropuesta": 3,
+    "coincidentes": 2,
+    "faltanEnPropuesta": 1,
+    "sobranEnPropuesta": 0,
+    "conDiferencias": 1
+  },
+  "diferencias": [
+    {
+      "tipoComprobanteTabla10": "03",
+      "serie": "B001",
+      "numero": "1",
+      "tipo": "CAMPOS_DIFERENTES",
+      "campos": [
+        {
+          "campo": "icbper",
+          "registro": "0.50",
+          "propuesta": "0.00"
+        },
+        {
+          "campo": "importeTotal",
+          "registro": "59.54",
+          "propuesta": "59.04"
+        }
+      ]
+    },
+    {
+      "tipoComprobanteTabla10": "07",
+      "serie": "FC01",
+      "numero": "1",
+      "tipo": "FALTA_EN_PROPUESTA"
+    }
+  ]
+}

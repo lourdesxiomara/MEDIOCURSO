@@ -484,6 +484,66 @@ paths:
               examples:
                 ple: { externalValue: '../02-dominio/ejemplos/LE2060012345020261000140100001111.txt' }
         '400': { $ref: '#/components/responses/SolicitudInvalida' }
+  /reportes/ventas/conciliaciones-sire:
+    post:
+      tags: [Reportes]
+      operationId: iniciarConciliacionSire
+      summary: Downloads SUNAT's RVIE proposal for the period from SIRE and reconciles it with the company's Sales Record (R-76, ADR-007)
+      description: Starts the SIRE ticket flow (exportapropuesta → consultaestadotickets → archivoreporte, SIRE API manual v30). Asynchronous.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [periodo]
+              properties:
+                periodo: { type: string, pattern: '^\d{4}(0[1-9]|1[0-2])$' }
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '202':
+          description: Reconciliation started; state EN_PROCESO with the SUNAT ticket
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/conciliacion-sire.schema.json' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
+        '502': { $ref: '#/components/responses/ServicioExterno' }
+  /reportes/ventas/conciliaciones-sire/{periodo}:
+    parameters: [ { $ref: '#/components/parameters/periodoRuta' } ]
+    get:
+      tags: [Reportes]
+      operationId: obtenerConciliacionSire
+      summary: Reconciliation result — documents missing from the proposal, extra documents and field differences (R-76)
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '200':
+          description: Result
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/conciliacion-sire.schema.json' }
+              examples:
+                octubre: { externalValue: '../02-dominio/ejemplos/conciliacion-sire.2026-10.json' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+  /reportes/ventas/conciliaciones-sire/{periodo}/aceptar:
+    parameters: [ { $ref: '#/components/parameters/periodoRuta' } ]
+    post:
+      tags: [Reportes]
+      operationId: aceptarPropuestaSire
+      summary: Accepts the RVIE proposal in SIRE (aceptapropuesta) — only when the period is CONCILIADA (R-76)
+      security: [ { sesionLocal: [ADMINISTRADOR] } ]
+      responses:
+        '401': { $ref: '#/components/responses/NoAutorizado' }
+        '403': { $ref: '#/components/responses/SinPermiso' }
+        '202':
+          description: Acceptance sent to SIRE; state ACEPTADA_EN_SIRE when the ticket finishes
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/conciliacion-sire.schema.json' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
+        '409': { $ref: '#/components/responses/EstadoInvalido' }
   /migraciones:
     post:
       tags: [Migracion]
@@ -567,6 +627,12 @@ components:
       required: true
       description: Book period AAAAMM (exported as AAAAMM00).
       schema: { type: string, pattern: '^\d{4}(0[1-9]|1[0-2])$' }
+    periodoRuta:
+      name: periodo
+      in: path
+      required: true
+      description: Book period AAAAMM.
+      schema: { type: string, pattern: '^\d{4}(0[1-9]|1[0-2])$' }
     formatoLibro:
       name: formato
       in: query
@@ -629,6 +695,11 @@ components:
             validacion: { externalValue: '../02-dominio/ejemplos/error.validacion.json' }
     EstadoInvalido:
       description: The operation is not allowed in the document's current status
+      content:
+        application/problem+json:
+          schema: { $ref: '../02-dominio/schemas/error.schema.json' }
+    ServicioExterno:
+      description: SUNAT's SIRE API did not answer or returned an error; retry later
       content:
         application/problem+json:
           schema: { $ref: '../02-dominio/schemas/error.schema.json' }

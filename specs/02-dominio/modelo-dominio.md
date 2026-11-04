@@ -120,7 +120,8 @@ golden outputs the generator must reproduce.
 | `schemas/error.schema.json` | RFC 9457 error with rule ID | All |
 | `schemas/evento.schema.json` | Domain events between microservices | `specs/04-api/eventos.md` |
 | `schemas/kardex.schema.json` | Format 12.1 per item and period (19 fields per row) | CU-12, CU-14 |
-| `schemas/registro-ventas.schema.json` | Format 14.1 Sales Record (35 fields per row) | CU-12 |
+| `schemas/registro-ventas.schema.json` | Format 14.1 Sales Record (35 fields per row); also the normalized SIRE proposal | CU-12 |
+| `schemas/conciliacion-sire.schema.json` | Reconciliation SIRE proposal ↔ company record (R-76) | CU-12 |
 
 Key decision: **the request carries no number and no totals**. The domain computes them, so no client
 (Windows, Android or a future microservice) can send inconsistent amounts.
@@ -137,6 +138,7 @@ Key decision: **the request carries no number and no totals**. The domain comput
 | `ejemplos/movimiento-inventario.salida.json` | `movimiento-inventario.schema.json` |
 | `ejemplos/error.validacion.json` | `error.schema.json` |
 | `ejemplos/evento.comprobante-aceptado.json` | `evento.schema.json` |
+| `ejemplos/propuesta-sire.2026-10.json` + `conciliacion-sire.2026-10.json` | `registro-ventas.schema.json` + `conciliacion-sire.schema.json`; result recomputed by the verifier (R-76) |
 | `ejemplos/factura-F001-1.firmada.xml` | UBL 2.1 XSD + XMLDSig signature verification (R-51, test certificate) |
 | `ejemplos/invalidos/*.json` (12) | Must be **rejected** by the rule in `invalidos/esperados.json` (CA-56) |
 | `ejemplos/kardex.CER-630.2026-10.json` + `LE…120100…txt` | `kardex.schema.json` + PLE 12.1 (R-66) |

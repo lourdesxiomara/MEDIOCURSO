@@ -96,7 +96,8 @@ Contract: `POST /comprobantes/reenviar-pendientes`.
 ### CU-12 Reports and inventory record
 **Sales Record (Format 14.1)** per period, built from the CPEs (R-70 to R-75), and **Permanent Inventory Record in
 Physical Units (Format 12.1, RS 234-2006)** per product and period (R-60 to R-66), both as JSON or as the PLE text
-file. Contracts: `GET /reportes/ventas?periodo=AAAAMM&formato=json|ple`, `GET /inventario/kardex?productoId&periodo&formato=json|ple`.
+file. Each month the Sales Record is reconciled with SUNAT's SIRE proposal before accepting it (R-76, ADR-007).
+Contracts: `GET /reportes/ventas?periodo=AAAAMM&formato=json|ple`, `POST /reportes/ventas/conciliaciones-sire`, `GET /inventario/kardex?productoId&periodo&formato=json|ple`.
 
 ### CU-13 Migrate legacy data
 Imports the warehouse history, applies rules M-01…M-07, quarantines what cannot be migrated and produces

@@ -16,6 +16,8 @@
 | SEE programmer manual – return codes | CDR ranges: exceptions 0100–1999, rejections 2000–3999, observations ≥ 4000 (R-53 to R-55) | https://llama.pe/listado-de-errores-manual-del-programador-factura-electronica-sunat |
 | RS 112-2021/SUNAT (SIRE) · RS 000125-2026/SUNAT (schedule) | Sales Record kept in SIRE; obligation dates by taxpayer type (R-76, ADR-007) | https://elperuano.pe/noticia/299237-sunat-extiende-plazo-del-sire-para-empresas-con-ingresos-superiores-a-2300-uit · https://www.invyperu.com/blog/que-es-el-sire-sunat |
 | RS 169-2015/SUNAT Annex 3 – official SPIJ publication | Full table 6, including `PK PAQUETE` (D-14) | https://spij.minjus.gob.pe/Graficos/Peru/2015/Junio/30/RS-169-2015-SUNAT-ANX-3.pdf |
+| SUNAT – Manual del servicio API del Registro de Ventas e Información Electrónica (SIRE), v30, June 2026 | Official endpoints for token, proposal download, ticket, acceptance and replacement (port `PropuestaRegistroVentas`) | https://cpe.sunat.gob.pe/sites/default/files/2026-06/Manual%20del%20servicio%20API%20del%20Registro%20de%20Ventas%20e%20Informaci%C3%B3n%20Electr%C3%B3nica.%20v30.pdf |
+| RS 112-2021/SUNAT (text) | RVIE proposal: accept, complement or replace (art. 8); CAR; Annex 2 = proposal structure | https://www.sunat.gob.pe/legislacion/superin/2021/112-2021.pdf |
 | Law 30884 | ICBPER | Diario El Peruano |
 | Law 27037 | IGV exemption in the Amazon region | Diario El Peruano |
 | OASIS UBL 2.1 | XSDs in `docs/ubl/` | http://docs.oasis-open.org/ubl/os-UBL-2.1/ |

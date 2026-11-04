@@ -10,8 +10,10 @@
   1. The system keeps its own Sales Record with the 14.1 structure (`registro-ventas.schema.json`, rules R-70 to R-75),
      built from the accepted and voided CPEs. It is the company's ledger of what it issued.
   2. Every period, SUNAT generates the RVIE **proposal** in SIRE from the CPEs received through the OSE/SUNAT. The
-     system downloads it (future `PropuestaRegistroVentas` output port, SIRE web services) and **reconciles** it row by
-     row with its own record: same key (type, series, number) and same fields 14–25 (R-76).
+     system downloads it through the `PropuestaRegistroVentas` output port, which uses SUNAT's official SIRE API
+     (token, `exportapropuesta`, ticket, `archivoreporte`, `aceptapropuesta`; see `specs/04-api/puertos-salida.md`),
+     and **reconciles** it with its own record (R-76): key = type, series, number; compared = issue date, customer
+     document and fields 13–26. API: `POST /reportes/ventas/conciliaciones-sire`, result in `conciliacion-sire.schema.json`.
   3. Only a reconciled proposal is accepted in SIRE. Differences are fixed at the source (credit/debit note, voiding)
      or adjusted in SIRE, never by editing the internal record by hand.
   4. The PLE 14.1 text file (`tools/ple.py`, R-75) remains as an audit and backup export, and for any period in which
@@ -19,5 +21,4 @@
 - **Consequences:**
   - (+) The specification matches the current regulation and still delivers the 14.1 structure the exam requires.
   - (+) Reconciliation catches CPEs that SUNAT did not receive or received with different amounts.
-  - (−) The SIRE web-service contract (authentication, download format) is specified in the implementation phase,
-    from SUNAT's SIRE API manual; the core only depends on the port.
+  - (+) The SIRE calls are taken from SUNAT's official API manual (v30, June 2026), so the adapter contract is verifiable.

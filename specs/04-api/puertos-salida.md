@@ -35,6 +35,13 @@ sealed interface ResultadoEnvio {                                   // classifie
     data class NoDisponible(val causa: String) : ResultadoEnvio   // timeout / no connection → PENDIENTE_ENVIO
 }
 
+interface PropuestaRegistroVentas {     // SIRE, ADR-007, R-76
+    fun solicitarPropuesta(periodo: YearMonth): TicketSire          // exportapropuesta
+    fun estadoTicket(ticket: TicketSire): EstadoTicket              // consultaestadotickets
+    fun descargarPropuesta(ticket: TicketSire): RegistroVentas      // archivoreporte → rows normalized to registro-ventas.schema.json
+    fun aceptarPropuesta(periodo: YearMonth): TicketSire            // aceptapropuesta (only if CONCILIADA)
+}
+
 interface ValidadorRuc { fun consultar(ruc: Ruc): EstadoContribuyente? }  // R-13, optional
 interface Notificador  { fun enviarComprobante(c: Comprobante, correo: String) }
 interface Reloj        { fun ahora(): ZonedDateTime }  // America/Lima; enables deterministic tests
@@ -71,3 +78,19 @@ flowchart LR
   S -- "0100-1999 or timeout" --> P[PENDIENTE_ENVIO<br/>same number]
   P -- "CU-11 retry / fix" --> E
 ```
+
+## External contract: SIRE – Sales Record (`sire` adapter, port `PropuestaRegistroVentas`)
+Source: SUNAT, *Manual del servicio API del Registro de Ventas e Información Electrónica*, v30 (June 2026): https://cpe.sunat.gob.pe/sites/default/files/2026-06/Manual%20del%20servicio%20API%20del%20Registro%20de%20Ventas%20e%20Informaci%C3%B3n%20Electr%C3%B3nica.%20v30.pdf
+
+| Step | Operation | Endpoint (official) | Notes |
+|---|---|---|---|
+| 1 | Token | `POST https://api-seguridad.sunat.gob.pe/v1/clientessol/{client_id}/oauth2/token/` | `grant_type=password`, `scope=https://api-sire.sunat.gob.pe`, `username` = RUC + SOL user, `password` = SOL password; `client_id` / `client_secret` from "Credenciales de API SUNAT" |
+| 2 | Request proposal | `GET https://apisire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/{perTributario}/exportapropuesta?codTipoArchivo=0` | `perTributario` = AAAAMM; `codTipoArchivo` 0 = txt, 1 = xls; returns `numTicket` (AAAA99999999) |
+| 3 | Ticket status | `GET …/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/masivo/consultaestadotickets` | `perIni`, `perFin`, `page`, `perPage`, `numTicket`; download when the process has finished |
+| 4 | Download | `GET …/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte` | `nomArchivoReporte`, `codTipoArchivoReporte`, `codLibro=140000`; zipped file |
+| 5 | Accept proposal | `POST https://apisire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/{perTributario}/aceptapropuesta` | Only after reconciliation is CONCILIADA (R-76); returns `numTicket` |
+| — | Replace proposal | `…/v1/contribuyente/migeigv/libros/rvierce/receptorpropuesta/web/propuesta/upload` (TUS upload, `codLibro=140000`) | Replacement file `LE` + RUC + AAAAMM + `0014040002` + O I M `2.txt`, zipped; structure in RS 112-2021 Annex (not used while the internal record and the CPEs agree) |
+
+All calls use `Authorization: Bearer {token}` and must be made from the server-side adapter (the manual warns against
+browser clients). The proposal columns are mapped to `registro-ventas.schema.json` rows inside the adapter, so the
+reconciliation (`conciliacion-sire.schema.json`) compares like with like.
