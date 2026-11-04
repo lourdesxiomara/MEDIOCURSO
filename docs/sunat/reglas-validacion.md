@@ -63,14 +63,14 @@ the acceptance criteria and the API errors.
 | ID | Rule | Type | Source |
 |---|---|---|---|
 | R-50 | XML valid against the UBL 2.1 XSD before signing | E | OASIS UBL 2.1 |
-| R-51 | Enveloped XMLDSig signature in `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent` with a valid digital certificate | X | RS 097-2012 |
+| R-51 | Enveloped XMLDSig signature in `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent` with a valid digital certificate; `cac:Signature/…/cbc:URI` points to the `ds:Signature` `Id`; signing must not change the document. Example: `specs/02-dominio/ejemplos/factura-F001-1.firmada.xml` (test certificate) | X | RS 097-2012 |
 | R-52 | Submission to OSE/SUNAT as ZIP `RUC-TYPE-SERIES-NUMBER.zip` | X | SEE programmer manual |
 | R-53 | A document only becomes `ACEPTADO` with a CDR whose response code is 0 or ≥ 4000. A number is consumed once SUNAT/OSE processed the document: a document rejected with a code 2000–3999 keeps its number and is **never** re-sent with it; the sale is issued again with a new number | N/X | SEE programmer manual (return codes) |
 | R-54 | The response code is classified by range: **0** accepted · **0100–1999 exception** (the file could not be processed: the document counts as *not submitted*) · **2000–3999 rejection** (processed and invalid) · **≥ 4000 observation** (valid, accepted with observations). The category is stored in `respuestaSunat.categoria` | N/X | SEE programmer manual (return codes) |
 | R-55 | Effect of each category: *exception* → status `PENDIENTE_ENVIO`; transient service codes (e.g. 0100, 0109) are retried automatically with backoff and the **same number**; format/content codes (1000–1999) need correction and are re-sent with the **same number** within the deadline (R-05). *Rejection* (invoice, notes) → `RECHAZADO`, number not reused (R-53), stock not deducted. *Rejection of a daily summary or voiding communication* → the file counts as not submitted and is re-sent with the same file name. *Observation* → `ACEPTADO_CON_OBSERVACIONES`, observations kept for review | N/X | SEE programmer manual (return codes) |
 
 ## Books and records (RS 234-2006/SUNAT)
-Tables 5, 6, 10 and 12 of Annex 3 are in `docs/sunat/tablas-libros/`.
+Tables 2, 5, 6, 10 and 12 of Annex 3 are in `docs/sunat/tablas-libros/`.
 
 ### Format 12.1 – Permanent Inventory Record in Physical Units
 | ID | Rule | Type | Source |
@@ -89,7 +89,7 @@ From October 2026 every obligated taxpayer keeps it through SIRE (R-76, ADR-007)
 | ID | Rule | Type | Source |
 |---|---|---|---|
 | R-70 | One row per CPE issued in the period (accepted or voided), with period `AAAAMM00` of the issue date, ordered by issue date, document type, series and number. Receipts are recorded one by one (field 9 empty) | N | Format 14.1 fields 1–9 |
-| R-71 | Row amounts come from the CPE totals: field 14 = `totalGravado` (UBL document-level IGV `TaxableAmount`, without ISC), 16 = `totalIgv`, 18 = `totalExonerado`, 19 = `totalInafecto`, 20 = `totalIsc`, 23 = `totalIcbper`, 25 = `importeTotal` = Σ fields 13–24; fields 13, 21, 22 = `0.00` (no exports, no rice milling). Field 5 = due date of the last instalment for credit invoices. Customer fields 10–12 from the CPE | N | Format 14.1 fields 5, 10–25 |
+| R-71 | Row amounts come from the CPE totals: field 14 = `totalGravado` (UBL document-level IGV `TaxableAmount`, without ISC), 16 = `totalIgv`, 18 = `totalExonerado`, 19 = `totalInafecto`, 20 = `totalIsc`, 23 = `totalIcbper`, 25 = `importeTotal` = Σ fields 13–24; fields 13, 21, 22 = `0.00` (no exports, no rice milling). Field 5 = due date of the last instalment for credit invoices. Customer fields 10–12 from the CPE, field 10 converted from catalog 06 to books table 2 (`tabla02.json`) | N | Format 14.1 fields 5, 10–25 |
 | R-72 | Credit notes are recorded with **negative** amounts; credit and debit notes fill fields 28–31 with the issue date, type, series and number of the modified document | N | Format 14.1 fields 28–31 |
 | R-73 | Field 26 = document currency; field 27 = `1.000` for PEN; for USD, the SBS exchange rate of the issue date | N | Format 14.1 fields 26–27 |
 | R-74 | Field 35 status: `1` document of the period, `2` voided document (amounts kept as issued unless SUNAT instructions say otherwise, D-15), `8` omitted from a previous period, `9` adjustment of a previous period | N | Format 14.1 field 35 |

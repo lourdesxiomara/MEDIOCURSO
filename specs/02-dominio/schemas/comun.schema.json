@@ -595,6 +595,19 @@
       "type": "string",
       "pattern": "^\\d{1,12}(\\.\\d{1,2})?$",
       "description": "Quantity for Format 12.1: up to 12 integer digits and 2 decimals."
+    },
+    "tabla02": {
+      "type": "string",
+      "title": "Books table 02 – Tipo de documento de identidad",
+      "enum": [
+        "0",
+        "1",
+        "4",
+        "6",
+        "7",
+        "A"
+      ],
+      "description": "Source: docs/sunat/tablas-libros/tabla02.json (RS 234-2006/SUNAT, Annex 3)."
     }
   }
 }

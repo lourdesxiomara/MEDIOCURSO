@@ -9,7 +9,7 @@
 | XML guides – UBL 2.1 credit / debit note | `CreditNote` / `DebitNote` structure, `DiscrepancyResponse`, `BillingReference` | https://cpe.sunat.gob.pe (XML guides) |
 | SUNAT tax guidance – ISC calculation | Catalog 08 systems; retail-price factor = 1/(1+IGV+IPM) to 3 decimals (0.847) | https://orientacion.sunat.gob.pe/node/1809 |
 | RS 234-2006/SUNAT | Books and records: Format 12.1 (Permanent Inventory in Physical Units) and 13.1 (Valued) | https://www.sunat.gob.pe/legislacion/superin/2006/234.htm |
-| RS 234-2006 – Annex 3 Tables (RS 169-2015 version) | Tables 5, 6, 10 and 12 in `docs/sunat/tablas-libros/` | https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf |
+| RS 234-2006 – Annex 3 Tables (RS 169-2015 version) | Tables 2, 5, 6, 10 and 12 in `docs/sunat/tablas-libros/` | https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf |
 | Electronic books structure – Format 12.1 (19 fields) | Kardex contract and PLE 12.1 export (R-60 to R-66) | https://www.sunat.gob.pe/legislacion/superin/2018/anexoI-315-2018.pdf |
 | Electronic books structure – Format 14.1 (RS 361-2015; PLE 5.2 adds ICBPER as field 23) | Sales Record contract and PLE 14.1 export (R-70 to R-75) | https://www.sunat.gob.pe/legislacion/superin/2015/anexo1-361-2015.pdf · https://noticierocontable.com/estructura-libros-electronicos/ |
 | RS 000193-2020/SUNAT – payment terms | `formaPago`, credit instalments (R-35, R-36); credit note reason 13 | https://www.sunat.gob.pe/legislacion/superin/2020/193-2020.pdf · https://www.sunat.gob.pe/legislacion/superin/2020/anexo1-193-2020.pdf |

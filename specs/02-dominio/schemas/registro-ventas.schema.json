@@ -105,8 +105,8 @@
           "description": "Field 9: only for daily consolidated receipts (not used: receipts are recorded one by one)."
         },
         "tipoDocumentoCliente": {
-          "$ref": "comun.schema.json#/$defs/catalogo06",
-          "description": "Field 10."
+          "$ref": "comun.schema.json#/$defs/tabla02",
+          "description": "Field 10: books table 2, derived from the CPE catalog 06 code with the equivalence in tabla02.json (R-71)."
         },
         "numeroDocumentoCliente": {
           "type": "string",

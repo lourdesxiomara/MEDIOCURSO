@@ -1,0 +1,44 @@
+{
+  "tabla": "02",
+  "titulo": "Tipo de documento de identidad",
+  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf",
+  "nota": "Tabla completa. Formato 14.1, campo 10 (tipo de documento del cliente).",
+  "equivalenciaCatalogo06": {
+    "0": "0",
+    "1": "1",
+    "4": "4",
+    "6": "6",
+    "7": "7",
+    "A": "A",
+    "B": "0",
+    "C": "0",
+    "D": "0"
+  },
+  "notaEquivalencia": "Catálogo 06 (CPE) → Tabla 2 (libros): mismos códigos 0, 1, 4, 6, 7 y A; los documentos de no domiciliados B, C y D del catálogo 06 no tienen código propio en la Tabla 2 y se registran como 0 (OTROS TIPOS DE DOCUMENTOS).",
+  "codigos": [
+    {
+      "codigo": "0",
+      "descripcion": "OTROS TIPOS DE DOCUMENTOS"
+    },
+    {
+      "codigo": "1",
+      "descripcion": "DOCUMENTO NACIONAL DE IDENTIDAD (DNI)"
+    },
+    {
+      "codigo": "4",
+      "descripcion": "CARNET DE EXTRANJERIA"
+    },
+    {
+      "codigo": "6",
+      "descripcion": "REGISTRO ÚNICO DE CONTRIBUYENTES"
+    },
+    {
+      "codigo": "7",
+      "descripcion": "PASAPORTE"
+    },
+    {
+      "codigo": "A",
+      "descripcion": "CÉDULA DIPLOMÁTICA DE IDENTIDAD"
+    }
+  ]
+}

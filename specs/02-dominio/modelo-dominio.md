@@ -137,5 +137,7 @@ Key decision: **the request carries no number and no totals**. The domain comput
 | `ejemplos/movimiento-inventario.salida.json` | `movimiento-inventario.schema.json` |
 | `ejemplos/error.validacion.json` | `error.schema.json` |
 | `ejemplos/evento.comprobante-aceptado.json` | `evento.schema.json` |
+| `ejemplos/factura-F001-1.firmada.xml` | UBL 2.1 XSD + XMLDSig signature verification (R-51, test certificate) |
+| `ejemplos/invalidos/*.json` (12) | Must be **rejected** by the rule in `invalidos/esperados.json` (CA-56) |
 | `ejemplos/kardex.CER-630.2026-10.json` + `LE…120100…txt` | `kardex.schema.json` + PLE 12.1 (R-66) |
 | `ejemplos/registro-ventas.2026-10.json` + `LE…140100…txt` | `registro-ventas.schema.json` + PLE 14.1 (R-75) |

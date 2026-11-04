@@ -1,0 +1,102 @@
+[
+  {
+    "archivo": "boleta-con-serie-de-factura.json",
+    "schema": "comprobante-crear",
+    "regla": "R-02",
+    "rechazo": "schema",
+    "campo": "/serie",
+    "descripcion": "Receipt (03) with an invoice series F001"
+  },
+  {
+    "archivo": "factura-a-cliente-con-dni.json",
+    "schema": "comprobante-crear",
+    "regla": "R-11",
+    "rechazo": "schema",
+    "campo": "/cliente/documento/tipo",
+    "descripcion": "Invoice (01) issued to a customer identified by DNI"
+  },
+  {
+    "archivo": "factura-ruc-digito-verificador.json",
+    "schema": "comprobante-crear",
+    "regla": "R-10",
+    "rechazo": "dominio",
+    "campo": "",
+    "descripcion": "Customer RUC with a wrong modulo-11 check digit (passes the pattern, fails the domain)"
+  },
+  {
+    "archivo": "factura-sin-forma-pago.json",
+    "schema": "comprobante-crear",
+    "regla": "R-35",
+    "rechazo": "schema",
+    "campo": "",
+    "descripcion": "Invoice without payment terms",
+    "contiene": "formaPago"
+  },
+  {
+    "archivo": "factura-credito-sin-cuotas.json",
+    "schema": "comprobante-crear",
+    "regla": "R-36",
+    "rechazo": "schema",
+    "campo": "/formaPago",
+    "descripcion": "Credit invoice without instalments",
+    "contiene": "cuotas"
+  },
+  {
+    "archivo": "factura-cuotas-no-cuadran.json",
+    "schema": "comprobante-crear",
+    "regla": "R-36",
+    "rechazo": "dominio",
+    "campo": "",
+    "descripcion": "Instalments (172.90 + 100.00) do not add up to the net pending amount (345.80)"
+  },
+  {
+    "archivo": "factura-cuota-vence-el-dia-de-emision.json",
+    "schema": "comprobante-crear",
+    "regla": "R-36",
+    "rechazo": "dominio",
+    "campo": "",
+    "descripcion": "Instalment due on the issue date (must be later)"
+  },
+  {
+    "archivo": "factura-moneda-fuera-de-catalogo.json",
+    "schema": "comprobante-crear",
+    "regla": "R-33",
+    "rechazo": "schema",
+    "campo": "/moneda",
+    "descripcion": "Currency outside catalog 02"
+  },
+  {
+    "archivo": "producto-isc-al-valor-sin-tasa.json",
+    "schema": "producto",
+    "regla": "R-24",
+    "rechazo": "schema",
+    "campo": "/isc",
+    "descripcion": "ISC system 01 (ad valorem) without a rate",
+    "contiene": "tasa"
+  },
+  {
+    "archivo": "nota-credito-sin-documento-afectado.json",
+    "schema": "comprobante",
+    "regla": "R-41",
+    "rechazo": "schema",
+    "campo": "",
+    "descripcion": "Credit note without the document it modifies",
+    "contiene": "documentoAfectado"
+  },
+  {
+    "archivo": "factura-igv-mal-calculado.json",
+    "schema": "comprobante",
+    "regla": "R-22",
+    "rechazo": "dominio",
+    "campo": "",
+    "descripcion": "Line 1 IGV 39.61 instead of 18 % × 220.00 = 39.60"
+  },
+  {
+    "archivo": "factura-isc-pvp-mal-calculado.json",
+    "schema": "comprobante",
+    "regla": "R-24",
+    "rechazo": "dominio",
+    "campo": "",
+    "descripcion": "ISC system 03 line shows 10.20; the correct value is 12.00 × 0.847 × 20 % × 5 = 10.16"
+  }
+]

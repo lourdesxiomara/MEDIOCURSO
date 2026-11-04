@@ -132,6 +132,12 @@ def v_tablas():
             errores.append(f"{f.name}: duplicated codes")
         if f.stem != f"tabla{d['tabla']}":
             errores.append(f"{f.name}: name does not match table {d['tabla']}")
+    t02 = leer_json(TABLAS / "tabla02.json")
+    cat06 = leer_json(CATALOGOS / "cat06.json")
+    cods02 = [c["codigo"] for c in t02["codigos"]]
+    for c06 in [c["codigo"] for c in cat06["codigos"]]:
+        if t02["equivalenciaCatalogo06"].get(c06) not in cods02:
+            errores.append(f"tabla02 equivalence: catalog 06 code {c06} has no table 2 code")
     t06 = leer_json(TABLAS / "tabla06.json")
     cat03 = cargar_catalogos()["03"]
     for c03, c06 in t06.get("equivalenciaCatalogo03", {}).items():
@@ -255,82 +261,143 @@ def isc_esperado(x: dict, cantidad: Decimal, vv: Decimal) -> Decimal:
     raise ValueError(f"sistemaIsc desconocido {s}")
 
 
-def v_calculos():
+def reglas_comprobante(c: dict, nombre: str) -> list[str]:
+    """Business rules (type N) on a calculated document (comprobante.schema.json). Returns messages tagged R-xx."""
+    errores: list[str] = []
     tasa_igv = Decimal("0.18")
-    for f in sorted(EJEMPLOS.glob("comprobante.*.json")):
-        nombre = f.name
-        c = leer_json(f)
-        if not ruc_valido(c["emisor"]["ruc"]):
-            errores.append(f"{nombre}: RUC del emisor no cumple R-10")
-        doc = c["cliente"]["documento"]
-        if doc["tipo"] == "6" and not ruc_valido(doc["numero"]):
-            errores.append(f"{nombre}: RUC del cliente no cumple R-10")
-        if c["tipoComprobante"] == "01" and doc["tipo"] != "6":
-            errores.append(f"{nombre}: factura exige cliente con RUC (R-11)")
-        if c["tipoComprobante"] == "03" and doc["tipo"] == "1" and not re.fullmatch(r"\d{8}", doc["numero"]):
-            errores.append(f"{nombre}: DNI debe tener 8 dígitos (R-12)")
-        t = {k: Decimal("0") for k in ("grav", "exo", "ina", "igv", "isc", "icb", "vv")}
-        for ln in c["lineas"]:
-            cant, vu, vv = Decimal(ln["cantidad"]), Decimal(ln["valorUnitario"]), Decimal(ln["valorVenta"])
-            n = f"{nombre} línea {ln['numero']}"
-            if r2(cant * vu - Decimal(ln.get("descuento", "0"))) != vv:
-                errores.append(f"{n}: valorVenta ≠ cantidad × valorUnitario (R-28)")
-            trib = {x["codigo"]: x for x in ln["tributos"]}
-            af = ln["afectacionIgv"]
-            isc = Decimal("0")
-            if "2000" in trib:
-                isc = Decimal(trib["2000"]["monto"])
-                if isc_esperado(trib["2000"], cant, vv) != isc:
-                    errores.append(f"{n}: ISC sistema {trib['2000']['sistemaIsc']} miscalculated (cat. 08)")
-            if af.startswith("1"):
-                if "1000" not in trib:
-                    errores.append(f"{n}: afectación {af} exige tributo 1000 IGV (R-22)")
-                    continue
-                x = trib["1000"]
-                if Decimal(x["baseImponible"]) != vv + isc:
-                    errores.append(f"{n}: base IGV ≠ valor + ISC (R-25)")
-                if r2((vv + isc) * tasa_igv) != Decimal(x["monto"]):
-                    errores.append(f"{n}: IGV miscalculated")
-                t["grav"] += vv
-                t["igv"] += Decimal(x["monto"])
-            else:
-                esperado = {"2": "9997", "3": "9998", "4": "9995"}[af[0]]
-                if esperado not in trib or "1000" in trib:
-                    errores.append(f"{n}: afectación {af} exige tributo {esperado} y sin IGV (R-23)")
-                t["exo" if af[0] == "2" else "ina"] += vv
-            if "7152" in trib:
-                x = trib["7152"]
-                if Decimal(x["cantidadBolsas"]) * Decimal(x["montoPorUnidad"]) != Decimal(x["monto"]):
-                    errores.append(f"{n}: ICBPER ≠ bolsas × monto (R-26)")
-                t["icb"] += Decimal(x["monto"])
-            t["isc"] += isc
-            t["vv"] += vv
-        tot = {k: Decimal(v) for k, v in c["totales"].items()}
-        pares = [("totalGravado", t["grav"]), ("totalExonerado", t["exo"]), ("totalInafecto", t["ina"]),
-                 ("totalIgv", t["igv"]), ("totalIsc", t["isc"]), ("totalIcbper", t["icb"]), ("valorVenta", t["vv"]),
-                 ("precioVenta", t["vv"] + t["igv"] + t["isc"] + t["icb"])]
-        for campo, esperado in pares:
-            if tot[campo] != esperado:
-                errores.append(f"{nombre}: totales.{campo} = {tot[campo]} y should be {esperado} (R-30/R-31)")
-        if tot["importeTotal"] != tot["precioVenta"] - tot.get("totalDescuentos", 0) - tot.get("totalAnticipos", 0):
-            errores.append(f"{nombre}: importeTotal inconsistente (R-31)")
-        if not any(l["codigo"] == "1000" for l in c["leyendas"]):
-            errores.append(f"{nombre}: falta leyenda 1000 (R-32)")
-        fp = c.get("formaPago")
-        if c["tipoComprobante"] == "01" and not fp:
-            errores.append(f"{nombre}: invoice without formaPago (R-35)")
-        if fp and fp["tipo"] == "Credito":
-            pend, cuotas = Decimal(fp["montoNetoPendiente"]), fp["cuotas"]
-            if sum(Decimal(q["monto"]) for q in cuotas) != pend:
-                errores.append(f"{nombre}: Σ instalments ≠ net pending amount (R-36)")
-            if not (Decimal("0") < pend <= tot["importeTotal"]):
-                errores.append(f"{nombre}: net pending amount must be > 0 and ≤ total (R-36)")
-            if [q["numero"] for q in cuotas] != list(range(1, len(cuotas) + 1)):
-                errores.append(f"{nombre}: instalments must be numbered 1..n (R-36)")
-            for q in cuotas:
-                if q["fechaVencimiento"] <= c["fechaEmision"]:
-                    errores.append(f"{nombre}: instalment {q['numero']} due on or before the issue date (R-36)")
+    if not ruc_valido(c["emisor"]["ruc"]):
+        errores.append(f"{nombre}: RUC del emisor no cumple R-10")
+    doc = c["cliente"]["documento"]
+    if doc["tipo"] == "6" and not ruc_valido(doc["numero"]):
+        errores.append(f"{nombre}: RUC del cliente no cumple R-10")
+    if c["tipoComprobante"] == "01" and doc["tipo"] != "6":
+        errores.append(f"{nombre}: factura exige cliente con RUC (R-11)")
+    if c["tipoComprobante"] == "03" and doc["tipo"] == "1" and not re.fullmatch(r"\d{8}", doc["numero"]):
+        errores.append(f"{nombre}: DNI debe tener 8 dígitos (R-12)")
+    t = {k: Decimal("0") for k in ("grav", "exo", "ina", "igv", "isc", "icb", "vv")}
+    for ln in c["lineas"]:
+        cant, vu, vv = Decimal(ln["cantidad"]), Decimal(ln["valorUnitario"]), Decimal(ln["valorVenta"])
+        n = f"{nombre} línea {ln['numero']}"
+        if r2(cant * vu - Decimal(ln.get("descuento", "0"))) != vv:
+            errores.append(f"{n}: valorVenta ≠ cantidad × valorUnitario (R-28)")
+        trib = {x["codigo"]: x for x in ln["tributos"]}
+        af = ln["afectacionIgv"]
+        isc = Decimal("0")
+        if "2000" in trib:
+            isc = Decimal(trib["2000"]["monto"])
+            if isc_esperado(trib["2000"], cant, vv) != isc:
+                errores.append(f"{n}: ISC sistema {trib['2000']['sistemaIsc']} miscalculated (cat. 08, R-24)")
+        if af.startswith("1"):
+            if "1000" not in trib:
+                errores.append(f"{n}: afectación {af} exige tributo 1000 IGV (R-22)")
+                continue
+            x = trib["1000"]
+            if Decimal(x["baseImponible"]) != vv + isc:
+                errores.append(f"{n}: base IGV ≠ valor + ISC (R-25)")
+            if r2((vv + isc) * tasa_igv) != Decimal(x["monto"]):
+                errores.append(f"{n}: IGV miscalculated (R-22)")
+            t["grav"] += vv
+            t["igv"] += Decimal(x["monto"])
+        else:
+            esperado = {"2": "9997", "3": "9998", "4": "9995"}[af[0]]
+            if esperado not in trib or "1000" in trib:
+                errores.append(f"{n}: afectación {af} exige tributo {esperado} y sin IGV (R-23)")
+            t["exo" if af[0] == "2" else "ina"] += vv
+        if "7152" in trib:
+            x = trib["7152"]
+            if Decimal(x["cantidadBolsas"]) * Decimal(x["montoPorUnidad"]) != Decimal(x["monto"]):
+                errores.append(f"{n}: ICBPER ≠ bolsas × monto (R-26)")
+            t["icb"] += Decimal(x["monto"])
+        t["isc"] += isc
+        t["vv"] += vv
+    tot = {k: Decimal(v) for k, v in c["totales"].items()}
+    pares = [("totalGravado", t["grav"]), ("totalExonerado", t["exo"]), ("totalInafecto", t["ina"]),
+             ("totalIgv", t["igv"]), ("totalIsc", t["isc"]), ("totalIcbper", t["icb"]), ("valorVenta", t["vv"]),
+             ("precioVenta", t["vv"] + t["igv"] + t["isc"] + t["icb"])]
+    for campo, esperado in pares:
+        if tot[campo] != esperado:
+            errores.append(f"{nombre}: totales.{campo} = {tot[campo]} y should be {esperado} (R-30/R-31)")
+    if tot["importeTotal"] != tot["precioVenta"] - tot.get("totalDescuentos", 0) - tot.get("totalAnticipos", 0):
+        errores.append(f"{nombre}: importeTotal inconsistente (R-31)")
+    if not any(l["codigo"] == "1000" for l in c["leyendas"]):
+        errores.append(f"{nombre}: falta leyenda 1000 (R-32)")
+    fp = c.get("formaPago")
+    if c["tipoComprobante"] == "01" and not fp:
+        errores.append(f"{nombre}: invoice without formaPago (R-35)")
+    if fp and fp["tipo"] == "Credito":
+        pend, cuotas = Decimal(fp["montoNetoPendiente"]), fp["cuotas"]
+        if sum(Decimal(q["monto"]) for q in cuotas) != pend:
+            errores.append(f"{nombre}: Σ instalments ≠ net pending amount (R-36)")
+        if not (Decimal("0") < pend <= tot["importeTotal"]):
+            errores.append(f"{nombre}: net pending amount must be > 0 and ≤ total (R-36)")
+        if [q["numero"] for q in cuotas] != list(range(1, len(cuotas) + 1)):
+            errores.append(f"{nombre}: instalments must be numbered 1..n (R-36)")
+        for q in cuotas:
+            if q["fechaVencimiento"] <= c["fechaEmision"]:
+                errores.append(f"{nombre}: instalment {q['numero']} due on or before the issue date (R-36)")
 
+    return errores
+
+
+def reglas_solicitud(d: dict, nombre: str) -> list[str]:
+    """Business rules (type N) that a request (comprobante-crear) must pass before calculation."""
+    out: list[str] = []
+    doc = d["cliente"]["documento"]
+    if doc["tipo"] == "6" and not ruc_valido(doc["numero"]):
+        out.append(f"{nombre}: customer RUC fails the modulo-11 check digit (R-10)")
+    fp = d.get("formaPago")
+    if fp and fp["tipo"] == "Credito":
+        cuotas = fp["cuotas"]
+        if sum(Decimal(q["monto"]) for q in cuotas) != Decimal(fp["montoNetoPendiente"]):
+            out.append(f"{nombre}: Σ instalments ≠ net pending amount (R-36)")
+        if [q["numero"] for q in cuotas] != list(range(1, len(cuotas) + 1)):
+            out.append(f"{nombre}: instalments must be numbered 1..n (R-36)")
+        for q in cuotas:
+            if d.get("fechaEmision") and q["fechaVencimiento"] <= d["fechaEmision"]:
+                out.append(f"{nombre}: instalment {q['numero']} due on or before the issue date (R-36)")
+    return out
+
+
+def v_calculos():
+    for f in sorted(EJEMPLOS.glob("comprobante.*.json")):
+        errores.extend(reglas_comprobante(leer_json(f), f.name))
+    for f in sorted(EJEMPLOS.glob("comprobante-crear.*.json")):
+        errores.extend(reglas_solicitud(leer_json(f), f.name))
+
+
+def v_invalidos():
+    """Every file in ejemplos/invalidos must be REJECTED, and for the expected reason (review: negative examples)."""
+    carpeta = EJEMPLOS / "invalidos"
+    esperados = leer_json(carpeta / "esperados.json")
+    reg = cargar_registro()
+    reglas = set(re.findall(r"\|\s*(R-\d{2})\s*\|", REGLAS.read_text(encoding="utf-8")))
+    listados = {e["archivo"] for e in esperados}
+    for f in sorted(carpeta.glob("*.json")):
+        if f.name != "esperados.json" and f.name not in listados:
+            errores.append(f"invalidos/{f.name}: not listed in esperados.json")
+    for e in esperados:
+        n = f"invalidos/{e['archivo']}"
+        if e["regla"] not in reglas:
+            errores.append(f"{n}: rule {e['regla']} does not exist")
+        datos = leer_json(carpeta / e["archivo"])
+        val = Draft202012Validator(leer_json(SCHEMAS / f"{e['schema']}.schema.json"), registry=reg, format_checker=FormatChecker())
+        errs = list(val.iter_errors(datos))
+        if e["rechazo"] == "schema":
+            def coincide(err):
+                ruta = "/" + "/".join(map(str, err.absolute_path)) if err.absolute_path else ""
+                return ruta.startswith(e["campo"]) and (e.get("contiene", "") in json.dumps(err.instance, ensure_ascii=False) + err.message)
+            todos = [x for err in errs for x in ([err] + list(err.context or []))]
+            if not errs:
+                errores.append(f"{n}: ACCEPTED by the schema, but it must be rejected ({e['regla']})")
+            elif not any(coincide(x) for x in todos):
+                errores.append(f"{n}: rejected, but not at {e['campo'] or '/'} ({e['regla']}); got {errs[0].message[:80]}")
+        else:
+            if errs:
+                errores.append(f"{n}: must pass the schema and fail a business rule, but the schema rejects it: {errs[0].message[:80]}")
+                continue
+            msgs = reglas_comprobante(datos, n) if e["schema"] == "comprobante" else reglas_solicitud(datos, n)
+            if not any(f"{e['regla']}" in m for m in msgs):
+                errores.append(f"{n}: ACCEPTED by the domain rules, but it must fail {e['regla']}")
 
 # ---------------------------------------------------------------- XML UBL vs XSD y vs JSON
 # ---------------------------------------------------------------- registros 12.1 y 14.1 (RS 234-2006)
@@ -420,8 +487,9 @@ def v_registros():
                 errores.append(f"{n}: field 25 ≠ Σ fields 13–24 (R-71)")
             if fila["tipoComprobanteTabla10"] != c["tipoComprobante"] or fila["fechaEmision"] != c["fechaEmision"]:
                 errores.append(f"{n}: type or date ≠ CPE (R-70)")
+            eq06 = leer_json(TABLAS / "tabla02.json")["equivalenciaCatalogo06"]
             if (fila["tipoDocumentoCliente"], fila["numeroDocumentoCliente"], fila["nombreCliente"]) != (
-                    c["cliente"]["documento"]["tipo"], c["cliente"]["documento"]["numero"], c["cliente"]["nombre"]):
+                    eq06[c["cliente"]["documento"]["tipo"]], c["cliente"]["documento"]["numero"], c["cliente"]["nombre"]):
                 errores.append(f"{n}: customer ≠ CPE (R-71)")
             if fila["periodo"] != rv["periodo"] or fila["fechaEmision"][:4] + fila["fechaEmision"][5:7] + "00" != rv["periodo"]:
                 errores.append(f"{n}: period ≠ issue date (R-70)")
@@ -459,6 +527,42 @@ def v_registros():
         b = d.xpath(xp_ns(f"/{raiz}/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxableAmount/text()"), namespaces=NS)
         if b and b[0] != leer_json(EJEMPLOS / jsonf)["totales"]["totalGravado"]:
             errores.append(f"{xmlf}: document-level IGV TaxableAmount must be the taxed sale value without ISC (14.1 field 14)")
+
+
+def v_firma():
+    """R-51: the signed example carries a valid enveloped XMLDSig in ext:UBLExtensions and, without it,
+    is exactly the unsigned example (signing must not change the document)."""
+    try:
+        from signxml import XMLVerifier
+    except ImportError:
+        errores.append("signxml not installed: run python -m pip install -r tools/requirements.txt")
+        return
+    firmados = sorted(EJEMPLOS.glob("*.firmada.xml"))
+    if not firmados:
+        errores.append("No signed example (R-51)")
+    pem = (RAIZ / "tools/cert-prueba/certificado-prueba.pem").read_text(encoding="utf-8")
+    for f in firmados:
+        datos = f.read_bytes()
+        try:
+            XMLVerifier().verify(datos, x509_cert=pem)
+        except Exception as e:  # noqa: BLE001
+            errores.append(f"{f.name}: signature does not verify ({type(e).__name__}: {str(e)[:80]}) (R-51)")
+            continue
+        doc = etree.fromstring(datos)
+        raiz = etree.QName(doc).localname
+        firma = doc.xpath(xp_ns(f"/{raiz}/ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature"), namespaces=NS)
+        if len(firma) != 1:
+            errores.append(f"{f.name}: ds:Signature must be inside ext:UBLExtensions/…/ext:ExtensionContent (R-51)")
+            continue
+        uri = doc.xpath(xp_ns(f"/{raiz}/cac:Signature/cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI/text()"), namespaces=NS)
+        if not uri or uri[0] != "#" + firma[0].get("Id", ""):
+            errores.append(f"{f.name}: cac:Signature URI must point to the ds:Signature Id (R-51)")
+        doc.remove(doc.find(f"{{{NS['ext']}}}UBLExtensions"))
+        sin = etree.parse(str(EJEMPLOS / f.name.replace(".firmada.xml", ".sin-firma.xml"))).getroot()
+        norm = lambda e: etree.tostring(e, method="c14n", exclusive=False, with_comments=False)
+        quitar_espacios = lambda b: b"".join(b.split())
+        if quitar_espacios(norm(doc)) != quitar_espacios(norm(sin)):
+            errores.append(f"{f.name}: content differs from the unsigned example (signing must not change the document)")
 
 
 def v_xml_xsd():
@@ -695,9 +799,7 @@ def v_matriz():
         xp = f["xpath_ubl"]
         if xp.startswith("/"):
             raiz = xp.split("/")[1]
-            if "UBLExtensions" in xp:
-                avisos.append(f"{fid}: {xp} is added on signing; not checked in unsigned XML")
-            elif not any(d.xpath(xp_ns(xp), namespaces=NS) for d in xml.get(raiz, [])):
+            if not any(d.xpath(xp_ns(xp), namespaces=NS) for d in xml.get(raiz, [])):
                 errores.append(f"{fid}: XPath has no match in the example XML: {xp}")
 
 
@@ -819,11 +921,13 @@ def main() -> int:
     check("SUNAT catalogs (structure)", v_catalogos)
     check("Valid JSON Schemas and resolved $refs", v_schemas)
     check("Schema enums = SUNAT catalogs", v_enums_catalogos)
-    check("Books tables 5, 6, 10, 12 (RS 234-2006): structure, enums, catalog 03 equivalence", v_tablas)
+    check("Books tables 2, 5, 6, 10, 12 (RS 234-2006): structure, enums, catalog 03/06 equivalences", v_tablas)
     check("JSON examples valid against their schemas", v_ejemplos_json)
     check("IGV, ISC (cat. 08: 01/02/03), ICBPER and totals in examples", v_calculos)
+    check("Invalid examples are rejected for the expected rule", v_invalidos)
     check("Example XMLs valid against the UBL 2.1 XSD", v_xml_xsd)
     check("Example XMLs match their JSON", v_xml_coincide_json)
+    check("Signed example: valid enveloped XMLDSig in ext:UBLExtensions (R-51)", v_firma)
     check("Books 12.1 (kardex) and 14.1 (sales): balances, CPE cross-check, PLE files", v_registros)
     check("OpenAPI 3.1: structure, $refs, examples and use-case routes", v_openapi)
     check("Traceability matrix: schema, XPath, rules and catalogs", v_matriz)

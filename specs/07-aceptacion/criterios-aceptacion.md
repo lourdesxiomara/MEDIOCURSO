@@ -28,7 +28,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-02 · **API:** `POST /comprobantes`
 - **Given** an invoice (`01`) with series `B001`
 - **When** it is sent
-- **Then** it returns `400` pointing at `/serie`; with series `F001` it returns `201`.
+- **Then** it returns `400` pointing at `/serie` (negative example `ejemplos/invalidos/boleta-con-serie-de-factura.json`); with series `F001` it returns `201`.
 
 ### CA-04 Unique number per series
 - **Rules:** R-03, R-53 · **API:** `POST /comprobantes/{id}/emitir`
@@ -54,13 +54,13 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-10 · **API:** `POST /clientes`, `POST /comprobantes`
 - **Given** RUC `20456789015` (correct check digit: 4)
 - **When** it is registered as a customer
-- **Then** it returns `422` like `ejemplos/error.validacion.json` (rule R-10, field `/cliente/documento/numero`).
+- **Then** it returns `422` like `ejemplos/error.validacion.json` (rule R-10, field `/cliente/documento/numero`); negative example `ejemplos/invalidos/factura-ruc-digito-verificador.json`.
 
 ### CA-08 Invoice to a customer without RUC
 - **Rules:** R-11 · **API:** `POST /comprobantes`
 - **Given** the DNI customer in `ejemplos/comprobante.boleta.json`
 - **When** an invoice (`01`) is issued to them
-- **Then** it returns `400` stating the document must be type 6.
+- **Then** it returns `400` stating the document must be type 6 (negative example `ejemplos/invalidos/factura-a-cliente-con-dni.json`).
 
 ### CA-09 Receipt to a person with DNI
 - **Rules:** R-12 · **API:** `POST /comprobantes`
@@ -116,7 +116,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-24 · **API:** `POST /comprobantes`
 - **Given** a product flagged with ISC but without `isc.sistema`
 - **When** it is invoiced
-- **Then** it returns `422` with rule R-24 (second error in `ejemplos/error.validacion.json`).
+- **Then** it returns `422` with rule R-24 (second error in `ejemplos/error.validacion.json`); negative examples `ejemplos/invalidos/producto-isc-al-valor-sin-tasa.json` and `ejemplos/invalidos/factura-isc-pvp-mal-calculado.json`.
 
 ### CA-18 ICBPER per plastic bag
 - **Rules:** R-26 · **API:** `POST /comprobantes/validar`
@@ -154,7 +154,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-33 · **API:** `POST /comprobantes`
 - **Given** `moneda = "ABC"`
 - **When** it is sent
-- **Then** it returns `400` citing catalog 02.
+- **Then** it returns `400` citing catalog 02 (negative example `ejemplos/invalidos/factura-moneda-fuera-de-catalogo.json`).
 
 ### CA-24 Operation type
 - **Rules:** R-34 · **API:** `POST /comprobantes`
@@ -194,7 +194,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-35 · **API:** `POST /comprobantes`
 - **Given** an invoice request without `formaPago`
 - **When** it is sent
-- **Then** it returns `400` on `/formaPago`; with `formaPago.tipo = Contado` (`ejemplos/comprobante-crear.factura.json`) it returns `201` and the XML carries `cac:PaymentTerms` `FormaPago` / `Contado` (`ejemplos/factura-F001-1.sin-firma.xml`).
+- **Then** it returns `400` on `/formaPago` (negative example `ejemplos/invalidos/factura-sin-forma-pago.json`); with `formaPago.tipo = Contado` (`ejemplos/comprobante-crear.factura.json`) it returns `201` and the XML carries `cac:PaymentTerms` `FormaPago` / `Contado` (`ejemplos/factura-F001-1.sin-firma.xml`).
 
 ### CA-39 Credit sale in instalments
 - **Rules:** R-36 · **API:** `POST /comprobantes`, `POST /comprobantes/{id}/emitir`
@@ -206,13 +206,13 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-36 · **API:** `POST /comprobantes`
 - **Given** a credit invoice with net pending 137.07 and instalments 68.54 + 60.00
 - **When** it is sent
-- **Then** it returns `422` with rule R-36 on `/formaPago/cuotas`.
+- **Then** it returns `422` with rule R-36 on `/formaPago/cuotas` (negative examples `ejemplos/invalidos/factura-cuotas-no-cuadran.json` and `ejemplos/invalidos/factura-credito-sin-cuotas.json`).
 
 ### CA-41 Instalment due on or before the issue date
 - **Rules:** R-36 · **API:** `POST /comprobantes`
 - **Given** a credit invoice issued 2026-10-22 with an instalment due 2026-10-22
 - **When** it is sent
-- **Then** it returns `422` with rule R-36; a cash invoice (`Contado`) that includes instalments is also rejected (`400`).
+- **Then** it returns `422` with rule R-36 (negative example `ejemplos/invalidos/factura-cuota-vence-el-dia-de-emision.json`); a cash invoice (`Contado`) that includes instalments is also rejected (`400`).
 
 ## F. XML, signature and submission
 
@@ -226,7 +226,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-51 · **API:** `POST /comprobantes/{id}/emitir`
 - **Given** a valid test certificate
 - **When** the document is issued
-- **Then** the XML contains `ds:Signature` in `ext:UBLExtensions`, the signature verifies and `firma.hash` is its `DigestValue`; with an expired certificate it returns `422` without consuming a number.
+- **Then** the XML contains `ds:Signature` in `ext:UBLExtensions` and the signature verifies, as in `ejemplos/factura-F001-1.firmada.xml` (test certificate, `tools/firmar_ejemplo.py`); removing the signature gives back exactly `ejemplos/factura-F001-1.sin-firma.xml`; `firma.hash` is its `DigestValue`; with an expired certificate it returns `422` without consuming a number.
 
 ### CA-31 Packaging and submission to the OSE
 - **Rules:** R-52, R-53 · **API:** `POST /comprobantes/{id}/emitir` (simulated OSE)
@@ -357,3 +357,11 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Given** the SIRE proposal for 2026-10 and the internal record `ejemplos/registro-ventas.2026-10.json`
 - **When** the period is reconciled
 - **Then** if both have the same four documents with the same fields 14–25 the proposal can be accepted; if the proposal lacks `F001-2` or shows a different total, acceptance is blocked and the difference is listed by document.
+
+## I. Negative examples (executable)
+
+### CA-56 Every negative example is rejected for its own rule
+- **Rules:** R-02, R-10, R-11, R-22, R-24, R-33, R-35, R-36, R-41 · **API:** `POST /comprobantes`, `POST /productos`
+- **Given** the 12 files in `specs/02-dominio/ejemplos/invalidos/`, each a copy of a valid example with **one** defect, and their expected rule in `ejemplos/invalidos/esperados.json`
+- **When** each is validated (JSON Schema first, then the business rules)
+- **Then** every file is rejected, and for the expected reason: structural defects at the expected field (`400`), business defects by the expected rule (`422`); a negative example that is accepted, or rejected for another reason, fails the verification.

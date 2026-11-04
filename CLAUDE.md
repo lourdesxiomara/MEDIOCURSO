@@ -26,7 +26,7 @@ Any Claude agent working in this repo reads this file automatically. Read it ful
 | Path | Content |
 |---|---|
 | `docs/ubl/` | Official OASIS UBL 2.1 XSDs + `soporte/` (CCTS, XMLDSig, XAdES) |
-| `docs/sunat/` | SUNAT catalogs in JSON, books tables 5/6/10/12 (`tablas-libros/`), validation rules, sources (catalog text kept in Spanish) |
+| `docs/sunat/` | SUNAT catalogs in JSON, books tables 2/5/6/10/12 (`tablas-libros/`), validation rules, sources (catalog text kept in Spanish) |
 | `docs/legado/` | Legacy data sample and description |
 | `docs/benchmark/` | Nubefact analysis (reference use cases) |
 | `specs/00-contexto/` | Case, scope, assumptions, glossary, open questions, non-functional requirements |
@@ -57,7 +57,8 @@ It checks: valid JSON Schemas, examples valid against their schemas, schema enum
 tax calculations in examples (IGV, ISC systems 01/02/03, ICBPER), example XMLs valid against the UBL 2.1
 XSD and consistent with their JSON, OpenAPI `$ref`s and use-case routes, traceability matrix (schema +
 XPath + rules + catalogs), migration coverage, acceptance criteria covering every rule, cross references,
-Mermaid diagrams and untouched official XSDs.
+Mermaid diagrams, untouched official XSDs, the signed example (XMLDSig) and that every negative example in
+`specs/02-dominio/ejemplos/invalidos/` is rejected for its expected rule.
 
 **If you change the matrix:** edit `matriz.csv` and run `python tools/generar_matriz_md.py`.
 **If you change a catalog:** also update the matching `enum` in `comun.schema.json`
