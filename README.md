@@ -12,7 +12,11 @@ UNAS – School of Computer and Systems Engineering.
 | **University** | Universidad Nacional Agraria de la Selva |
 | **Date** | October 19, 2026 |
 
-## Deliverables
+## Phase 2 – Implementation (second midterm)
+UBL 2.1 invoice XML **generated from the Invoice XSD** (JAXB/xjc), validated, signed and submitted, in Kotlin, with
+44 unit tests: see [`implementacion/`](implementacion/README.md) (`cd implementacion && ./gradlew test`).
+
+## Deliverables (phase 1)
 | # | Required deliverable | Location |
 |---|---|---|
 | 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (14 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (validated JSON + UBL 2.1 XML, one of them digitally signed, plus 12 invalid examples) |

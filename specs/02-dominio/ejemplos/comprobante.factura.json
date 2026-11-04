@@ -65,6 +65,7 @@
     {
       "numero": 2,
       "codigoProducto": "CER-630",
+      "codigoSunat": "50202201",
       "descripcion": "CERVEZA 630ML",
       "unidadMedida": "NIU",
       "cantidad": "12",

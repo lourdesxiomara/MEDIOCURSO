@@ -2,9 +2,12 @@
 
 Any Claude agent working in this repo reads this file automatically. Read it fully before any task.
 
-## 1. Methodology: SPEC-FIRST (current phase)
-- **Writing business logic is FORBIDDEN** in this phase. Only specifications: rules, data contracts
-  (JSON Schema), interface contracts (OpenAPI / ports / events), diagrams, matrices, acceptance criteria and ADRs.
+## 1. Methodology: SPEC-FIRST, then implementation
+- **Phase 1 (Spec-First, closed):** `docs/` and `specs/` are the contract. Business logic is not written there.
+- **Phase 2 (current, `implementacion/`):** Kotlin code that implements the ports of `specs/04-api/puertos-salida.md`
+  (generation, validation, signature and submission of the invoice XML). Code follows the specs, never the other way
+  around: if the code needs a change in a contract, change the spec first and keep `tools/verificar.py` passing.
+  Run `cd implementacion && ./gradlew test` before each commit.
 - Do not modify the official OASIS XSDs (`docs/ubl/common`, `docs/ubl/maindoc`).
 - Before each task: propose a short plan and wait for the user's approval.
 - Every regulatory statement cites its source (catalog, UBL XPath, resolution). See `docs/sunat/fuentes.md`.

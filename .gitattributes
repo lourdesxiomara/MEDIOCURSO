@@ -8,3 +8,6 @@
 *.zip binary
 *.xls binary
 *.xlsx binary
+*.bat text eol=crlf
+*.jar binary
+*.p12 binary

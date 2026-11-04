@@ -1,6 +1,6 @@
 # ADR-006 · UBL XML generation with classes generated from the XSD (JAXB / xjc)
 
-- **Status:** Accepted (Spec-First phase)
+- **Status:** Accepted — implemented in phase 2 (`implementacion/`)
 - **Context:** The `GeneradorDocumentoUbl` port (`specs/04-api/puertos-salida.md`) must produce UBL 2.1 XML
   that is valid by construction against the official OASIS XSDs (`docs/ubl/`), for Invoice, CreditNote and
   DebitNote. Writing the XML by hand (string templates) makes every missing or misplaced node a runtime
@@ -42,3 +42,17 @@ xmlutil) produced from the same XSD, and must pass the **same golden tests**. Th
 ## Rejected alternatives
 - String templates (FreeMarker, Velocity): no structural guarantee; errors appear only at SUNAT.
 - DOM built by hand: verbose and error-prone in node order.
+
+## Implementation (phase 2, `implementacion/`)
+What was built, and where it differs from the text above:
+- **Generation task:** `generateUblClasses` (Gradle `JavaExec` running `com.sun.tools.xjc.XJCFacade`, JAXB 4.0.5) on
+  `docs/ubl/maindoc/UBL-Invoice-2.1.xsd` plus the support schemas in `docs/ubl/soporte`. The support schemas are passed
+  to xjc directly, so the `tools/xsd` wrappers are only used for validation.
+- **Packages:** xjc's default package per namespace (`oasis.names.specification.ubl.schema.xsd.invoice_2`,
+  `…commonaggregatecomponents_2`, `…commonbasiccomponents_2`) instead of a bindings file; dates stay as
+  `XMLGregorianCalendar`. Amounts are `BigDecimal`, as decided.
+- **Mapper:** `GeneradorFacturaJaxb` (domain `Comprobante` → `InvoiceType`); the `Marshaller` validates with the XSD (R-50).
+- **Signature:** the JDK's standard XMLDSig API (`javax.xml.crypto.dsig`, derived from Apache Santuario), so no extra dependency.
+- **Golden tests:** `GeneradorFacturaTest` compares the generated XML with the invoice, ISC invoice and receipt examples.
+  To make them comparable, the receipt and ISC examples now carry the full issuer address and the
+  `DocumentCurrencyCode` attributes, like invoice F001-1, and line 2 of `comprobante.factura.json` carries its UNSPSC code.
