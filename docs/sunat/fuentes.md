@@ -25,6 +25,7 @@
 | INEI ubigeo 150117 (Los Olivos, Lima) | Issuer address in the examples (D-04) | https://citypopulation.de/en/peru/lima/admin/lima/150117__los_olivos/ |
 | Law 27037, art. 3.1 | Definition of the Amazon region (D-04, ADR-005) | https://faolex.fao.org/docs/pdf/per21100.pdf |
 | OASIS UBL 2.1 | XSDs in `docs/ubl/` | http://docs.oasis-open.org/ubl/os-UBL-2.1/ |
+| OASIS UBL 2.1 `UBL-ApplicationResponse-2.1.xsd` (CDR) | Validates the CDR example (R-53 to R-55, matrix T-95…T-98). Copy from the ph-ubl distribution, whose `UBL-Invoice-2.1.xsd` has the same SHA-256 as the one in this repo | https://raw.githubusercontent.com/phax/ph-ubl/master/ph-ubl21/src/main/resources/external/schemas/ubl21/maindoc/UBL-ApplicationResponse-2.1.xsd |
 | Support schemas (CCTS, XMLDSig, XAdES) | `docs/ubl/soporte/` | https://github.com/phax/ph-xsds |
 
 ## Official documents kept in the repository (`docs/fuentes-oficiales/`)

@@ -118,6 +118,10 @@ In credit notes the prefix is `/CreditNote` and the line is `cac:CreditNoteLine`
 | T-92 | SIRE proposal: CAR (registration code) | 01,03,07,08 |  | R-76 | `(not in the XML: RUC + type + series + number, Annex 1 table 7)` | `registro-ventas:/filas/*/car` |  | 27 characters, zero-padded | RS 112-2021 Annex 1 table 7; Annex 2 field 4 |
 | T-93 | SIRE proposal: total of the document | 01,03,07,08 |  | R-76 | `/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount` | `registro-ventas:/filas/*/importeTotal` |  | Proposal field 26 = 14.1 field 25 = CPE PayableAmount | RS 112-2021 Annex 2 field 26 |
 | T-94 | SIRE proposal: taxed base without ISC | 01,03,07,08 |  | R-76 | `/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxableAmount` | `registro-ventas:/filas/*/baseImponibleGravada` |  | Proposal field 15 = 14.1 field 14; excludes ISC | RS 112-2021 Annex 2 field 15 |
+| T-95 | CDR: return code | 01,03,07,08 |  | R-53,R-54 | `/ApplicationResponse/cac:DocumentResponse/cac:Response/cbc:ResponseCode` | `/respuestaSunat/codigoRespuesta` |  | Stored verbatim (D-07) | SEE programmer manual (return codes); OASIS UBL 2.1 ApplicationResponse |
+| T-96 | CDR: return-code range (category) | 01,03,07,08 |  | R-54,R-55 | `(derived from ResponseCode: 0 accepted · 0100–1999 exception · 2000–3999 rejection · ≥ 4000 observation)` | `/respuestaSunat/categoria` |  | Exception → PENDIENTE_ENVIO, same number; rejection → RECHAZADO, number not reused; observation → ACEPTADO_CON_OBSERVACIONES | SEE programmer manual (return codes); OASIS UBL 2.1 ApplicationResponse |
+| T-97 | CDR: description | 01,03,07,08 |  | R-54 | `/ApplicationResponse/cac:DocumentResponse/cac:Response/cbc:Description` | `/respuestaSunat/descripcion` |  | Stored verbatim (D-07) | SEE programmer manual (return codes); OASIS UBL 2.1 ApplicationResponse |
+| T-98 | CDR: document answered | 01,03,07,08 |  | R-53 | `/ApplicationResponse/cac:DocumentResponse/cac:DocumentReference/cbc:ID` | `/numero` |  | = series-number of the document sent | SEE programmer manual (return codes); OASIS UBL 2.1 ApplicationResponse |
 
 ## Legacy field coverage
 

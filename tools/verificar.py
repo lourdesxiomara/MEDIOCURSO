@@ -30,15 +30,33 @@ DUDAS = RAIZ / "specs/00-contexto/dudas-abiertas.md"
 LEGADO = RAIZ / "docs/legado/legado-almacen-muestra.csv"
 XSD = {"Invoice": RAIZ / "tools/xsd/validar-Invoice.xsd",
        "CreditNote": RAIZ / "tools/xsd/validar-CreditNote.xsd",
-       "DebitNote": RAIZ / "tools/xsd/validar-DebitNote.xsd"}
+       "DebitNote": RAIZ / "tools/xsd/validar-DebitNote.xsd",
+       "ApplicationResponse": RAIZ / "tools/xsd/validar-ApplicationResponse.xsd"}
 NS = {"cbc": "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
       "cac": "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
       "ext": "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2",
       "ds": "http://www.w3.org/2000/09/xmldsig#",
       "inv": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
       "cn": "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
-      "dn": "urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2"}
-PREFIJO_RAIZ = {"Invoice": "inv", "CreditNote": "cn", "DebitNote": "dn"}
+      "dn": "urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2",
+      "ar": "urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2"}
+PREFIJO_RAIZ = {"Invoice": "inv", "CreditNote": "cn", "DebitNote": "dn", "ApplicationResponse": "ar"}
+# CDR de ejemplo -> comprobante cuyo respuestaSunat resume (R-53 a R-55)
+CDR_JSON = {"cdr-R-20600123450-01-F001-1.xml": "comprobante.factura.json"}
+
+
+def categoria_cdr(codigo: str) -> str:
+    """R-54: 0 aceptado · 0100–1999 excepción · 2000–3999 rechazo · ≥ 4000 observación."""
+    n = int(codigo)
+    if n == 0:
+        return "ACEPTADO"
+    if 100 <= n <= 1999:
+        return "EXCEPCION"
+    if 2000 <= n <= 3999:
+        return "RECHAZO"
+    if n >= 4000:
+        return "OBSERVACION"
+    raise ValueError(f"código de retorno fuera de rango: {codigo}")
 
 
 def xp_ns(xp: str) -> str:
@@ -750,6 +768,31 @@ def v_xml_coincide_json():
             errores.append(f"{xmlf}: TaxTotal {tot} ≠ Σ TaxSubtotal {subs}")
 
 
+def v_cdr():
+    """El CDR de ejemplo coincide con respuestaSunat de su comprobante y la categoría sale del rango (R-54)."""
+    for xmlf, jsonf in CDR_JSON.items():
+        d = etree.parse(str(EJEMPLOS / xmlf))
+        c = leer_json(EJEMPLOS / jsonf)
+        r = c["respuestaSunat"]
+        def val(xp):
+            v = d.xpath(xp_ns(xp), namespaces=NS)
+            return v[0] if v else None
+        base = "/ApplicationResponse/cac:DocumentResponse/cac:Response"
+        pares = [(f"{base}/cbc:ResponseCode/text()", r["codigoRespuesta"]),
+                 (f"{base}/cbc:Description/text()", r["descripcion"]),
+                 (f"{base}/cbc:ReferenceID/text()", c["numero"]),
+                 ("/ApplicationResponse/cac:DocumentResponse/cac:DocumentReference/cbc:ID/text()", c["numero"]),
+                 ("/ApplicationResponse/cac:ReceiverParty/cac:PartyIdentification/cbc:ID/text()", "6-" + c["emisor"]["ruc"])]
+        for xp, v in pares:
+            if val(xp) != v:
+                errores.append(f"{xmlf}: {xp} = {val(xp)!r}, JSON dice {v!r}")
+        if categoria_cdr(r["codigoRespuesta"]) != r["categoria"]:
+            errores.append(f"{jsonf}: categoria {r['categoria']} ≠ rango del código {r['codigoRespuesta']} (R-54)")
+        notas = [n.split(" - ")[0] for n in d.xpath(xp_ns("/ApplicationResponse/cbc:Note/text()"), namespaces=NS)]
+        if r["categoria"] == "OBSERVACION" and not notas:
+            errores.append(f"{xmlf}: observación sin cbc:Note (R-55)")
+
+
 # ---------------------------------------------------------------- OpenAPI
 def v_openapi():
     api = yaml.safe_load(OPENAPI.read_text(encoding="utf-8"))
@@ -1026,6 +1069,7 @@ def main() -> int:
     check("Invalid examples are rejected for the expected rule", v_invalidos)
     check("Example XMLs valid against the UBL 2.1 XSD", v_xml_xsd)
     check("Example XMLs match their JSON", v_xml_coincide_json)
+    check("CDR example (ApplicationResponse) matches respuestaSunat; category by code range (R-54)", v_cdr)
     check("Signed example: valid enveloped XMLDSig in ext:UBLExtensions (R-51)", v_firma)
     check("Books 12.1 (kardex) and 14.1 (sales): balances, CPE cross-check, PLE files", v_registros)
     check("SIRE: proposal vs company record reconciliation (R-76)", v_conciliacion)

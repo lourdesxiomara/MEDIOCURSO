@@ -18,7 +18,7 @@ UNAS – School of Computer and Systems Engineering.
 | 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (14 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (validated JSON + UBL 2.1 XML, one of them digitally signed, plus 12 invalid examples) |
 | 2 | **MVC architecture diagrams with a Hexagonal vision** | [`specs/03-arquitectura/arquitectura.md`](specs/03-arquitectura/arquitectura.md) · decisions in [`specs/adr/`](specs/adr) |
 | 3 | **Endpoint / service specification (API contracts)** | [`specs/04-api/openapi.yaml`](specs/04-api/openapi.yaml) (OpenAPI 3.1) · [`puertos-salida.md`](specs/04-api/puertos-salida.md) · [`eventos.md`](specs/04-api/eventos.md) |
-| 4 | **Regulatory traceability matrix SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (91 rows: CPE, payment terms, Format 12.1, Format 14.1) |
+| 4 | **Regulatory traceability matrix SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (98 rows: CPE, payment terms, CDR return codes, Format 12.1, Format 14.1, SIRE) |
 
 Other case requirements also covered:
 | Requirement | Location |
