@@ -262,10 +262,12 @@
     "respuestaSunat": {
       "type": "object",
       "additionalProperties": false,
-      "description": "CDR summary (ApplicationResponse).",
+      "description": "CDR summary (ApplicationResponse) or exception returned by the OSE/SUNAT. Rules R-53 to R-55.",
       "properties": {
         "codigoRespuesta": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^\\d{1,4}$",
+          "description": "SUNAT/OSE return code (R-54)."
         },
         "descripcion": {
           "type": "string"
@@ -286,6 +288,16 @@
             "OSE",
             "SUNAT"
           ]
+        },
+        "categoria": {
+          "type": "string",
+          "enum": [
+            "ACEPTADO",
+            "EXCEPCION",
+            "RECHAZO",
+            "OBSERVACION"
+          ],
+          "description": "Return-code range (R-54): 0 → ACEPTADO, 0100–1999 → EXCEPCION, 2000–3999 → RECHAZO, ≥ 4000 → OBSERVACION."
         }
       }
     },
@@ -303,6 +315,9 @@
           "type": "string"
         }
       }
+    },
+    "formaPago": {
+      "$ref": "comun.schema.json#/$defs/formaPago"
     }
   },
   "allOf": [
@@ -326,6 +341,23 @@
       "else": {
         "required": [
           "tipoOperacion"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoComprobante": {
+            "const": "01"
+          }
+        },
+        "required": [
+          "tipoComprobante"
+        ]
+      },
+      "then": {
+        "required": [
+          "formaPago"
         ]
       }
     }

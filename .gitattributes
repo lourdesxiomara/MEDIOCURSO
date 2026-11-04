@@ -1,0 +1,8 @@
+# Normalize line endings so checks behave the same on Windows, Linux and macOS.
+* text=auto eol=lf
+*.xsd text eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.zip binary

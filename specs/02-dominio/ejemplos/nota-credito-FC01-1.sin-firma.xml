@@ -60,7 +60,7 @@
       </cac:TaxCategory>
     </cac:TaxSubtotal>
     <cac:TaxSubtotal>
-      <cbc:TaxableAmount currencyID="PEN">12.00</cbc:TaxableAmount>
+      <cbc:TaxableAmount currencyID="PEN">10.00</cbc:TaxableAmount>
       <cbc:TaxAmount currencyID="PEN">2.16</cbc:TaxAmount>
       <cac:TaxCategory>
         <cac:TaxScheme><cbc:ID>1000</cbc:ID><cbc:Name>IGV</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme>

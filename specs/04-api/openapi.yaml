@@ -438,36 +438,52 @@ paths:
     get:
       tags: [Reportes]
       operationId: obtenerKardex
-      summary: Permanent Inventory Record in Physical Units per product and period (CU-12)
+      summary: Permanent Inventory Record in Physical Units (Format 12.1) per product and period (CU-12)
+      description: JSON (kardex.schema.json) or the PLE 12.1 text file (rules R-60 to R-66).
       parameters:
         - { name: productoId, in: query, required: true, schema: { type: string, format: uuid } }
-        - { name: periodo, in: query, required: true, schema: { type: string, pattern: '^\d{4}-(0[1-9]|1[0-2])$' } }
+        - $ref: '#/components/parameters/periodoLibro'
+        - $ref: '#/components/parameters/formatoLibro'
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
         '200':
-          description: Movements with opening balance, inputs, outputs and closing balance
+          description: Opening balance, movements with running balance, totals and closing balance
           content:
             application/json:
-              schema:
-                type: object
-                required: [saldoInicial, movimientos, saldoFinal]
-                properties:
-                  saldoInicial: { type: string }
-                  movimientos:
-                    type: array
-                    items: { $ref: '../02-dominio/schemas/movimiento-inventario.schema.json' }
-                  saldoFinal: { type: string }
+              schema: { $ref: '../02-dominio/schemas/kardex.schema.json' }
+              examples:
+                cerveza: { externalValue: '../02-dominio/ejemplos/kardex.CER-630.2026-10.json' }
+            text/plain:
+              schema: { type: string, description: 'PLE 12.1 file LE<RUC><AAAAMM00>120100001111.txt, 19 pipe-separated fields per line' }
+              examples:
+                ple: { externalValue: '../02-dominio/ejemplos/LE2060012345020261000120100001111.txt' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
+        '404': { $ref: '#/components/responses/NoEncontrado' }
   /reportes/ventas:
     get:
       tags: [Reportes]
       operationId: reporteVentas
-      summary: Sales report (CU-12)
+      summary: Sales Record (Format 14.1) for a period (CU-12)
+      description: Built from the accepted and voided CPEs of the period (rules R-70 to R-75). JSON (registro-ventas.schema.json) or the PLE 14.1 text file.
       parameters:
-        - { name: desde, in: query, required: true, schema: { type: string, format: date } }
-        - { name: hasta, in: query, required: true, schema: { type: string, format: date } }
+        - $ref: '#/components/parameters/periodoLibro'
+        - $ref: '#/components/parameters/formatoLibro'
       responses:
         '401': { $ref: '#/components/responses/NoAutorizado' }
-        '200': { description: Reporte, content: { application/json: { schema: { type: object } } } }
+        '200':
+          description: One row per document of the period, 35 fields each
+          headers:
+            Content-Disposition: { schema: { type: string }, description: 'attachment; filename=LE<RUC><AAAAMM00>140100001111.txt (formato=ple)' }
+          content:
+            application/json:
+              schema: { $ref: '../02-dominio/schemas/registro-ventas.schema.json' }
+              examples:
+                octubre: { externalValue: '../02-dominio/ejemplos/registro-ventas.2026-10.json' }
+            text/plain:
+              schema: { type: string, description: 'PLE 14.1 file, 35 pipe-separated fields per line' }
+              examples:
+                ple: { externalValue: '../02-dominio/ejemplos/LE2060012345020261000140100001111.txt' }
+        '400': { $ref: '#/components/responses/SolicitudInvalida' }
   /migraciones:
     post:
       tags: [Migracion]
@@ -545,6 +561,17 @@ components:
         Roles: VENDEDOR, ALMACENERO, CONTADOR, ADMINISTRADOR (see specs/01-casos-uso, actors).
         Operations marked [ADMINISTRADOR] require that role.
   parameters:
+    periodoLibro:
+      name: periodo
+      in: query
+      required: true
+      description: Book period AAAAMM (exported as AAAAMM00).
+      schema: { type: string, pattern: '^\d{4}(0[1-9]|1[0-2])$' }
+    formatoLibro:
+      name: formato
+      in: query
+      description: json (default) or ple (SUNAT Electronic Books Program text file).
+      schema: { type: string, enum: [json, ple], default: json }
     id:
       name: id
       in: path

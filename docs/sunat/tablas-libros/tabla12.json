@@ -1,0 +1,246 @@
+{
+  "tabla": "12",
+  "titulo": "Tipo de operación",
+  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf",
+  "nota": "Tabla completa. Formato 12.1, campo 14.",
+  "codigos": [
+    {
+      "codigo": "01",
+      "descripcion": "VENTA NACIONAL"
+    },
+    {
+      "codigo": "02",
+      "descripcion": "COMPRA NACIONAL"
+    },
+    {
+      "codigo": "03",
+      "descripcion": "CONSIGNACION RECIBIDA"
+    },
+    {
+      "codigo": "04",
+      "descripcion": "CONSIGNACION ENTREGADA"
+    },
+    {
+      "codigo": "05",
+      "descripcion": "DEVOLUCION RECIBIDA"
+    },
+    {
+      "codigo": "06",
+      "descripcion": "DEVOLUCION ENTREGADA"
+    },
+    {
+      "codigo": "07",
+      "descripcion": "BONIFICACION"
+    },
+    {
+      "codigo": "08",
+      "descripcion": "PREMIO"
+    },
+    {
+      "codigo": "09",
+      "descripcion": "DONACION"
+    },
+    {
+      "codigo": "10",
+      "descripcion": "SALIDA A PRODUCCION"
+    },
+    {
+      "codigo": "11",
+      "descripcion": "SALIDA POR TRANSFERENCIA ENTRE ALMACENES"
+    },
+    {
+      "codigo": "12",
+      "descripcion": "RETIRO"
+    },
+    {
+      "codigo": "13",
+      "descripcion": "MERMAS"
+    },
+    {
+      "codigo": "14",
+      "descripcion": "DESMEDROS"
+    },
+    {
+      "codigo": "15",
+      "descripcion": "DESTRUCCION"
+    },
+    {
+      "codigo": "16",
+      "descripcion": "SALDO INICIAL"
+    },
+    {
+      "codigo": "17",
+      "descripcion": "EXPORTACION"
+    },
+    {
+      "codigo": "18",
+      "descripcion": "IMPORTACION"
+    },
+    {
+      "codigo": "19",
+      "descripcion": "ENTRADA DE PRODUCCION"
+    },
+    {
+      "codigo": "20",
+      "descripcion": "ENTRADA POR DEVOLUCION DE PRODUCCION"
+    },
+    {
+      "codigo": "21",
+      "descripcion": "ENTRADA POR TRANSFERENCIA ENTRE ALMACENES"
+    },
+    {
+      "codigo": "22",
+      "descripcion": "ENTRADA POR IDENTIFICACION ERRONEA"
+    },
+    {
+      "codigo": "23",
+      "descripcion": "SALIDA POR IDENTIFICACION ERRONEA"
+    },
+    {
+      "codigo": "24",
+      "descripcion": "ENTRADA POR DEVOLUCION DEL CLIENTE"
+    },
+    {
+      "codigo": "25",
+      "descripcion": "SALIDA POR DEVOLUCION AL PROVEEDOR"
+    },
+    {
+      "codigo": "26",
+      "descripcion": "ENTRADA PARA SERVICIO DE PRODUCCION"
+    },
+    {
+      "codigo": "27",
+      "descripcion": "SALIDA POR SERVICIO DE PRODUCCION"
+    },
+    {
+      "codigo": "28",
+      "descripcion": "AJUSTE POR DIFERENCIA DE INVENTARIO"
+    },
+    {
+      "codigo": "29",
+      "descripcion": "ENTRADA DE BIENES EN PRESTAMO"
+    },
+    {
+      "codigo": "30",
+      "descripcion": "SALIDA DE BIENES EN PRESTAMO"
+    },
+    {
+      "codigo": "31",
+      "descripcion": "ENTRADA DE BIENES EN CUSTODIA"
+    },
+    {
+      "codigo": "32",
+      "descripcion": "SALIDA DE BIENES EN CUSTODIA"
+    },
+    {
+      "codigo": "33",
+      "descripcion": "MUESTRAS MEDICAS"
+    },
+    {
+      "codigo": "34",
+      "descripcion": "PUBLICIDAD"
+    },
+    {
+      "codigo": "35",
+      "descripcion": "GASTOS DE REPRESENTACION"
+    },
+    {
+      "codigo": "36",
+      "descripcion": "RETIRO PARA ENTREGA A TRABAJADORES"
+    },
+    {
+      "codigo": "37",
+      "descripcion": "RETIRO POR CONVENIO COLECTIVO"
+    },
+    {
+      "codigo": "38",
+      "descripcion": "RETIRO POR SUSTITUCION DE BIEN SINIESTRADO"
+    },
+    {
+      "codigo": "91",
+      "descripcion": "OTROS 1"
+    },
+    {
+      "codigo": "92",
+      "descripcion": "OTROS 2"
+    },
+    {
+      "codigo": "93",
+      "descripcion": "OTROS 3"
+    },
+    {
+      "codigo": "94",
+      "descripcion": "OTROS 4"
+    },
+    {
+      "codigo": "95",
+      "descripcion": "OTROS 5"
+    },
+    {
+      "codigo": "96",
+      "descripcion": "OTROS 6"
+    },
+    {
+      "codigo": "97",
+      "descripcion": "OTROS 7"
+    },
+    {
+      "codigo": "98",
+      "descripcion": "OTROS 8"
+    },
+    {
+      "codigo": "99",
+      "descripcion": "OTROS"
+    }
+  ],
+  "sentido": {
+    "01": "SALIDA",
+    "02": "ENTRADA",
+    "03": "ENTRADA",
+    "04": "SALIDA",
+    "05": "ENTRADA",
+    "06": "SALIDA",
+    "07": "SALIDA",
+    "08": "SALIDA",
+    "09": "SALIDA",
+    "10": "SALIDA",
+    "11": "SALIDA",
+    "12": "SALIDA",
+    "13": "SALIDA",
+    "14": "SALIDA",
+    "15": "SALIDA",
+    "16": "SALDO_INICIAL",
+    "17": "SALIDA",
+    "18": "ENTRADA",
+    "19": "ENTRADA",
+    "20": "ENTRADA",
+    "21": "ENTRADA",
+    "22": "ENTRADA",
+    "23": "SALIDA",
+    "24": "ENTRADA",
+    "25": "SALIDA",
+    "26": "ENTRADA",
+    "27": "SALIDA",
+    "28": "AJUSTE",
+    "29": "ENTRADA",
+    "30": "SALIDA",
+    "31": "ENTRADA",
+    "32": "SALIDA",
+    "33": "SALIDA",
+    "34": "SALIDA",
+    "35": "SALIDA",
+    "36": "SALIDA",
+    "37": "SALIDA",
+    "38": "SALIDA",
+    "91": "OTRO",
+    "92": "OTRO",
+    "93": "OTRO",
+    "94": "OTRO",
+    "95": "OTRO",
+    "96": "OTRO",
+    "97": "OTRO",
+    "98": "OTRO",
+    "99": "OTRO"
+  },
+  "notaSentido": "Dirección de cada tipo de operación para la regla R-61 (derivada del nombre de la operación; 28 admite entrada o salida; 91–99 sin restricción)."
+}

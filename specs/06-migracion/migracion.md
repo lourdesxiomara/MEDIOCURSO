@@ -15,10 +15,10 @@ final balance is the **opening balance** of the new system.
 |---|---|---|
 | `id` | `MovimientoInventario.idLegado` and `ResultadoMigracion.trazas[].idLegado` | Literal copy (M-07) |
 | `fecha` | `MovimientoInventario.fecha` | M-01 |
-| `ingreso` | `MovimientoInventario` type `INGRESO` or `AJUSTE_*`, `cantidad` | M-02, M-05 |
-| `salida` | `MovimientoInventario` type `SALIDA` or `AJUSTE_*`, `cantidad` | M-02, M-05 |
+| `ingreso` | `MovimientoInventario` type `INGRESO` or `AJUSTE_*`, `cantidad`, `tipoOperacionTabla12` (02 purchase / 28 adjustment) | M-02, M-05 |
+| `salida` | `MovimientoInventario` type `SALIDA` or `AJUSTE_*`, `cantidad`, `tipoOperacionTabla12` (01 sale / 28 adjustment) | M-02, M-05 |
 | `producto` | `Producto` (`descripcion`, `codigo`, `idLegado`) and `MovimientoInventario.productoId` | M-03, M-06 |
-| `nro_documento` | `MovimientoInventario.documentoSustento` (`tipo`, `numero`) | M-04 |
+| `nro_documento` | `MovimientoInventario.documentoSustento` (`tipoTabla10`, `serie`, `numero`) | M-04 |
 
 Field-by-field detail: `mapeo-legado.csv`. Cross-check with SUNAT/UBL: `specs/05-trazabilidad/matriz.csv` (T-48…T-52).
 
@@ -28,8 +28,8 @@ Field-by-field detail: `mapeo-legado.csv`. Cross-check with SUNAT/UBL: `specs/05
 | **M-01** Date | Accept `YYYY-MM-DD` and `DD/MM/YYYY`; convert to ISO 8601. Not in the future. | Empty or invalid date → QUARANTINE |
 | **M-02** Quantities | `ingreso` and `salida` numeric ≥ 0. If both > 0 → two movements. If both = 0 → DISCARDED and logged. Decimals only if the unit allows them (KGM, LTR). | Non-numeric text or decimal in NIU → QUARANTINE |
 | **M-03** Product | Normalize: uppercase, no accents, single spaces. Group equal variants; generate a stable `codigo`. Keep the original text in `idLegado`. | Doubtful similarity → QUARANTINE for manual merge |
-| **M-04** Document | Classify `nro_documento`: `^[FB]\d{3}-\d{1,8}$` → paper type 01/03; `^GR-` → dispatch guide (09); `AJUSTE` → INTERNAL; empty or without series → INTERNAL flagged `NO_IDENTIFICADO`; mistyped series (`b1-89`) → proposed repair (`B001-89`) requiring approval. Duplicates (same number on different dates) → QUARANTINE. | See column |
-| **M-05** Adjustments | Negative quantity or document `AJUSTE` → `AJUSTE_POSITIVO` / `AJUSTE_NEGATIVO` with absolute value. | — |
+| **M-04** Document | Classify `nro_documento`: `^[FB]\d{3}-\d{1,8}$` → paper type 01/03; `^GR-` → dispatch guide (09); `AJUSTE` → table 10 `00` (Otros); empty or without series → `00` with series `0` and the original text as number, flagged `NO_IDENTIFICADO`. Series and number are split for Format 12.1 (`F001-125` → `F001` / `125`); mistyped series (`b1-89`) → proposed repair (`B001-89`) requiring approval. Duplicates (same number on different dates) → QUARANTINE. | See column |
+| **M-05** Adjustments | Negative quantity or document `AJUSTE` → `AJUSTE_POSITIVO` / `AJUSTE_NEGATIVO` with absolute value and table 12 = `28` (inventory difference). Legacy inputs with a guide or purchase document → table 12 = `02`; legacy sales → `01`. Each product's legacy closing balance becomes its **opening balance** in the new system (table 12 = `16`, document `00`) | — |
 | **M-06** Tax configuration | Flag products that need a decision: alcoholic drinks/cigarettes → pending ISC (cat. 08, D-05); plastic bags → `esBolsaPlastica = true` (ICBPER). All start with treatment `10` unless stated (D-04). | Product created inactive until configured |
 | **M-07** Traceability | Every row ends in exactly one state: MIGRATED, QUARANTINE or DISCARDED, with the rules applied. `read = migrated + quarantined + discarded`. | The migration fails and is rolled back |
 
@@ -63,10 +63,10 @@ flowchart TD
 |---|---|---|
 | 1, 2, 4, 8, 9 | MIGRATED | M-01, M-02, M-03, M-04 (8: M-06 ISC; 9: M-06 ICBPER) |
 | 3 | MIGRATED (date converted) | M-01 |
-| 5 | MIGRATED with INTERNAL document `NO_IDENTIFICADO` | M-03, M-04 |
-| 6 | MIGRATED with INTERNAL document `NO_IDENTIFICADO` | M-04 |
+| 5 | MIGRATED with document `00` (series `0`, number `88`), `NO_IDENTIFICADO` | M-03, M-04 |
+| 6 | MIGRATED with document `00` / `0` / `0`, `NO_IDENTIFICADO` | M-04 |
 | 7 | QUARANTINE (repair `B001-89` proposed) | M-04 |
-| 10 | MIGRATED as `AJUSTE_NEGATIVO` 2 | M-05 |
+| 10 | MIGRATED as `AJUSTE_NEGATIVO` 2, table 12 = `28` | M-05 |
 | 11 | DISCARDED (no movement) | M-02 |
 | 12 | MIGRATED as two movements | M-02 |
 | 13 | QUARANTINE (no date) | M-01 |

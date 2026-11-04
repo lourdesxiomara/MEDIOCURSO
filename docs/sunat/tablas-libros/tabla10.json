@@ -1,0 +1,40 @@
+{
+  "tabla": "10",
+  "titulo": "Tipo de comprobante de pago o documento",
+  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf",
+  "nota": "Subconjunto aplicable. Formato 12.1 campo 11 y Formato 14.1 campo 6. Documentos internos (ajustes) usan 00.",
+  "codigos": [
+    {
+      "codigo": "00",
+      "descripcion": "Otros"
+    },
+    {
+      "codigo": "01",
+      "descripcion": "Factura"
+    },
+    {
+      "codigo": "03",
+      "descripcion": "Boleta de Venta"
+    },
+    {
+      "codigo": "07",
+      "descripcion": "Nota de crédito"
+    },
+    {
+      "codigo": "08",
+      "descripcion": "Nota de débito"
+    },
+    {
+      "codigo": "09",
+      "descripcion": "Guía de remisión - Remitente"
+    },
+    {
+      "codigo": "12",
+      "descripcion": "Ticket o cinta emitido por máquina registradora"
+    },
+    {
+      "codigo": "31",
+      "descripcion": "Guía de Remisión - Transportista"
+    }
+  ]
+}

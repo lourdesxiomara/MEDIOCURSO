@@ -1,0 +1,15 @@
+# SHA-256 of the official OASIS UBL 2.1 XSDs, with line endings normalized to LF (CRLF/CR → LF, trailing newlines ignored).
+# Checked by tools/verificar.py; independent of git and of Windows CRLF checkouts.
+528eb001745a79736f6670b1709907783bbcfb5ac121136764e273d0d80cf5bd  docs/ubl/common/UBL-CommonAggregateComponents-2.1.xsd
+a823da6fef43553b6e36c8be4e85e31adac71d4784cb9d4533ff290313aa2b8f  docs/ubl/common/UBL-CommonBasicComponents-2.1.xsd
+a6ab5a2505b97d5c70b7a7ef1e892f75b6c6817a861c48b51734b2c6ec71264b  docs/ubl/common/UBL-CommonExtensionComponents-2.1.xsd
+25b61f0a8375e76dc6e28d19d4d92937770e822466b113b2236879d71621d981  docs/ubl/common/UBL-CommonSignatureComponents-2.1.xsd
+991cc706edf579a5258ff2a648faf0712042dc21b012394142451c45f629b8b8  docs/ubl/common/UBL-CoreComponentParameters-2.1.xsd
+5ce28bab70a88fe5a668215fae482c03f6111b56e67d1df30da82efe4a009071  docs/ubl/common/UBL-ExtensionContentDataType-2.1.xsd
+76ecf49e23729a93ec423c79027776765bfab75ef18516d73cdcb5704dbe61c0  docs/ubl/common/UBL-QualifiedDataTypes-2.1.xsd
+25fa89fe43be6e890ef2835851db1d19df9be753d3fcc39b7ec242b3250a57bf  docs/ubl/common/UBL-SignatureAggregateComponents-2.1.xsd
+ae2c29db19b46d3f76b1c347098419eb1753e7fae2e29d9c76901d6325133463  docs/ubl/common/UBL-SignatureBasicComponents-2.1.xsd
+7cf802c3466452fc69c13cc54adeabe598a8bf226504ab8a2c202c6e9c8989f6  docs/ubl/common/UBL-UnqualifiedDataTypes-2.1.xsd
+21eee9df7418a4ec2a26d92ad80c9b41d5e884959a698793311d2c5c6754c4b0  docs/ubl/maindoc/UBL-CreditNote-2.1.xsd
+ea5303c2191dfb579d6d53a66e41094020f33dca0531086da1bd62f722202da0  docs/ubl/maindoc/UBL-DebitNote-2.1.xsd
+6943ac608d877dc014b6bda8accdd985f526e3a3314b6f6abdb7eb4ff558cc36  docs/ubl/maindoc/UBL-Invoice-2.1.xsd

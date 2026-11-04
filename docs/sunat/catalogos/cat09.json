@@ -42,6 +42,11 @@
     {
       "codigo": "10",
       "descripcion": "Otros conceptos"
+    },
+    {
+      "codigo": "13",
+      "descripcion": "Ajustes – montos y/o fechas de pago"
     }
-  ]
+  ],
+  "nota": "Código 13 incorporado por la RS 000193-2020/SUNAT para corregir el monto neto pendiente o las cuotas de una factura al crédito."
 }

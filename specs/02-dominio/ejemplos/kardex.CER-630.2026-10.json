@@ -1,0 +1,90 @@
+{
+  "periodo": "20261000",
+  "ruc": "20600123450",
+  "codigoEstablecimiento": "0000",
+  "codigoExistencia": "CER-630",
+  "saldoInicial": "48",
+  "movimientos": [
+    {
+      "periodo": "20261000",
+      "cuo": "KX202610-0001",
+      "correlativoAsiento": "A1",
+      "codigoEstablecimiento": "0000",
+      "tipoExistencia": "01",
+      "productoId": "0a9e1c3b-2d4f-4e6a-8b7c-1f2e3d4c5b6a",
+      "codigoExistencia": "CER-630",
+      "codigoSunat": "50202201",
+      "descripcionExistencia": "CERVEZA 630ML",
+      "fecha": "2026-10-01",
+      "documentoSustento": {
+        "tipoTabla10": "00",
+        "serie": "0",
+        "numero": "0"
+      },
+      "tipoOperacionTabla12": "16",
+      "tipo": "SALDO_INICIAL",
+      "unidadMedidaTabla6": "NIU",
+      "cantidad": "48",
+      "saldoFinal": "48",
+      "estadoOperacion": "1",
+      "almacen": "PRINCIPAL",
+      "origen": "MIGRACION"
+    },
+    {
+      "periodo": "20261000",
+      "cuo": "KX202610-0002",
+      "correlativoAsiento": "M2",
+      "codigoEstablecimiento": "0000",
+      "tipoExistencia": "01",
+      "productoId": "0a9e1c3b-2d4f-4e6a-8b7c-1f2e3d4c5b6a",
+      "codigoExistencia": "CER-630",
+      "codigoSunat": "50202201",
+      "descripcionExistencia": "CERVEZA 630ML",
+      "fecha": "2026-10-22",
+      "documentoSustento": {
+        "tipoTabla10": "01",
+        "serie": "F001",
+        "numero": "1",
+        "comprobanteId": "3f6c2a10-7b1e-4c55-9a7d-0e2f1b9c8a01"
+      },
+      "tipoOperacionTabla12": "01",
+      "tipo": "SALIDA",
+      "unidadMedidaTabla6": "NIU",
+      "cantidad": "12",
+      "saldoFinal": "36",
+      "estadoOperacion": "1",
+      "almacen": "PRINCIPAL",
+      "origen": "SISTEMA"
+    },
+    {
+      "periodo": "20261000",
+      "cuo": "KX202610-0003",
+      "correlativoAsiento": "M3",
+      "codigoEstablecimiento": "0000",
+      "tipoExistencia": "01",
+      "productoId": "0a9e1c3b-2d4f-4e6a-8b7c-1f2e3d4c5b6a",
+      "codigoExistencia": "CER-630",
+      "codigoSunat": "50202201",
+      "descripcionExistencia": "CERVEZA 630ML",
+      "fecha": "2026-10-23",
+      "documentoSustento": {
+        "tipoTabla10": "07",
+        "serie": "FC01",
+        "numero": "1",
+        "comprobanteId": "8b1d4e22-5c3a-4f0e-b6a1-2d9e7f3c4b02"
+      },
+      "tipoOperacionTabla12": "24",
+      "tipo": "INGRESO",
+      "unidadMedidaTabla6": "NIU",
+      "cantidad": "2",
+      "saldoFinal": "38",
+      "estadoOperacion": "1",
+      "almacen": "PRINCIPAL",
+      "origen": "SISTEMA"
+    }
+  ],
+  "totalEntradas": "2",
+  "totalSalidas": "12",
+  "saldoFinal": "38",
+  "archivoPle": "LE2060012345020261000120100001111.txt"
+}

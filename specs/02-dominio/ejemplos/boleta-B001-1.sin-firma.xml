@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Sales receipt (cat. 01 = 03) to a person with DNI (cat. 06 = 1), with ICBPER.
+  Sales receipt (cat. 01 = 03) to a person with DNI (cat. 06 = 1), with ICBPER and one exempt line (cat. 07 = 20).
   Equivalent to specs/02-dominio/ejemplos/comprobante.boleta.json. XML BEFORE signing (R-50).
 -->
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -12,9 +12,9 @@
   <cbc:IssueDate>2026-10-22</cbc:IssueDate>
   <cbc:IssueTime>12:30:00</cbc:IssueTime>
   <cbc:InvoiceTypeCode listID="0101" listAgencyName="PE:SUNAT" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">03</cbc:InvoiceTypeCode>
-  <cbc:Note languageLocaleID="1000">CINCUENTA Y DOS CON 54/100 SOLES</cbc:Note>
+  <cbc:Note languageLocaleID="1000">CINCUENTA Y NUEVE CON 54/100 SOLES</cbc:Note>
   <cbc:DocumentCurrencyCode>PEN</cbc:DocumentCurrencyCode>
-  <cbc:LineCountNumeric>2</cbc:LineCountNumeric>
+  <cbc:LineCountNumeric>3</cbc:LineCountNumeric>
   <cac:Signature>
     <cbc:ID>IDSignABC</cbc:ID>
     <cac:SignatoryParty>
@@ -50,11 +50,15 @@
         <cbc:TaxAmount currencyID="PEN">0.50</cbc:TaxAmount>
         <cac:TaxCategory><cac:TaxScheme><cbc:ID>7152</cbc:ID><cbc:Name>ICBPER</cbc:Name><cbc:TaxTypeCode>OTH</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
       </cac:TaxSubtotal>
+    <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">7.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">0.00</cbc:TaxAmount>
+        <cac:TaxCategory><cac:TaxScheme><cbc:ID>9997</cbc:ID><cbc:Name>EXO</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
   </cac:TaxTotal>
   <cac:LegalMonetaryTotal>
-    <cbc:LineExtensionAmount currencyID="PEN">44.10</cbc:LineExtensionAmount>
-    <cbc:TaxInclusiveAmount currencyID="PEN">52.54</cbc:TaxInclusiveAmount>
-    <cbc:PayableAmount currencyID="PEN">52.54</cbc:PayableAmount>
+    <cbc:LineExtensionAmount currencyID="PEN">51.10</cbc:LineExtensionAmount>
+    <cbc:TaxInclusiveAmount currencyID="PEN">59.54</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="PEN">59.54</cbc:PayableAmount>
   </cac:LegalMonetaryTotal>
   <cac:InvoiceLine>
     <cbc:ID>1</cbc:ID>
@@ -100,5 +104,25 @@
       <cac:SellersItemIdentification><cbc:ID>BOL-01</cbc:ID></cac:SellersItemIdentification>
     </cac:Item>
     <cac:Price><cbc:PriceAmount currencyID="PEN">0.10</cbc:PriceAmount></cac:Price>
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>3</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="KGM">2</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="PEN">7.00</cbc:LineExtensionAmount>
+    <cac:PricingReference><cac:AlternativeConditionPrice>
+      <cbc:PriceAmount currencyID="PEN">3.50</cbc:PriceAmount><cbc:PriceTypeCode>01</cbc:PriceTypeCode>
+    </cac:AlternativeConditionPrice></cac:PricingReference>
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="PEN">0.00</cbc:TaxAmount>
+      <cac:TaxSubtotal>
+        <cbc:TaxableAmount currencyID="PEN">7.00</cbc:TaxableAmount><cbc:TaxAmount currencyID="PEN">0.00</cbc:TaxAmount>
+        <cac:TaxCategory><cbc:Percent>18.00</cbc:Percent><cbc:TaxExemptionReasonCode>20</cbc:TaxExemptionReasonCode><cac:TaxScheme><cbc:ID>9997</cbc:ID><cbc:Name>EXO</cbc:Name><cbc:TaxTypeCode>VAT</cbc:TaxTypeCode></cac:TaxScheme></cac:TaxCategory>
+      </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:Item>
+      <cbc:Description>PAPA AMARILLA 1KG</cbc:Description>
+      <cac:SellersItemIdentification><cbc:ID>PAP-1K</cbc:ID></cac:SellersItemIdentification>
+    </cac:Item>
+    <cac:Price><cbc:PriceAmount currencyID="PEN">3.50</cbc:PriceAmount></cac:Price>
   </cac:InvoiceLine>
 </Invoice>

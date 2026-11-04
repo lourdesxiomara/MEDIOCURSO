@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://abc-software.pe/specs/schemas/registro-ventas.schema.json",
+  "title": "RegistroVentas",
+  "description": "Sales Record (Format 14.1) for one period, built from the accepted CPEs. Response of GET /reportes/ventas (CU-12). Rules R-70 to R-75.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "periodo",
+    "ruc",
+    "filas"
+  ],
+  "properties": {
+    "periodo": {
+      "$ref": "comun.schema.json#/$defs/periodoPle"
+    },
+    "ruc": {
+      "$ref": "comun.schema.json#/$defs/ruc"
+    },
+    "filas": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fila"
+      }
+    },
+    "archivoPle": {
+      "type": "string",
+      "pattern": "^LE\\d{11}\\d{6}00140100\\d{2}[01][01][12]1\\.txt$",
+      "description": "PLE file name (R-75)."
+    }
+  },
+  "$defs": {
+    "fila": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "periodo",
+        "cuo",
+        "correlativoAsiento",
+        "fechaEmision",
+        "tipoComprobanteTabla10",
+        "serie",
+        "numero",
+        "tipoDocumentoCliente",
+        "numeroDocumentoCliente",
+        "nombreCliente",
+        "valorExportacion",
+        "baseImponibleGravada",
+        "descuentoBaseImponible",
+        "igv",
+        "descuentoIgv",
+        "importeExonerado",
+        "importeInafecto",
+        "isc",
+        "baseIvap",
+        "ivap",
+        "icbper",
+        "otrosConceptos",
+        "importeTotal",
+        "moneda",
+        "tipoCambio",
+        "estado"
+      ],
+      "description": "One row of the Sales Record (Format 14.1, PLE 5.2: 35 fields + free fields). Rules R-70 to R-75.",
+      "properties": {
+        "periodo": {
+          "$ref": "comun.schema.json#/$defs/periodoPle",
+          "description": "Field 1."
+        },
+        "cuo": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Field 2."
+        },
+        "correlativoAsiento": {
+          "type": "string",
+          "pattern": "^[AMC][A-Za-z0-9]{1,9}$",
+          "description": "Field 3."
+        },
+        "fechaEmision": {
+          "$ref": "comun.schema.json#/$defs/fecha",
+          "description": "Field 4 (DD/MM/AAAA in PLE)."
+        },
+        "fechaVencimiento": {
+          "$ref": "comun.schema.json#/$defs/fecha",
+          "description": "Field 5: due date of the last instalment for credit invoices; omitted otherwise."
+        },
+        "tipoComprobanteTabla10": {
+          "$ref": "comun.schema.json#/$defs/tabla10",
+          "description": "Field 6."
+        },
+        "serie": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 7."
+        },
+        "numero": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 8."
+        },
+        "numeroFinal": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 9: only for daily consolidated receipts (not used: receipts are recorded one by one)."
+        },
+        "tipoDocumentoCliente": {
+          "$ref": "comun.schema.json#/$defs/catalogo06",
+          "description": "Field 10."
+        },
+        "numeroDocumentoCliente": {
+          "type": "string",
+          "maxLength": 15,
+          "description": "Field 11."
+        },
+        "nombreCliente": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Field 12."
+        },
+        "valorExportacion": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 13: 0.00 (no exports, S-03)."
+        },
+        "baseImponibleGravada": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 14 = totales.totalGravado."
+        },
+        "descuentoBaseImponible": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 15."
+        },
+        "igv": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 16 = totales.totalIgv."
+        },
+        "descuentoIgv": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 17."
+        },
+        "importeExonerado": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 18 = totales.totalExonerado."
+        },
+        "importeInafecto": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 19 = totales.totalInafecto."
+        },
+        "isc": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 20 = totales.totalIsc."
+        },
+        "baseIvap": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 21: 0.00 (no rice milling)."
+        },
+        "ivap": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 22: 0.00."
+        },
+        "icbper": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 23 = totales.totalIcbper."
+        },
+        "otrosConceptos": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 24."
+        },
+        "importeTotal": {
+          "$ref": "comun.schema.json#/$defs/montoPle",
+          "description": "Field 25 = totales.importeTotal = Σ fields 13–24."
+        },
+        "moneda": {
+          "$ref": "comun.schema.json#/$defs/catalogo02",
+          "description": "Field 26."
+        },
+        "tipoCambio": {
+          "type": "string",
+          "pattern": "^\\d\\.\\d{3}$",
+          "description": "Field 27: 1.000 for PEN (R-73)."
+        },
+        "modificadoFecha": {
+          "$ref": "comun.schema.json#/$defs/fecha",
+          "description": "Field 28: issue date of the modified document (notes)."
+        },
+        "modificadoTipo": {
+          "$ref": "comun.schema.json#/$defs/tabla10",
+          "description": "Field 29."
+        },
+        "modificadoSerie": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 30."
+        },
+        "modificadoNumero": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 31."
+        },
+        "contrato": {
+          "type": "string",
+          "maxLength": 12,
+          "description": "Field 32: joint ventures only."
+        },
+        "errorTipoCambio": {
+          "type": "string",
+          "enum": [
+            "1"
+          ],
+          "description": "Field 33."
+        },
+        "indicadorMedioPago": {
+          "type": "string",
+          "enum": [
+            "1"
+          ],
+          "description": "Field 34."
+        },
+        "estado": {
+          "type": "string",
+          "enum": [
+            "1",
+            "2",
+            "8",
+            "9"
+          ],
+          "description": "Field 35: 1 current period, 2 voided document, 8 omitted from a previous period, 9 adjustment (R-74)."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "tipoComprobanteTabla10": {
+                "enum": [
+                  "07",
+                  "08"
+                ]
+              }
+            },
+            "required": [
+              "tipoComprobanteTabla10"
+            ]
+          },
+          "then": {
+            "required": [
+              "modificadoFecha",
+              "modificadoTipo",
+              "modificadoSerie",
+              "modificadoNumero"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

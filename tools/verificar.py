@@ -18,6 +18,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 CATALOGOS = RAIZ / "docs/sunat/catalogos"
+TABLAS = RAIZ / "docs/sunat/tablas-libros"
 SCHEMAS = RAIZ / "specs/02-dominio/schemas"
 EJEMPLOS = RAIZ / "specs/02-dominio/ejemplos"
 OPENAPI = RAIZ / "specs/04-api/openapi.yaml"
@@ -64,6 +65,8 @@ EJEMPLO_SCHEMA = {
     "producto-cerveza-monto-fijo.json": "producto.schema.json",
     "producto-cigarrillos.json": "producto.schema.json",
     "evento.comprobante-aceptado.json": "evento.schema.json",
+    "kardex.CER-630.2026-10.json": "kardex.schema.json",
+    "registro-ventas.2026-10.json": "registro-ventas.schema.json",
 }
 
 # XML de ejemplo -> JSON equivalente (se comprueba que digan lo mismo)
@@ -111,6 +114,41 @@ def cargar_catalogos() -> dict[str, list[str]]:
         codigos = [c["codigo"] for c in d["codigos"]]
         cats[d["catalogo"]] = codigos
     return cats
+
+
+def cargar_tablas() -> dict[str, list[str]]:
+    """Books tables of RS 234-2006 (Annex 3): tabla05, tabla06, tabla10, tabla12…"""
+    return {leer_json(f)["tabla"]: [c["codigo"] for c in leer_json(f)["codigos"]] for f in sorted(TABLAS.glob("tabla*.json"))}
+
+
+def v_tablas():
+    for f in sorted(TABLAS.glob("tabla*.json")):
+        d = leer_json(f)
+        for k in ("tabla", "titulo", "fuente", "codigos"):
+            if k not in d:
+                errores.append(f"{f.name}: missing '{k}'")
+        cods = [c["codigo"] for c in d["codigos"]]
+        if len(cods) != len(set(cods)):
+            errores.append(f"{f.name}: duplicated codes")
+        if f.stem != f"tabla{d['tabla']}":
+            errores.append(f"{f.name}: name does not match table {d['tabla']}")
+    t06 = leer_json(TABLAS / "tabla06.json")
+    cat03 = cargar_catalogos()["03"]
+    for c03, c06 in t06.get("equivalenciaCatalogo03", {}).items():
+        if c03 not in cat03:
+            errores.append(f"tabla06 equivalence: {c03} is not in catalog 03")
+        if c06 is not None and c06 not in [c["codigo"] for c in t06["codigos"]]:
+            errores.append(f"tabla06 equivalence: {c06} is not in table 6")
+    for c03 in cat03:
+        if c03 not in t06.get("equivalenciaCatalogo03", {}):
+            errores.append(f"tabla06: catalog 03 code {c03} has no equivalence (map it or set null + open question)")
+    comun = leer_json(SCHEMAS / "comun.schema.json")["$defs"]
+    for n, cods in cargar_tablas().items():
+        d = comun.get(f"tabla{n}")
+        if d is None:
+            errores.append(f"comun.schema.json: missing $defs/tabla{n}")
+        elif d["enum"] != cods:
+            errores.append(f"comun.schema.json: enum tabla{n} differs from tabla{n}.json")
 
 
 def v_catalogos():
@@ -278,9 +316,151 @@ def v_calculos():
             errores.append(f"{nombre}: importeTotal inconsistente (R-31)")
         if not any(l["codigo"] == "1000" for l in c["leyendas"]):
             errores.append(f"{nombre}: falta leyenda 1000 (R-32)")
+        fp = c.get("formaPago")
+        if c["tipoComprobante"] == "01" and not fp:
+            errores.append(f"{nombre}: invoice without formaPago (R-35)")
+        if fp and fp["tipo"] == "Credito":
+            pend, cuotas = Decimal(fp["montoNetoPendiente"]), fp["cuotas"]
+            if sum(Decimal(q["monto"]) for q in cuotas) != pend:
+                errores.append(f"{nombre}: Σ instalments ≠ net pending amount (R-36)")
+            if not (Decimal("0") < pend <= tot["importeTotal"]):
+                errores.append(f"{nombre}: net pending amount must be > 0 and ≤ total (R-36)")
+            if [q["numero"] for q in cuotas] != list(range(1, len(cuotas) + 1)):
+                errores.append(f"{nombre}: instalments must be numbered 1..n (R-36)")
+            for q in cuotas:
+                if q["fechaVencimiento"] <= c["fechaEmision"]:
+                    errores.append(f"{nombre}: instalment {q['numero']} due on or before the issue date (R-36)")
 
 
 # ---------------------------------------------------------------- XML UBL vs XSD y vs JSON
+# ---------------------------------------------------------------- registros 12.1 y 14.1 (RS 234-2006)
+def v_registros():
+    sys.path.insert(0, str(RAIZ / "tools"))
+    import ple
+    comps = {c["numero"]: c for c in (leer_json(f) for f in EJEMPLOS.glob("comprobante.*.json"))}
+    emisor = next(iter(comps.values()))["emisor"]
+    t12 = leer_json(TABLAS / "tabla12.json")["sentido"]
+    equiv = leer_json(TABLAS / "tabla06.json")["equivalenciaCatalogo03"]
+    permitido = {"SALDO_INICIAL": {"SALDO_INICIAL"}, "INGRESO": {"ENTRADA", "OTRO"}, "AJUSTE_POSITIVO": {"AJUSTE", "OTRO"},
+                 "SALIDA": {"SALIDA", "OTRO"}, "AJUSTE_NEGATIVO": {"AJUSTE", "OTRO"}}
+    # ---- Format 12.1 (kardex)
+    for f in sorted(EJEMPLOS.glob("kardex.*.json")):
+        k = leer_json(f)
+        movs = k["movimientos"]
+        if movs[0]["tipoOperacionTabla12"] != "16" or movs[0]["tipo"] != "SALDO_INICIAL":
+            errores.append(f"{f.name}: first row must be the opening balance, table 12 = 16 (R-65)")
+        if Decimal(movs[0]["cantidad"]) != Decimal(k["saldoInicial"]):
+            errores.append(f"{f.name}: saldoInicial ≠ first row (R-65)")
+        saldo, ent, sal = Decimal("0"), Decimal("0"), Decimal("0")
+        for i, m in enumerate(movs, 1):
+            q = Decimal(m["cantidad"])
+            entra = m["tipo"] in ("SALDO_INICIAL", "INGRESO", "AJUSTE_POSITIVO")
+            saldo += q if entra else -q
+            if i > 1:
+                ent, sal = (ent + q, sal) if entra else (ent, sal + q)
+            if Decimal(m["saldoFinal"]) != saldo or saldo < 0:
+                errores.append(f"{f.name} row {i}: saldoFinal {m['saldoFinal']} should be {saldo} and never negative (R-65)")
+            if t12.get(m["tipoOperacionTabla12"]) not in permitido[m["tipo"]]:
+                errores.append(f"{f.name} row {i}: table 12 code {m['tipoOperacionTabla12']} inconsistent with {m['tipo']} (R-61)")
+            if m["periodo"] != k["periodo"] or m["fecha"][:4] + m["fecha"][5:7] + "00" != m["periodo"]:
+                errores.append(f"{f.name} row {i}: period does not match the date (R-60)")
+            if m["codigoEstablecimiento"] != emisor["domicilioFiscal"]["codigoEstablecimiento"]:
+                errores.append(f"{f.name} row {i}: establishment ≠ CPE AddressTypeCode (R-64)")
+            doc = m["documentoSustento"]
+            if doc["tipoTabla10"] == "00":
+                if (doc["serie"], doc["numero"]) != ("0", "0") and m["tipo"] == "SALDO_INICIAL":
+                    errores.append(f"{f.name} row {i}: opening balance uses document 00 / 0 / 0 (R-62)")
+            else:
+                c = comps.get(f"{doc['serie']}-{doc['numero']}")
+                if not c or c["tipoComprobante"] != doc["tipoTabla10"]:
+                    errores.append(f"{f.name} row {i}: supporting document {doc} not found among the example CPEs (R-62)")
+                else:
+                    lin = [l for l in c["lineas"] if l.get("codigoProducto") == m["codigoExistencia"]]
+                    if not lin or Decimal(lin[0]["cantidad"]) != q:
+                        errores.append(f"{f.name} row {i}: quantity ≠ CPE line for {m['codigoExistencia']}")
+                    elif equiv.get(lin[0]["unidadMedida"]) != m["unidadMedidaTabla6"]:
+                        errores.append(f"{f.name} row {i}: unit ≠ table 6 equivalent of the CPE unit (R-63)")
+                    if c["fechaEmision"] != m["fecha"]:
+                        errores.append(f"{f.name} row {i}: date ≠ CPE issue date")
+        if (Decimal(k["totalEntradas"]), Decimal(k["totalSalidas"]), Decimal(k["saldoFinal"])) != (ent, sal, saldo):
+            errores.append(f"{f.name}: totals should be inputs {ent}, outputs {sal}, closing {saldo} (R-65)")
+        if k["archivoPle"] != ple.nombre_archivo(k["ruc"], k["periodo"], "120100"):
+            errores.append(f"{f.name}: PLE file name should be {ple.nombre_archivo(k['ruc'], k['periodo'], '120100')} (R-66)")
+        txt = EJEMPLOS / k["archivoPle"]
+        esperado = [ple.linea_12_1(m) for m in movs]
+        if not txt.is_file() or txt.read_text(encoding="utf-8").splitlines() != esperado:
+            errores.append(f"{txt.name}: PLE 12.1 file does not match {f.name} (R-66)")
+        elif any(len(l.split("|")) != 20 for l in esperado):
+            errores.append(f"{txt.name}: each 12.1 line must have 19 fields (R-66)")
+    mov = leer_json(EJEMPLOS / "movimiento-inventario.salida.json")
+    if not any(m == mov for f in EJEMPLOS.glob("kardex.*.json") for m in leer_json(f)["movimientos"]):
+        errores.append("movimiento-inventario.salida.json is not a row of the example kardex")
+    # ---- Format 14.1 (registro de ventas)
+    for f in sorted(EJEMPLOS.glob("registro-ventas.*.json")):
+        rv = leer_json(f)
+        claves = []
+        for i, fila in enumerate(rv["filas"], 1):
+            n = f"{f.name} row {i}"
+            num = f"{fila['serie']}-{fila['numero']}"
+            c = comps.get(num)
+            if not c:
+                errores.append(f"{n}: {num} is not an example CPE (R-70)")
+                continue
+            claves.append((fila["fechaEmision"], fila["tipoComprobanteTabla10"], fila["serie"], int(fila["numero"])))
+            signo = Decimal("-1") if c["tipoComprobante"] == "07" else Decimal("1")
+            tot = c["totales"]
+            pares = {"baseImponibleGravada": "totalGravado", "igv": "totalIgv", "importeExonerado": "totalExonerado",
+                     "importeInafecto": "totalInafecto", "isc": "totalIsc", "icbper": "totalIcbper", "importeTotal": "importeTotal"}
+            for campo, t_ in pares.items():
+                if Decimal(fila[campo]) != signo * Decimal(tot[t_]):
+                    errores.append(f"{n}: {campo} {fila[campo]} ≠ {'−' if signo < 0 else ''}{tot[t_]} from {num} (R-71/R-72)")
+            suma = sum(Decimal(fila[x]) for x in ("valorExportacion", "baseImponibleGravada", "descuentoBaseImponible", "igv",
+                       "descuentoIgv", "importeExonerado", "importeInafecto", "isc", "baseIvap", "ivap", "icbper", "otrosConceptos"))
+            if suma != Decimal(fila["importeTotal"]):
+                errores.append(f"{n}: field 25 ≠ Σ fields 13–24 (R-71)")
+            if fila["tipoComprobanteTabla10"] != c["tipoComprobante"] or fila["fechaEmision"] != c["fechaEmision"]:
+                errores.append(f"{n}: type or date ≠ CPE (R-70)")
+            if (fila["tipoDocumentoCliente"], fila["numeroDocumentoCliente"], fila["nombreCliente"]) != (
+                    c["cliente"]["documento"]["tipo"], c["cliente"]["documento"]["numero"], c["cliente"]["nombre"]):
+                errores.append(f"{n}: customer ≠ CPE (R-71)")
+            if fila["periodo"] != rv["periodo"] or fila["fechaEmision"][:4] + fila["fechaEmision"][5:7] + "00" != rv["periodo"]:
+                errores.append(f"{n}: period ≠ issue date (R-70)")
+            fp = c.get("formaPago", {})
+            venc = fp["cuotas"][-1]["fechaVencimiento"] if fp.get("tipo") == "Credito" else None
+            if fila.get("fechaVencimiento") != venc:
+                errores.append(f"{n}: field 5 should be the last instalment due date ({venc}) (R-71)")
+            if fila["moneda"] != c["moneda"] or (c["moneda"] == "PEN" and fila["tipoCambio"] != "1.000"):
+                errores.append(f"{n}: currency / exchange rate (R-73)")
+            if c["tipoComprobante"] in ("07", "08"):
+                af = c["documentoAfectado"]
+                ref = comps.get(af["numero"])
+                if (fila.get("modificadoTipo"), f"{fila.get('modificadoSerie')}-{fila.get('modificadoNumero')}") != (af["tipoComprobante"], af["numero"]) \
+                        or not ref or fila.get("modificadoFecha") != ref["fechaEmision"]:
+                    errores.append(f"{n}: fields 28–31 must reference {af['numero']} (R-72)")
+            if fila["estado"] != ("2" if c["estado"] == "ANULADO" else "1"):
+                errores.append(f"{n}: field 35 status (R-74)")
+        if claves != sorted(claves):
+            errores.append(f"{f.name}: rows must be ordered by date, type, series and number (R-70)")
+        en_periodo = {k for k, c in comps.items() if c["fechaEmision"][:4] + c["fechaEmision"][5:7] + "00" == rv["periodo"]}
+        if en_periodo != {f"{x['serie']}-{x['numero']}" for x in rv["filas"]}:
+            errores.append(f"{f.name}: every example CPE of the period must have exactly one row (R-70)")
+        if rv["archivoPle"] != ple.nombre_archivo(rv["ruc"], rv["periodo"], "140100"):
+            errores.append(f"{f.name}: PLE file name (R-75)")
+        txt = EJEMPLOS / rv["archivoPle"]
+        esperado = [ple.linea_14_1(x) for x in rv["filas"]]
+        if not txt.is_file() or txt.read_text(encoding="utf-8").splitlines() != esperado:
+            errores.append(f"{txt.name}: PLE 14.1 file does not match {f.name} (R-75)")
+        elif any(len(l.split("|")) != 36 for l in esperado):
+            errores.append(f"{txt.name}: each 14.1 line must have 35 fields (R-75)")
+    # ---- base global del IGV = valor de venta gravado (sin ISC)
+    for xmlf, jsonf in XML_JSON.items():
+        d = etree.parse(str(EJEMPLOS / xmlf))
+        raiz = etree.QName(d.getroot()).localname
+        b = d.xpath(xp_ns(f"/{raiz}/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxableAmount/text()"), namespaces=NS)
+        if b and b[0] != leer_json(EJEMPLOS / jsonf)["totales"]["totalGravado"]:
+            errores.append(f"{xmlf}: document-level IGV TaxableAmount must be the taxed sale value without ISC (14.1 field 14)")
+
+
 def v_xml_xsd():
     esquemas = {}
     for raiz, xsd in XSD.items():
@@ -332,6 +512,18 @@ def v_xml_coincide_json():
         if raiz == "Invoice":
             esperado[f"/{raiz}/cbc:InvoiceTypeCode/text()"] = c["tipoComprobante"]
             esperado[f"/{raiz}/cbc:InvoiceTypeCode/@listID"] = c["tipoOperacion"]
+            fp = c.get("formaPago")
+            if fp:
+                esperado[f"/{raiz}/cac:PaymentTerms[cbc:ID='FormaPago'][1]/cbc:PaymentMeansID/text()"] = fp["tipo"]
+                n_cuotas = len(d.xpath(xp_ns(f"/{raiz}/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]"), namespaces=NS))
+                if n_cuotas != len(fp.get("cuotas", [])):
+                    errores.append(f"{xmlf}: {n_cuotas} instalments in XML, JSON has {len(fp.get('cuotas', []))}")
+                if fp["tipo"] == "Credito":
+                    esperado[f"/{raiz}/cac:PaymentTerms[cbc:PaymentMeansID='Credito']/cbc:Amount/text()"] = fp["montoNetoPendiente"]
+                    for q in fp["cuotas"]:
+                        base = f"/{raiz}/cac:PaymentTerms[cbc:PaymentMeansID='Cuota{q['numero']:03d}']"
+                        esperado[f"{base}/cbc:Amount/text()"] = q["monto"]
+                        esperado[f"{base}/cbc:PaymentDueDate/text()"] = q["fechaVencimiento"]
         else:
             esperado[f"/{raiz}/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID/text()"] = c["documentoAfectado"]["numero"]
             esperado[f"/{raiz}/cac:DiscrepancyResponse/cbc:ResponseCode/text()"] = c["motivoNota"]["codigo"]
@@ -477,8 +669,11 @@ def v_matriz():
     reglas = set(re.findall(r"\|\s*(R-\d{2})\s*\|", REGLAS.read_text(encoding="utf-8")))
     reglas |= set(re.findall(r"\*\*(M-\d{2})\*\*", MIGRACION.read_text(encoding="utf-8")))
     reglas |= set(re.findall(r"### (CU-\d{2})", CASOS_USO.read_text(encoding="utf-8")))
-    xml = {"Invoice": etree.parse(str(EJEMPLOS / "factura-F001-1.sin-firma.xml")),
-           "CreditNote": etree.parse(str(EJEMPLOS / "nota-credito-FC01-1.sin-firma.xml"))}
+    xml: dict[str, list] = {}
+    for x in sorted(EJEMPLOS.glob("*.xml")):
+        d = etree.parse(str(x))
+        xml.setdefault(etree.QName(d.getroot()).localname, []).append(d)
+    tablas = cargar_tablas()
     ids = [f["id"] for f in filas]
     if len(ids) != len(set(ids)):
         errores.append("matriz.csv: IDs duplicados")
@@ -492,14 +687,17 @@ def v_matriz():
             if r.strip() not in reglas:
                 errores.append(f"{fid}: regla {r} no está definida")
         for c in filter(None, f["catalogo"].split("/")):
-            if c not in cats:
+            if c.startswith("T"):
+                if c[1:] not in tablas:
+                    errores.append(f"{fid}: books table {c} does not exist in docs/sunat/tablas-libros")
+            elif c not in cats:
                 errores.append(f"{fid}: catálogo {c} does not exist en docs/sunat/catalogos")
         xp = f["xpath_ubl"]
         if xp.startswith("/"):
             raiz = xp.split("/")[1]
             if "UBLExtensions" in xp:
                 avisos.append(f"{fid}: {xp} is added on signing; not checked in unsigned XML")
-            elif not xml[raiz].xpath(xp_ns(xp), namespaces=NS):
+            elif not any(d.xpath(xp_ns(xp), namespaces=NS) for d in xml.get(raiz, [])):
                 errores.append(f"{fid}: XPath has no match in the example XML: {xp}")
 
 
@@ -597,14 +795,23 @@ def v_mermaid():
 
 
 def v_xsd_oficiales_intactos():
-    try:
-        base = subprocess.run(["git", "rev-list", "--max-parents=0", "HEAD"], cwd=RAIZ,
-                              capture_output=True, text=True, check=True).stdout.split()[0]
-        r = subprocess.run(["git", "diff", "--quiet", base, "--", "docs/ubl/common", "docs/ubl/maindoc"], cwd=RAIZ)
-        if r.returncode != 0:
-            errores.append("The official OASIS XSDs were modified since the base commit")
-    except (FileNotFoundError, subprocess.CalledProcessError, IndexError):
-        avisos.append("git not available: official XSDs not checked")
+    """Compares each official XSD with docs/ubl/MANIFEST.sha256 after normalizing CRLF → LF.
+    Works without git and on Windows checkouts or ZIP copies (review finding #6)."""
+    import hashlib
+    manifiesto = RAIZ / "docs/ubl/MANIFEST.sha256"
+    esperados = {}
+    for linea in manifiesto.read_text(encoding="utf-8").splitlines():
+        if linea and not linea.startswith("#"):
+            h, ruta = linea.split(maxsplit=1)
+            esperados[ruta] = h
+    actuales = {f.relative_to(RAIZ).as_posix(): f for f in (RAIZ / "docs/ubl").glob("*/*.xsd")
+                if f.parent.name in ("common", "maindoc")}
+    if set(esperados) != set(actuales):
+        errores.append(f"XSD set differs from the manifest: {sorted(set(esperados) ^ set(actuales))}")
+    for ruta, f in actuales.items():
+        h = hashlib.sha256(f.read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n").rstrip(b"\n")).hexdigest()
+        if ruta in esperados and h != esperados[ruta]:
+            errores.append(f"{ruta}: content differs from the official OASIS file")
 
 
 def main() -> int:
@@ -612,10 +819,12 @@ def main() -> int:
     check("SUNAT catalogs (structure)", v_catalogos)
     check("Valid JSON Schemas and resolved $refs", v_schemas)
     check("Schema enums = SUNAT catalogs", v_enums_catalogos)
+    check("Books tables 5, 6, 10, 12 (RS 234-2006): structure, enums, catalog 03 equivalence", v_tablas)
     check("JSON examples valid against their schemas", v_ejemplos_json)
     check("IGV, ISC (cat. 08: 01/02/03), ICBPER and totals in examples", v_calculos)
     check("Example XMLs valid against the UBL 2.1 XSD", v_xml_xsd)
     check("Example XMLs match their JSON", v_xml_coincide_json)
+    check("Books 12.1 (kardex) and 14.1 (sales): balances, CPE cross-check, PLE files", v_registros)
     check("OpenAPI 3.1: structure, $refs, examples and use-case routes", v_openapi)
     check("Traceability matrix: schema, XPath, rules and catalogs", v_matriz)
     check("Migration: legacy sample coverage and mapping", v_migracion)

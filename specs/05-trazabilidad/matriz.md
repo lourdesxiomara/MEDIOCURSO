@@ -71,21 +71,60 @@ In credit notes the prefix is `/CreditNote` and the line is `cac:CreditNoteLine`
 | T-45 | Note reason | 07,08 | 09/10 | R-40 | `/CreditNote/cac:DiscrepancyResponse/cbc:ResponseCode` | `/motivoNota/codigo` |  | ∈ cat. 09 (NC) / 10 (ND) | Annexes 3 and 4 |
 | T-46 | Note justification | 07,08 |  | R-40 | `/CreditNote/cac:DiscrepancyResponse/cbc:Description` | `/motivoNota/sustento` |  | Mandatory | Annexes 3 and 4 |
 | T-47 | Digital signature | 01,03,07,08 |  | R-51 | `/Invoice/ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature` | `/firma/hash` |  | XMLDSig enveloped | RS 097-2012 |
-| T-48 | Inventory movement from a sale | 01,03,07 |  | CU-14 | `(not in the XML)` | `movimiento-inventario:/documentoSustento/numero` | nro_documento | Every sales output references a document | RS 234-2006 Formato 12.1 |
-| T-49 | Movement date | — |  | CU-14 | `(not in the XML)` | `movimiento-inventario:/fecha` | fecha | YYYY-MM-DD | RS 234-2006 Formato 12.1 |
-| T-50 | Input / output in units | — |  | CU-14 | `(not in the XML)` | `movimiento-inventario:/cantidad` | ingreso / salida | > 0; type gives direction | RS 234-2006 Formato 12.1 |
-| T-51 | Movement type | — |  | CU-14 | `(not in the XML)` | `movimiento-inventario:/tipo` | ingreso / salida (derived) | INGRESO, SALIDA, AJUSTE_* | RS 234-2006 Formato 12.1 |
+| T-48 | 12.1: supporting document type | 01,03,07,08 | T10 | R-62 | `/Invoice/cbc:InvoiceTypeCode` | `movimiento-inventario:/documentoSustento/tipoTabla10` | nro_documento | ∈ table 10; 00 for internal documents | RS 234-2006 Format 12.1 field 11 |
+| T-49 | 12.1: document date | 01,03,07,08 |  | R-60 | `/Invoice/cbc:IssueDate` | `movimiento-inventario:/fecha` | fecha | DD/MM/AAAA in PLE; within the period | RS 234-2006 Format 12.1 field 10 |
+| T-50 | 12.1: inputs / outputs in units | 01,03,07,08 |  | R-65 | `L/cbc:InvoicedQuantity` | `movimiento-inventario:/cantidad` | ingreso / salida | > 0; PLE input +, output − | RS 234-2006 Format 12.1 field 17, 18 |
+| T-51 | 12.1: operation type |  | T12 | R-61 | `(not in the XML: from document type and direction)` | `movimiento-inventario:/tipoOperacionTabla12` | ingreso / salida (derived) | ∈ table 12; consistent with direction | RS 234-2006 Format 12.1 field 14 |
 | T-52 | Traceability to legacy | — |  | M-07 | `(not in the XML)` | `movimiento-inventario:/idLegado` | id | Every legacy row traceable | Case requirement |
+| T-53 | Payment terms indicator | 01 |  | R-35 | `/Invoice/cac:PaymentTerms/cbc:ID` | `/formaPago` |  | Fixed = FormaPago | RS 193-2020, Annex 1 field 49-A |
+| T-54 | Payment terms (cash / credit) | 01 |  | R-35 | `/Invoice/cac:PaymentTerms[cbc:ID='FormaPago'][1]/cbc:PaymentMeansID` | `/formaPago/tipo` |  | Contado | Credito | RS 193-2020, Annex 1 field 49-A |
+| T-55 | Net amount pending | 01 |  | R-36 | `/Invoice/cac:PaymentTerms[cbc:PaymentMeansID='Credito']/cbc:Amount` | `/formaPago/montoNetoPendiente` |  | > 0, ≤ total; = Σ instalments | RS 193-2020, Annex 1 field 64-A |
+| T-56 | Instalment identifier | 01 |  | R-36 | `/Invoice/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]/cbc:PaymentMeansID` | `/formaPago/cuotas/*/numero` |  | Cuota + 3 digits, 1..n | RS 193-2020, Annex 1 field 64-B |
+| T-57 | Instalment amount | 01 |  | R-36 | `/Invoice/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]/cbc:Amount` | `/formaPago/cuotas/*/monto` |  | 2 decimals | RS 193-2020, Annex 1 field 64-B |
+| T-58 | Instalment due date | 01 |  | R-36 | `/Invoice/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]/cbc:PaymentDueDate` | `/formaPago/cuotas/*/fechaVencimiento` |  | Later than issue date | RS 193-2020, Annex 1 field 64-B |
+| T-59 | 12.1: period |  |  | R-60 | `(not in the XML: AAAAMM00 of the movement date)` | `movimiento-inventario:/periodo` | fecha | AAAAMM00 | RS 234-2006 Format 12.1 field 1 |
+| T-60 | 12.1: establishment code | 01,03,07,08 |  | R-64 | `/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode` | `movimiento-inventario:/codigoEstablecimiento` |  | 4–7 digits; = CPE AddressTypeCode | RS 234-2006 Format 12.1 field 4 |
+| T-61 | 12.1: stock item type |  | T05 | R-63 | `(not in the XML: product master)` | `movimiento-inventario:/tipoExistencia` |  | ∈ table 5; 01 for groceries | RS 234-2006 Format 12.1 field 6 |
+| T-62 | 12.1: own item code | 01,03,07,08 |  | R-63 | `L/cac:Item/cac:SellersItemIdentification/cbc:ID` | `movimiento-inventario:/codigoExistencia` | producto (normalized M-03) | ≤ 24 characters | RS 234-2006 Format 12.1 field 7 |
+| T-63 | 12.1: item description | 01,03,07,08 |  | R-60 | `L/cac:Item/cbc:Description` | `movimiento-inventario:/descripcionExistencia` | producto | ≤ 80 characters | RS 234-2006 Format 12.1 field 15 |
+| T-64 | 12.1: unit of measure | 01,03,07,08 | T06 | R-63 | `L/cbc:InvoicedQuantity/@unitCode` | `movimiento-inventario:/unidadMedidaTabla6` | producto (inferred) | ∈ table 6, from cat. 03 by equivalence | RS 234-2006 Format 12.1 field 16 |
+| T-65 | 12.1: document series | 01,03,07,08 |  | R-62 | `/Invoice/cbc:ID` | `movimiento-inventario:/documentoSustento/serie` | nro_documento | Series part of cbc:ID; 0 if absent | RS 234-2006 Format 12.1 field 12 |
+| T-66 | 12.1: document number | 01,03,07,08 |  | R-62 | `/Invoice/cbc:ID` | `movimiento-inventario:/documentoSustento/numero` | nro_documento | Number part of cbc:ID; 0 if absent | RS 234-2006 Format 12.1 field 13 |
+| T-67 | 12.1: running balance in units |  |  | R-65 | `(not in the XML: previous + inputs − outputs)` | `movimiento-inventario:/saldoFinal` |  | ≥ 0; closing = opening + inputs − outputs | RS 234-2006 Format 12.1 |
+| T-68 | 12.1: entry status |  |  | R-66 | `(not in the XML)` | `movimiento-inventario:/estadoOperacion` |  | 1 | 8 | 9 | RS 234-2006 Format 12.1 field 19 |
+| T-69 | 14.1: period |  |  | R-70 | `(not in the XML: AAAAMM00 of the issue date)` | `registro-ventas:/filas/*/periodo` |  | AAAAMM00 | RS 234-2006 Format 14.1 (PLE 5.2) field 1 |
+| T-70 | 14.1: unique operation code (CUO) |  |  | R-70 | `(not in the XML: accounting voucher)` | `registro-ventas:/filas/*/cuo` |  | ≤ 40 characters | RS 234-2006 Format 14.1 (PLE 5.2) field 2 |
+| T-71 | 14.1: issue date | 01,03,07,08 |  | R-70 | `/Invoice/cbc:IssueDate` | `registro-ventas:/filas/*/fechaEmision` |  | DD/MM/AAAA in PLE | RS 234-2006 Format 14.1 (PLE 5.2) field 4 |
+| T-72 | 14.1: due date | 01 |  | R-71 | `/Invoice/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]/cbc:PaymentDueDate` | `registro-ventas:/filas/*/fechaVencimiento` |  | Last instalment of a credit invoice | RS 234-2006 Format 14.1 (PLE 5.2) field 5 |
+| T-73 | 14.1: document type | 01,03,07,08 | T10 | R-70 | `/Invoice/cbc:InvoiceTypeCode` | `registro-ventas:/filas/*/tipoComprobanteTabla10` |  | ∈ table 10 | RS 234-2006 Format 14.1 (PLE 5.2) field 6 |
+| T-74 | 14.1: document series | 01,03,07,08 |  | R-70 | `/Invoice/cbc:ID` | `registro-ventas:/filas/*/serie` |  | Series part of cbc:ID | RS 234-2006 Format 14.1 (PLE 5.2) field 7 |
+| T-75 | 14.1: document number | 01,03,07,08 |  | R-70 | `/Invoice/cbc:ID` | `registro-ventas:/filas/*/numero` |  | Number part of cbc:ID | RS 234-2006 Format 14.1 (PLE 5.2) field 8 |
+| T-76 | 14.1: customer ID document type | 01,03,07,08 | 06 | R-71 | `/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID/@schemeID` | `registro-ventas:/filas/*/tipoDocumentoCliente` |  | ∈ catalog 06 | RS 234-2006 Format 14.1 (PLE 5.2) field 10 |
+| T-77 | 14.1: customer ID number | 01,03,07,08 |  | R-71 | `/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID` | `registro-ventas:/filas/*/numeroDocumentoCliente` |  | ≤ 15 characters | RS 234-2006 Format 14.1 (PLE 5.2) field 11 |
+| T-78 | 14.1: customer name | 01,03,07,08 |  | R-71 | `/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName` | `registro-ventas:/filas/*/nombreCliente` |  | ≤ 100 characters | RS 234-2006 Format 14.1 (PLE 5.2) field 12 |
+| T-79 | 14.1: taxed base | 01,03,07,08 |  | R-71 | `/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxableAmount` | `registro-ventas:/filas/*/baseImponibleGravada` |  | = totalGravado (without ISC); negative for credit notes | RS 234-2006 Format 14.1 (PLE 5.2) field 14 |
+| T-80 | 14.1: IGV | 01,03,07,08 |  | R-71 | `/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='1000']/cbc:TaxAmount` | `registro-ventas:/filas/*/igv` |  | = totalIgv | RS 234-2006 Format 14.1 (PLE 5.2) field 16 |
+| T-81 | 14.1: exempt amount | 01,03,07,08 |  | R-71 | `/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='9997']/cbc:TaxableAmount` | `registro-ventas:/filas/*/importeExonerado` |  | = totalExonerado | RS 234-2006 Format 14.1 (PLE 5.2) field 18 |
+| T-82 | 14.1: unaffected amount | 01,03,07,08 |  | R-71 | `/DebitNote/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='9998']/cbc:TaxableAmount` | `registro-ventas:/filas/*/importeInafecto` |  | = totalInafecto | RS 234-2006 Format 14.1 (PLE 5.2) field 19 |
+| T-83 | 14.1: ISC | 01,03,07,08 |  | R-71 | `/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='2000']/cbc:TaxAmount` | `registro-ventas:/filas/*/isc` |  | = totalIsc | RS 234-2006 Format 14.1 (PLE 5.2) field 20 |
+| T-84 | 14.1: ICBPER | 01,03 |  | R-71 | `/Invoice/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='7152']/cbc:TaxAmount` | `registro-ventas:/filas/*/icbper` |  | = totalIcbper | RS 234-2006 Format 14.1 (PLE 5.2) field 23 |
+| T-85 | 14.1: total amount | 01,03,07,08 |  | R-71 | `/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount` | `registro-ventas:/filas/*/importeTotal` |  | = Σ fields 13–24 | RS 234-2006 Format 14.1 (PLE 5.2) field 25 |
+| T-86 | 14.1: currency | 01,03,07,08 | 02 | R-73 | `/Invoice/cbc:DocumentCurrencyCode` | `registro-ventas:/filas/*/moneda` |  | ∈ catalog 02 | RS 234-2006 Format 14.1 (PLE 5.2) field 26 |
+| T-87 | 14.1: exchange rate |  |  | R-73 | `(not in the XML: 1.000 for PEN; SBS rate for USD)` | `registro-ventas:/filas/*/tipoCambio` |  | 9.999 | RS 234-2006 Format 14.1 (PLE 5.2) field 27 |
+| T-88 | 14.1: modified document series and number | 07,08 |  | R-72 | `/CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID` | `registro-ventas:/filas/*/modificadoSerie` |  | Mandatory for notes | RS 234-2006 Format 14.1 (PLE 5.2) field 30, 31 |
+| T-89 | 14.1: modified document type | 07,08 | T10 | R-72 | `/CreditNote/cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentTypeCode` | `registro-ventas:/filas/*/modificadoTipo` |  | 01 or 03 | RS 234-2006 Format 14.1 (PLE 5.2) field 29 |
+| T-90 | 14.1: status |  |  | R-74 | `(not in the XML: 2 when the CPE is voided)` | `registro-ventas:/filas/*/estado` |  | 1 | 2 | 8 | 9 | RS 234-2006 Format 14.1 (PLE 5.2) field 35 |
+| T-91 | 14.1: exports, IVAP, other concepts |  |  | R-71 | `(not in the XML: 0.00 — no exports, no rice milling, S-03)` | `registro-ventas:/filas/*/valorExportacion` |  | 0.00 | RS 234-2006 Format 14.1 (PLE 5.2) field 13, 21, 22, 24 |
 
 ## Legacy field coverage
 
 | Legacy field | Matrix rows |
 |---|---|
-| `fecha` | T-04, T-49 |
+| `fecha` | T-04, T-49, T-59 |
 | `ingreso` | T-50, T-51 |
 | `salida` | T-18, T-35, T-50, T-51 |
-| `producto` | T-19, T-20, T-21, T-34 |
-| `nro_documento` | T-03, T-06, T-48 |
+| `producto` | T-19, T-20, T-21, T-34, T-62, T-63, T-64 |
+| `nro_documento` | T-03, T-06, T-48, T-65, T-66 |
 | `id` | T-52 |
 
 Per-field transformation details: `specs/06-migracion/mapeo-legado.csv`.

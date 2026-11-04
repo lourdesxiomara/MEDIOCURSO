@@ -46,6 +46,12 @@ the acceptance criteria and the API errors.
 | R-33 | `moneda` ∈ cat. 02 and all lines in the same currency | E/N | Cat. 02 |
 | R-34 | `tipoOperacion` ∈ cat. 51 (invoices and receipts only) | E | Cat. 51 |
 
+## Payment terms (RS 000193-2020/SUNAT)
+| ID | Rule | Type | Source |
+|---|---|---|---|
+| R-35 | Every invoice declares `formaPago.tipo` = `Contado` (paid in full on the issue date) or `Credito` (all or part paid later). XML: `cac:PaymentTerms` with `cbc:ID` = `FormaPago` and `cbc:PaymentMeansID` = `Contado` / `Credito` | E/N | Annex 1 field 49-A |
+| R-36 | `Credito` ⇒ `montoNetoPendiente` (> 0 and ≤ `importeTotal`, net of IGV withholding, detraction and other deductions) and at least one instalment; instalments numbered 1..n and sent as `Cuota001`, `Cuota002`…, each with amount and due date later than the issue date; Σ instalments = `montoNetoPendiente`. `Contado` ⇒ no instalments. Later changes to amounts or dates are made with a credit note reason 13 (cat. 09) | N | Annex 1 fields 64-A, 64-B; cat. 09 |
+
 ## Credit / debit notes
 | ID | Rule | Type | Source |
 |---|---|---|---|
@@ -59,4 +65,30 @@ the acceptance criteria and the API errors.
 | R-50 | XML valid against the UBL 2.1 XSD before signing | E | OASIS UBL 2.1 |
 | R-51 | Enveloped XMLDSig signature in `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent` with a valid digital certificate | X | RS 097-2012 |
 | R-52 | Submission to OSE/SUNAT as ZIP `RUC-TYPE-SERIES-NUMBER.zip` | X | SEE programmer manual |
-| R-53 | A document only becomes `ACEPTADO` with a CDR. Handling of the number of a `RECHAZADO` document is pending (question D-09) | N/X | RS 097-2012 |
+| R-53 | A document only becomes `ACEPTADO` with a CDR whose response code is 0 or ≥ 4000. A number is consumed once SUNAT/OSE processed the document: a document rejected with a code 2000–3999 keeps its number and is **never** re-sent with it; the sale is issued again with a new number | N/X | SEE programmer manual (return codes) |
+| R-54 | The response code is classified by range: **0** accepted · **0100–1999 exception** (the file could not be processed: the document counts as *not submitted*) · **2000–3999 rejection** (processed and invalid) · **≥ 4000 observation** (valid, accepted with observations). The category is stored in `respuestaSunat.categoria` | N/X | SEE programmer manual (return codes) |
+| R-55 | Effect of each category: *exception* → status `PENDIENTE_ENVIO`; transient service codes (e.g. 0100, 0109) are retried automatically with backoff and the **same number**; format/content codes (1000–1999) need correction and are re-sent with the **same number** within the deadline (R-05). *Rejection* (invoice, notes) → `RECHAZADO`, number not reused (R-53), stock not deducted. *Rejection of a daily summary or voiding communication* → the file counts as not submitted and is re-sent with the same file name. *Observation* → `ACEPTADO_CON_OBSERVACIONES`, observations kept for review | N/X | SEE programmer manual (return codes) |
+
+## Books and records (RS 234-2006/SUNAT)
+Tables 5, 6, 10 and 12 of Annex 3 are in `docs/sunat/tablas-libros/`.
+
+### Format 12.1 – Permanent Inventory Record in Physical Units
+| ID | Rule | Type | Source |
+|---|---|---|---|
+| R-60 | Every warehouse movement produces one Format 12.1 row with its 19 fields: period `AAAAMM00` of the movement date (field 1), CUO and entry number (2–3), establishment (4), item type and code (6–9), document date, type, series and number (10–13), operation type (14), description (15), unit (16), input or output (17–18) and status (19) | E/N | Format 12.1 |
+| R-61 | `tipoOperacionTabla12` ∈ table 12 and consistent with the direction: sale 01 and returns to supplier 25 are outputs; purchase 02 and customer return 24 are inputs; opening balance is 16; inventory adjustment 28 is either. The direction of every code is in `tabla12.json` (`sentido`) | E/N | Format 12.1 field 14, table 12 |
+| R-62 | Supporting document type ∈ table 10. Sales and notes link to the CPE: type = cat. 01 code, series and number split from `cbc:ID` (F001-1 → F001 / 1). Internal documents, adjustments and the opening balance use `00`, with series and number `0` when absent | E/N | Format 12.1 fields 11–13, table 10 |
+| R-63 | Item type ∈ table 5 (`01` MERCADERIAS for groceries); unit ∈ table 6, derived from the CPE unit (catalog 03) with the equivalence in `tabla06.json`; a catalog 03 code without a confirmed equivalent (PK) is recorded in `NIU` (D-14) | E/N | Format 12.1 fields 6, 16; tables 5, 6 |
+| R-64 | `codigoEstablecimiento` = SUNAT annex establishment code (4 to 7 digits, `0000` registered address), equal to the CPE `cbc:AddressTypeCode` of the issuing establishment | E/N | Format 12.1 field 4 |
+| R-65 | Running balance: `saldoFinal` = previous balance + inputs − outputs, never negative. The first row of each item and period is the opening balance (table 12 = 16). Period closing = opening + Σ inputs − Σ outputs | N | Format 12.1 (saldo) |
+| R-66 | PLE export: file `LE` + RUC + `AAAAMM00` + `120100` + `00` + `1111` + `.txt`; one line per movement, 19 fields separated by `|` with a trailing `|`; dates `DD/MM/AAAA`; inputs positive in field 17 and `0.00` in 18, outputs negative in field 18 and `0.00` in 17; status 1, 8 or 9. Builder: `tools/ple.py` | E | PLE structure, Format 12.1 |
+
+### Format 14.1 – Sales Record
+| ID | Rule | Type | Source |
+|---|---|---|---|
+| R-70 | One row per CPE issued in the period (accepted or voided), with period `AAAAMM00` of the issue date, ordered by issue date, document type, series and number. Receipts are recorded one by one (field 9 empty) | N | Format 14.1 fields 1–9 |
+| R-71 | Row amounts come from the CPE totals: field 14 = `totalGravado` (UBL document-level IGV `TaxableAmount`, without ISC), 16 = `totalIgv`, 18 = `totalExonerado`, 19 = `totalInafecto`, 20 = `totalIsc`, 23 = `totalIcbper`, 25 = `importeTotal` = Σ fields 13–24; fields 13, 21, 22 = `0.00` (no exports, no rice milling). Field 5 = due date of the last instalment for credit invoices. Customer fields 10–12 from the CPE | N | Format 14.1 fields 5, 10–25 |
+| R-72 | Credit notes are recorded with **negative** amounts; credit and debit notes fill fields 28–31 with the issue date, type, series and number of the modified document | N | Format 14.1 fields 28–31 |
+| R-73 | Field 26 = document currency; field 27 = `1.000` for PEN; for USD, the SBS exchange rate of the issue date | N | Format 14.1 fields 26–27 |
+| R-74 | Field 35 status: `1` document of the period, `2` voided document (amounts kept as issued unless SUNAT instructions say otherwise, D-15), `8` omitted from a previous period, `9` adjustment of a previous period | N | Format 14.1 field 35 |
+| R-75 | PLE export: file `LE` + RUC + `AAAAMM00` + `140100` + `00` + `1111` + `.txt`; one line per row, 35 fields separated by `|` with a trailing `|`; dates `DD/MM/AAAA`; amounts with 2 decimals and dot; optional fields empty (placeholder conventions to confirm with the PLE validator, D-15). Builder: `tools/ple.py` | E | PLE 5.2 structure, Format 14.1 |

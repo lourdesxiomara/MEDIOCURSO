@@ -21,6 +21,11 @@
       "codigoProducto": "BOL-01",
       "cantidad": "1",
       "precioUnitario": "0.118"
+    },
+    {
+      "codigoProducto": "PAP-1K",
+      "cantidad": "2",
+      "precioUnitario": "3.50"
     }
   ]
 }

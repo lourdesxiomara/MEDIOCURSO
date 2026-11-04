@@ -107,6 +107,9 @@
     "ordenCompra": {
       "type": "string",
       "maxLength": 20
+    },
+    "formaPago": {
+      "$ref": "comun.schema.json#/$defs/formaPago"
     }
   },
   "allOf": [
@@ -134,7 +137,10 @@
               }
             }
           }
-        }
+        },
+        "required": [
+          "formaPago"
+        ]
       }
     },
     {

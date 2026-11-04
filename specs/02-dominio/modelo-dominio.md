@@ -98,6 +98,12 @@ Verified examples:
 
 The displayed unit price includes IGV and ISC; ICBPER is totalled separately (D-10).
 
+## 3b. From the domain to the UBL XML
+The `GeneradorDocumentoUbl` output port turns a `Comprobante` into UBL 2.1 XML using **classes generated from the
+official XSDs with JAXB/xjc** (ADR-006). The Kotlin mapper follows the traceability matrix row by row, the
+marshaller validates against the XSD before signing (R-50), and the `ejemplos/*.sin-firma.xml` files are the
+golden outputs the generator must reproduce.
+
 ## 4. Data contracts (JSON Schema 2020-12)
 | Schema | Use | Use cases |
 |---|---|---|
@@ -113,6 +119,8 @@ The displayed unit price includes IGV and ISC; ICBPER is totalled separately (D-
 | `schemas/migracion.schema.json` | Migration result | CU-13 |
 | `schemas/error.schema.json` | RFC 9457 error with rule ID | All |
 | `schemas/evento.schema.json` | Domain events between microservices | `specs/04-api/eventos.md` |
+| `schemas/kardex.schema.json` | Format 12.1 per item and period (19 fields per row) | CU-12, CU-14 |
+| `schemas/registro-ventas.schema.json` | Format 14.1 Sales Record (35 fields per row) | CU-12 |
 
 Key decision: **the request carries no number and no totals**. The domain computes them, so no client
 (Windows, Android or a future microservice) can send inconsistent amounts.
@@ -129,3 +137,5 @@ Key decision: **the request carries no number and no totals**. The domain comput
 | `ejemplos/movimiento-inventario.salida.json` | `movimiento-inventario.schema.json` |
 | `ejemplos/error.validacion.json` | `error.schema.json` |
 | `ejemplos/evento.comprobante-aceptado.json` | `evento.schema.json` |
+| `ejemplos/kardex.CER-630.2026-10.json` + `LE…120100…txt` | `kardex.schema.json` + PLE 12.1 (R-66) |
+| `ejemplos/registro-ventas.2026-10.json` + `LE…140100…txt` | `registro-ventas.schema.json` + PLE 14.1 (R-75) |

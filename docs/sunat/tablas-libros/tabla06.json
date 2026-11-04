@@ -1,0 +1,57 @@
+{
+  "tabla": "06",
+  "titulo": "Código de la unidad de medida",
+  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf",
+  "nota": "Subconjunto verificado en la fuente. Formato 12.1, campo 16.",
+  "equivalenciaCatalogo03": {
+    "NIU": "NIU",
+    "ZZ": "ZZ",
+    "KGM": "KGM",
+    "GRM": "GRM",
+    "LTR": "LTR",
+    "MLT": "MLT",
+    "BX": "BX",
+    "BG": "BG",
+    "DZN": "DZN",
+    "PK": null
+  },
+  "notaEquivalencia": "Catálogo 03 (CPE) y Tabla 6 (libros) usan los mismos códigos UN/ECE Rec. 20. PK (paquete) no se confirmó en la Tabla 6: ver duda D-14.",
+  "codigos": [
+    {
+      "codigo": "NIU",
+      "descripcion": "UNIDAD (BIENES)"
+    },
+    {
+      "codigo": "ZZ",
+      "descripcion": "UNIDAD (SERVICIOS)"
+    },
+    {
+      "codigo": "KGM",
+      "descripcion": "KILOGRAMO"
+    },
+    {
+      "codigo": "GRM",
+      "descripcion": "GRAMO"
+    },
+    {
+      "codigo": "LTR",
+      "descripcion": "LITRO"
+    },
+    {
+      "codigo": "MLT",
+      "descripcion": "MILILITRO"
+    },
+    {
+      "codigo": "BX",
+      "descripcion": "CAJA"
+    },
+    {
+      "codigo": "BG",
+      "descripcion": "BOLSA"
+    },
+    {
+      "codigo": "DZN",
+      "descripcion": "DOCENA"
+    }
+  ]
+}

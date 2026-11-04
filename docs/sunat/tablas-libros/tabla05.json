@@ -1,0 +1,84 @@
+{
+  "tabla": "05",
+  "titulo": "Tipo de existencia",
+  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf",
+  "nota": "Tabla completa. Un comercio de abarrotes usa 01 MERCADERIAS (Formato 12.1, campo 6).",
+  "codigos": [
+    {
+      "codigo": "01",
+      "descripcion": "MERCADERIAS"
+    },
+    {
+      "codigo": "02",
+      "descripcion": "PRODUCTOS TERMINADOS"
+    },
+    {
+      "codigo": "03",
+      "descripcion": "MATERIAS PRIMAS"
+    },
+    {
+      "codigo": "04",
+      "descripcion": "ENVASES"
+    },
+    {
+      "codigo": "05",
+      "descripcion": "MATERIALES AUXILIARES"
+    },
+    {
+      "codigo": "06",
+      "descripcion": "SUMINISTROS"
+    },
+    {
+      "codigo": "07",
+      "descripcion": "REPUESTOS"
+    },
+    {
+      "codigo": "08",
+      "descripcion": "EMBALAJES"
+    },
+    {
+      "codigo": "09",
+      "descripcion": "SUBPRODUCTOS"
+    },
+    {
+      "codigo": "10",
+      "descripcion": "DESECHOS Y DESPERDICIOS"
+    },
+    {
+      "codigo": "91",
+      "descripcion": "OTROS 1"
+    },
+    {
+      "codigo": "92",
+      "descripcion": "OTROS 2"
+    },
+    {
+      "codigo": "93",
+      "descripcion": "OTROS 3"
+    },
+    {
+      "codigo": "94",
+      "descripcion": "OTROS 4"
+    },
+    {
+      "codigo": "95",
+      "descripcion": "OTROS 5"
+    },
+    {
+      "codigo": "96",
+      "descripcion": "OTROS 6"
+    },
+    {
+      "codigo": "97",
+      "descripcion": "OTROS 7"
+    },
+    {
+      "codigo": "98",
+      "descripcion": "OTROS 8"
+    },
+    {
+      "codigo": "99",
+      "descripcion": "OTROS"
+    }
+  ]
+}

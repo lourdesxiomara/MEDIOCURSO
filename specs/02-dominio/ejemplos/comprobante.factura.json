@@ -35,6 +35,9 @@
     },
     "correo": "compras@bodega-ejemplo.pe"
   },
+  "formaPago": {
+    "tipo": "Contado"
+  },
   "lineas": [
     {
       "numero": 1,
@@ -145,6 +148,7 @@
   ],
   "respuestaSunat": {
     "codigoRespuesta": "0",
+    "categoria": "ACEPTADO",
     "descripcion": "La Factura numero F001-1, ha sido aceptada",
     "observaciones": [],
     "fechaRecepcion": "2026-10-22T10:15:07-05:00",

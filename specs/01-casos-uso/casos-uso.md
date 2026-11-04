@@ -54,10 +54,10 @@ flowchart LR
 | Preconditions | Issuer configured with RUC, certificate and an active `F###` series (CU-10). Products with IGV treatment defined. |
 | Trigger | A customer with RUC requests an invoice. |
 | API contract | `POST /comprobantes` with `tipoComprobante = "01"` → `POST /comprobantes/{id}/emitir` |
-| Main flow | 1. Seller finds or registers the customer by RUC (R-10, R-11). 2. Adds items: product, quantity, price. 3. The system computes per line ISC (if any, cat. 08), IGV (cat. 07) and ICBPER (CU-15). 4. Shows totals and amount-in-words legend. 5. Seller confirms. 6. The system assigns the number (R-03), generates UBL 2.1 XML and validates it against the XSD (R-50). 7. Signs (R-51) and sends to the OSE (R-52). 8. Receives an accepted CDR: status `ACEPTADO`. 9. Records the warehouse output (CU-14) referencing the document. 10. Generates a PDF with QR code. |
+| Main flow | 1. Seller finds or registers the customer by RUC (R-10, R-11). 2. Adds items: product, quantity, price, and chooses the payment terms: cash, or credit with instalments and due dates (R-35, R-36). 3. The system computes per line ISC (if any, cat. 08), IGV (cat. 07) and ICBPER (CU-15). 4. Shows totals and amount-in-words legend. 5. Seller confirms. 6. The system assigns the number (R-03), generates UBL 2.1 XML and validates it against the XSD (R-50). 7. Signs (R-51) and sends to the OSE (R-52). 8. Receives an accepted CDR: status `ACEPTADO`. 9. Records the warehouse output (CU-14) referencing the document. 10. Generates a PDF with QR code. |
 | Alternative flows | A1 Invalid RUC → message, cannot continue. A2 ISC product without a cat. 08 system → configuration error. A3 OSE does not respond → status `PENDIENTE_ENVIO`, queued (CU-11). A4 Rejected CDR → status `RECHAZADO` with SUNAT code and description; stock is not deducted. A5 CDR with observations → `ACEPTADO_CON_OBSERVACIONES`. |
 | Postconditions | Document stored with signed XML, hash, CDR and status. Inventory movement traceable to the document. |
-| Rules | R-01–R-03, R-10, R-11, R-20–R-34, R-50–R-53 |
+| Rules | R-01–R-03, R-10, R-11, R-20–R-36, R-50–R-55 |
 
 ### CU-04 Issue receipt (boleta)
 Same as CU-03 with these differences: series `B###`; customer with DNI or another cat. 06 document
@@ -94,8 +94,9 @@ Process that retries `PENDIENTE_ENVIO` documents within the submission deadline 
 Contract: `POST /comprobantes/reenviar-pendientes`.
 
 ### CU-12 Reports and inventory record
-Sales report per period and **Permanent Inventory Record in Physical Units (Format 12.1,
-RS 234-2006)** per product and warehouse. Contracts: `GET /reportes/ventas`, `GET /inventario/kardex`.
+**Sales Record (Format 14.1)** per period, built from the CPEs (R-70 to R-75), and **Permanent Inventory Record in
+Physical Units (Format 12.1, RS 234-2006)** per product and period (R-60 to R-66), both as JSON or as the PLE text
+file. Contracts: `GET /reportes/ventas?periodo=AAAAMM&formato=json|ple`, `GET /inventario/kardex?productoId&periodo&formato=json|ple`.
 
 ### CU-13 Migrate legacy data
 Imports the warehouse history, applies rules M-01…M-07, quarantines what cannot be migrated and produces
@@ -103,8 +104,10 @@ a legacy → new traceability report. Contracts: `POST /migraciones`, `GET /migr
 `GET /migraciones/{id}/trazabilidad`. Details in `specs/06-migracion/`.
 
 ### CU-14 Record warehouse movement
-Records an input, output or adjustment. Every sales output references a document; inputs reference a
-dispatch guide or purchase document. Contract: `POST /inventario/movimientos`.
+Records an input, output or adjustment as a Format 12.1 row: table 12 operation type consistent with the
+direction (R-61), table 10 supporting document (R-62), table 5 / table 6 codes (R-63), establishment (R-64) and
+running balance (R-65). Every sales output references its CPE; inputs reference a dispatch guide or purchase
+document. Contract: `POST /inventario/movimientos`.
 
 ### CU-15 Validate and calculate taxes (included)
 For each line: 1) determine the tax by IGV treatment (R-22, R-23); 2) compute ISC per cat. 08 (R-24);

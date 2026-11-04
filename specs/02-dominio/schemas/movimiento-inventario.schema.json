@@ -2,22 +2,106 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://abc-software.pe/specs/schemas/movimiento-inventario.schema.json",
   "title": "MovimientoInventario",
-  "description": "Movement of the Permanent Inventory Record in Physical Units (Format 12.1, RS 234-2006). CU-14.",
+  "description": "One row of the Permanent Inventory Record in Physical Units (Format 12.1, RS 234-2006/SUNAT; 19 fields). CU-14. Rules R-60 to R-66.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "fecha",
-    "tipo",
+    "periodo",
+    "codigoEstablecimiento",
+    "tipoExistencia",
     "productoId",
+    "codigoExistencia",
+    "descripcionExistencia",
+    "fecha",
+    "documentoSustento",
+    "tipoOperacionTabla12",
+    "tipo",
+    "unidadMedidaTabla6",
     "cantidad",
-    "documentoSustento"
+    "saldoFinal",
+    "estadoOperacion"
   ],
   "properties": {
     "id": {
       "$ref": "comun.schema.json#/$defs/uuid"
     },
+    "periodo": {
+      "$ref": "comun.schema.json#/$defs/periodoPle",
+      "description": "Field 1: AAAAMM00 of the movement date (R-60)."
+    },
+    "cuo": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Field 2: unique operation code (accounting voucher)."
+    },
+    "correlativoAsiento": {
+      "type": "string",
+      "pattern": "^[AMC][A-Za-z0-9]{1,9}$",
+      "description": "Field 3: A = opening, M = movement, C = closing."
+    },
+    "codigoEstablecimiento": {
+      "type": "string",
+      "pattern": "^\\d{4,7}$",
+      "description": "Field 4: SUNAT annex establishment code; 0000 = registered address. Same value as the CPE cbc:AddressTypeCode (R-64)."
+    },
+    "tipoExistencia": {
+      "$ref": "comun.schema.json#/$defs/tabla05",
+      "description": "Field 6: table 5; 01 MERCADERIAS for groceries (R-63)."
+    },
+    "productoId": {
+      "$ref": "comun.schema.json#/$defs/uuid"
+    },
+    "codigoExistencia": {
+      "type": "string",
+      "maxLength": 24,
+      "description": "Field 7: own item code = Producto.codigo = UBL cac:SellersItemIdentification/cbc:ID."
+    },
+    "codigoSunat": {
+      "type": "string",
+      "pattern": "^\\d{8}$",
+      "description": "Fields 8–9: UNSPSC code (catalog 1 of table 13), optional."
+    },
+    "descripcionExistencia": {
+      "type": "string",
+      "maxLength": 80,
+      "description": "Field 15."
+    },
     "fecha": {
-      "$ref": "comun.schema.json#/$defs/fecha"
+      "$ref": "comun.schema.json#/$defs/fecha",
+      "description": "Field 10: date of the supporting document (DD/MM/AAAA in PLE)."
+    },
+    "documentoSustento": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tipoTabla10",
+        "serie",
+        "numero"
+      ],
+      "description": "Fields 11–13: supporting document (R-62).",
+      "properties": {
+        "tipoTabla10": {
+          "$ref": "comun.schema.json#/$defs/tabla10",
+          "description": "Field 11: table 10; 00 for internal documents and adjustments."
+        },
+        "serie": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 12; '0' when the document has no series."
+        },
+        "numero": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Field 13; '0' when absent."
+        },
+        "comprobanteId": {
+          "$ref": "comun.schema.json#/$defs/uuid"
+        }
+      }
+    },
+    "tipoOperacionTabla12": {
+      "$ref": "comun.schema.json#/$defs/tabla12",
+      "description": "Field 14: table 12 (R-61)."
     },
     "tipo": {
       "type": "string",
@@ -27,37 +111,34 @@
         "AJUSTE_POSITIVO",
         "AJUSTE_NEGATIVO",
         "SALDO_INICIAL"
-      ]
+      ],
+      "description": "Direction of the movement; must be consistent with tipoOperacionTabla12 (R-61)."
     },
-    "productoId": {
-      "$ref": "comun.schema.json#/$defs/uuid"
+    "unidadMedidaTabla6": {
+      "$ref": "comun.schema.json#/$defs/tabla06",
+      "description": "Field 16: table 6, derived from catalog 03 by the equivalence in tabla06.json (R-63)."
     },
     "cantidad": {
-      "$ref": "comun.schema.json#/$defs/cantidad"
+      "$ref": "comun.schema.json#/$defs/cantidadPle",
+      "description": "Fields 17/18: always positive here; exported as input (+) or output (−) according to tipo."
+    },
+    "saldoFinal": {
+      "$ref": "comun.schema.json#/$defs/cantidadPle",
+      "description": "Balance in units after this movement (R-65)."
+    },
+    "estadoOperacion": {
+      "type": "string",
+      "enum": [
+        "1",
+        "8",
+        "9"
+      ],
+      "default": "1",
+      "description": "Field 19: 1 current period, 8 omitted from a previous period, 9 modifies a previous-period entry."
     },
     "almacen": {
       "type": "string",
       "default": "PRINCIPAL"
-    },
-    "documentoSustento": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "tipo",
-        "numero"
-      ],
-      "properties": {
-        "tipo": {
-          "type": "string",
-          "description": "Cat. 01 or 'INTERNO' for adjustments / unidentifiable legacy documents."
-        },
-        "numero": {
-          "type": "string"
-        },
-        "comprobanteId": {
-          "$ref": "comun.schema.json#/$defs/uuid"
-        }
-      }
     },
     "origen": {
       "type": "string",

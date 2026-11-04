@@ -15,20 +15,24 @@ UNAS – School of Computer and Systems Engineering.
 ## Deliverables
 | # | Required deliverable | Location |
 |---|---|---|
-| 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (12 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (validated JSON + UBL 2.1 XML) |
+| 1 | **Domain model and contracts (DTOs / Schemas)** | [`specs/02-dominio/modelo-dominio.md`](specs/02-dominio/modelo-dominio.md) · [`schemas/`](specs/02-dominio/schemas) (14 JSON Schema 2020-12) · [`ejemplos/`](specs/02-dominio/ejemplos) (validated JSON + UBL 2.1 XML) |
 | 2 | **MVC architecture diagrams with a Hexagonal vision** | [`specs/03-arquitectura/arquitectura.md`](specs/03-arquitectura/arquitectura.md) · decisions in [`specs/adr/`](specs/adr) |
 | 3 | **Endpoint / service specification (API contracts)** | [`specs/04-api/openapi.yaml`](specs/04-api/openapi.yaml) (OpenAPI 3.1) · [`puertos-salida.md`](specs/04-api/puertos-salida.md) · [`eventos.md`](specs/04-api/eventos.md) |
-| 4 | **Regulatory traceability matrix SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (52 rows) |
+| 4 | **Regulatory traceability matrix SUNAT ↔ UBL** | [`specs/05-trazabilidad/matriz.md`](specs/05-trazabilidad/matriz.md) · [`matriz.csv`](specs/05-trazabilidad/matriz.csv) (91 rows: CPE, payment terms, Format 12.1, Format 14.1) |
 
 Other case requirements also covered:
 | Requirement | Location |
 |---|---|
-| **Acceptance criteria** (37, covering every rule) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
+| **Acceptance criteria** (54, covering every rule) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
 | Use cases (Nubefact benchmark) | [`specs/01-casos-uso/`](specs/01-casos-uso/casos-uso.md) · [`docs/benchmark/`](docs/benchmark/nubefact.md) |
 | Legacy system and data migration with traceability | [`specs/06-migracion/`](specs/06-migracion/migracion.md) · [`docs/legado/`](docs/legado) |
 | SUNAT regulations, catalogs (incl. **catalog 08**: ISC systems 01, 02, 03) and rules | [`docs/sunat/`](docs/sunat) |
 | UBL 2.1 standard (`UBL-Invoice-2.1.xsd`) | [`docs/ubl/`](docs/ubl) |
 | Windows **MSI** + Android **APK** distribution | [`specs/adr/ADR-002-stack-y-distribucion-msi-apk.md`](specs/adr/ADR-002-stack-y-distribucion-msi-apk.md) |
+| **Books and records (RS 234-2006):** Sales Record 14.1 and Inventory 12.1, with PLE export | [`registro-ventas.schema.json`](specs/02-dominio/schemas/registro-ventas.schema.json) · [`kardex.schema.json`](specs/02-dominio/schemas/kardex.schema.json) · tables 5, 6, 10, 12 in [`docs/sunat/tablas-libros/`](docs/sunat/tablas-libros) |
+| **Payment terms** (cash / credit with instalments, RS 000193-2020) | `formaPago` in [`comun.schema.json`](specs/02-dominio/schemas/comun.schema.json), rules R-35, R-36 |
+| **CDR return-code ranges** and retry policy | [`specs/04-api/puertos-salida.md`](specs/04-api/puertos-salida.md), rules R-53 to R-55 |
+| **XML generation from the XSD** (JAXB / xjc) | [`specs/adr/ADR-006-generacion-xml-jaxb-xjc.md`](specs/adr/ADR-006-generacion-xml-jaxb-xjc.md) |
 | Non-functional requirements | [`specs/00-contexto/requisitos-no-funcionales.md`](specs/00-contexto/requisitos-no-funcionales.md) |
 | Context, assumptions, glossary and open questions | [`specs/00-contexto/`](specs/00-contexto) |
 

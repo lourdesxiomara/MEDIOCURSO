@@ -26,7 +26,7 @@ Any Claude agent working in this repo reads this file automatically. Read it ful
 | Path | Content |
 |---|---|
 | `docs/ubl/` | Official OASIS UBL 2.1 XSDs + `soporte/` (CCTS, XMLDSig, XAdES) |
-| `docs/sunat/` | SUNAT catalogs in JSON, validation rules, sources (kept in Spanish: regulatory text) |
+| `docs/sunat/` | SUNAT catalogs in JSON, books tables 5/6/10/12 (`tablas-libros/`), validation rules, sources (catalog text kept in Spanish) |
 | `docs/legado/` | Legacy data sample and description |
 | `docs/benchmark/` | Nubefact analysis (reference use cases) |
 | `specs/00-contexto/` | Case, scope, assumptions, glossary, open questions, non-functional requirements |
@@ -38,7 +38,7 @@ Any Claude agent working in this repo reads this file automatically. Read it ful
 | `specs/06-migracion/` | Legacy mapping and migration plan |
 | `specs/07-aceptacion/` | Acceptance criteria (Given/When/Then) |
 | `specs/adr/` | Architecture decision records (ADR) |
-| `tools/` | XSD wrappers and verification scripts |
+| `tools/` | XSD wrappers, verification scripts and `ple.py` (PLE 12.1 / 14.1 line builders) |
 
 ## 4. Conventions
 - Prose in English. Schema/API identifiers in Spanish `camelCase` without accents (SUNAT terminology).

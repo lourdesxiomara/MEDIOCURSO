@@ -87,23 +87,45 @@
           "montoPorUnidad": "0.50"
         }
       ]
+    },
+    {
+      "numero": 3,
+      "codigoProducto": "PAP-1K",
+      "descripcion": "PAPA AMARILLA 1KG",
+      "unidadMedida": "KGM",
+      "cantidad": "2",
+      "valorUnitario": "3.50",
+      "precioUnitario": "3.50",
+      "tipoPrecio": "01",
+      "afectacionIgv": "20",
+      "valorVenta": "7.00",
+      "tributos": [
+        {
+          "codigo": "9997",
+          "nombre": "EXO",
+          "codigoInternacional": "VAT",
+          "categoria": "E",
+          "baseImponible": "7.00",
+          "monto": "0.00"
+        }
+      ]
     }
   ],
   "totales": {
     "totalGravado": "44.10",
-    "totalExonerado": "0.00",
+    "totalExonerado": "7.00",
     "totalInafecto": "0.00",
     "totalIgv": "7.94",
     "totalIsc": "0.00",
     "totalIcbper": "0.50",
-    "valorVenta": "44.10",
-    "precioVenta": "52.54",
-    "importeTotal": "52.54"
+    "valorVenta": "51.10",
+    "precioVenta": "59.54",
+    "importeTotal": "59.54"
   },
   "leyendas": [
     {
       "codigo": "1000",
-      "texto": "CINCUENTA Y DOS CON 54/100 SOLES"
+      "texto": "CINCUENTA Y NUEVE CON 54/100 SOLES"
     }
   ]
 }

@@ -15,6 +15,9 @@
     },
     "correo": "compras@bodega-ejemplo.pe"
   },
+  "formaPago": {
+    "tipo": "Contado"
+  },
   "lineas": [
     {
       "codigoProducto": "ARZ-5K",
