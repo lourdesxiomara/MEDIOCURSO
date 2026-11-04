@@ -23,13 +23,13 @@ UNAS – School of Computer and Systems Engineering.
 Other case requirements also covered:
 | Requirement | Location |
 |---|---|
-| **Acceptance criteria** (54, covering every rule) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
+| **Acceptance criteria** (55, covering every rule) | [`specs/07-aceptacion/`](specs/07-aceptacion/criterios-aceptacion.md) |
 | Use cases (Nubefact benchmark) | [`specs/01-casos-uso/`](specs/01-casos-uso/casos-uso.md) · [`docs/benchmark/`](docs/benchmark/nubefact.md) |
 | Legacy system and data migration with traceability | [`specs/06-migracion/`](specs/06-migracion/migracion.md) · [`docs/legado/`](docs/legado) |
 | SUNAT regulations, catalogs (incl. **catalog 08**: ISC systems 01, 02, 03) and rules | [`docs/sunat/`](docs/sunat) |
 | UBL 2.1 standard (`UBL-Invoice-2.1.xsd`) | [`docs/ubl/`](docs/ubl) |
 | Windows **MSI** + Android **APK** distribution | [`specs/adr/ADR-002-stack-y-distribucion-msi-apk.md`](specs/adr/ADR-002-stack-y-distribucion-msi-apk.md) |
-| **Books and records (RS 234-2006):** Sales Record 14.1 and Inventory 12.1, with PLE export | [`registro-ventas.schema.json`](specs/02-dominio/schemas/registro-ventas.schema.json) · [`kardex.schema.json`](specs/02-dominio/schemas/kardex.schema.json) · tables 5, 6, 10, 12 in [`docs/sunat/tablas-libros/`](docs/sunat/tablas-libros) |
+| **Books and records (RS 234-2006):** Sales Record 14.1 and Inventory 12.1, with PLE export | [`registro-ventas.schema.json`](specs/02-dominio/schemas/registro-ventas.schema.json) · [`kardex.schema.json`](specs/02-dominio/schemas/kardex.schema.json) · tables 5, 6, 10, 12 in [`docs/sunat/tablas-libros/`](docs/sunat/tablas-libros) · SIRE reconciliation in [`ADR-007`](specs/adr/ADR-007-registro-ventas-sire.md) |
 | **Payment terms** (cash / credit with instalments, RS 000193-2020) | `formaPago` in [`comun.schema.json`](specs/02-dominio/schemas/comun.schema.json), rules R-35, R-36 |
 | **CDR return-code ranges** and retry policy | [`specs/04-api/puertos-salida.md`](specs/04-api/puertos-salida.md), rules R-53 to R-55 |
 | **XML generation from the XSD** (JAXB / xjc) | [`specs/adr/ADR-006-generacion-xml-jaxb-xjc.md`](specs/adr/ADR-006-generacion-xml-jaxb-xjc.md) |

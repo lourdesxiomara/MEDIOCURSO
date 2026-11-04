@@ -215,4 +215,4 @@ between services are replaced by the contracts in `specs/04-api/openapi.yaml` an
 
 ## 8. Related decisions
 ADR-001 (MVC with ports), ADR-002 (cross-platform stack), ADR-003 (persistence),
-ADR-004 (OSE/SUNAT channel), ADR-005 (Amazon region), ADR-006 (XML generation with JAXB/xjc) in `specs/adr/`.
+ADR-004 (OSE/SUNAT channel), ADR-005 (Amazon region), ADR-006 (XML generation with JAXB/xjc), ADR-007 (Sales Record through SIRE) in `specs/adr/`.

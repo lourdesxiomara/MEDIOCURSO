@@ -1,7 +1,7 @@
 {
   "tabla": "06",
   "titulo": "Código de la unidad de medida",
-  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf",
+  "fuente": "RS 234-2006/SUNAT, Anexo 3 – Tablas (versión RS 169-2015/SUNAT): https://www.sunat.gob.pe/legislacion/superin/2015/anexo3-rs169-2015.pdf · publicación oficial en SPIJ (incluye PK PAQUETE): https://spij.minjus.gob.pe/Graficos/Peru/2015/Junio/30/RS-169-2015-SUNAT-ANX-3.pdf",
   "nota": "Subconjunto verificado en la fuente. Formato 12.1, campo 16.",
   "equivalenciaCatalogo03": {
     "NIU": "NIU",
@@ -13,9 +13,9 @@
     "BX": "BX",
     "BG": "BG",
     "DZN": "DZN",
-    "PK": null
+    "PK": "PK"
   },
-  "notaEquivalencia": "Catálogo 03 (CPE) y Tabla 6 (libros) usan los mismos códigos UN/ECE Rec. 20. PK (paquete) no se confirmó en la Tabla 6: ver duda D-14.",
+  "notaEquivalencia": "Catálogo 03 (CPE) y Tabla 6 (libros) usan los mismos códigos UN/ECE Rec. 20 para las unidades del negocio; equivalencia 1 a 1.",
   "codigos": [
     {
       "codigo": "NIU",
@@ -52,6 +52,10 @@
     {
       "codigo": "DZN",
       "descripcion": "DOCENA"
+    },
+    {
+      "codigo": "PK",
+      "descripcion": "PAQUETE"
     }
   ]
 }

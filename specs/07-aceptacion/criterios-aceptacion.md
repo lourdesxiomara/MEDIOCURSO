@@ -308,7 +308,7 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Rules:** R-63 · **API:** `POST /productos`, `GET /inventario/kardex`
 - **Given** a product sold in `KGM` (catalog 03)
 - **When** its movements are listed
-- **Then** the unit is `KGM` in table 6 by the equivalence of `tabla06.json`, the item type is `01`; a product in `PK` is recorded in `NIU` until D-14 is resolved.
+- **Then** the unit is `KGM` in table 6 by the equivalence of `tabla06.json` and the item type is `01`; a product sold in `PK` is recorded as `PK` (PAQUETE); a unit outside table 6 returns `422` with rule R-63.
 
 ### CA-48 Running balance and closing balance
 - **Rules:** R-65 · **API:** `GET /inventario/kardex`
@@ -351,3 +351,9 @@ Format: **Given** (context) · **When** (action) · **Then** (observable result)
 - **Given** the sales record of 2026-10
 - **When** it is requested with `formato=ple`
 - **Then** the file is `LE2060012345020261000140100001111.txt`, identical to `ejemplos/LE2060012345020261000140100001111.txt`: 35 pipe-separated fields per line, dates `DD/MM/AAAA`, amounts with 2 decimals; an invalid period (e.g. `2026-13`) returns `400`.
+
+### CA-55 SIRE proposal reconciled before acceptance
+- **Rules:** R-76 · **API:** `GET /reportes/ventas`
+- **Given** the SIRE proposal for 2026-10 and the internal record `ejemplos/registro-ventas.2026-10.json`
+- **When** the period is reconciled
+- **Then** if both have the same four documents with the same fields 14–25 the proposal can be accepted; if the proposal lacks `F001-2` or shows a different total, acceptance is blocked and the difference is listed by document.

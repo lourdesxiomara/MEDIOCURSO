@@ -14,6 +14,8 @@
 | Electronic books structure – Format 14.1 (RS 361-2015; PLE 5.2 adds ICBPER as field 23) | Sales Record contract and PLE 14.1 export (R-70 to R-75) | https://www.sunat.gob.pe/legislacion/superin/2015/anexo1-361-2015.pdf · https://noticierocontable.com/estructura-libros-electronicos/ |
 | RS 000193-2020/SUNAT – payment terms | `formaPago`, credit instalments (R-35, R-36); credit note reason 13 | https://www.sunat.gob.pe/legislacion/superin/2020/193-2020.pdf · https://www.sunat.gob.pe/legislacion/superin/2020/anexo1-193-2020.pdf |
 | SEE programmer manual – return codes | CDR ranges: exceptions 0100–1999, rejections 2000–3999, observations ≥ 4000 (R-53 to R-55) | https://llama.pe/listado-de-errores-manual-del-programador-factura-electronica-sunat |
+| RS 112-2021/SUNAT (SIRE) · RS 000125-2026/SUNAT (schedule) | Sales Record kept in SIRE; obligation dates by taxpayer type (R-76, ADR-007) | https://elperuano.pe/noticia/299237-sunat-extiende-plazo-del-sire-para-empresas-con-ingresos-superiores-a-2300-uit · https://www.invyperu.com/blog/que-es-el-sire-sunat |
+| RS 169-2015/SUNAT Annex 3 – official SPIJ publication | Full table 6, including `PK PAQUETE` (D-14) | https://spij.minjus.gob.pe/Graficos/Peru/2015/Junio/30/RS-169-2015-SUNAT-ANX-3.pdf |
 | Law 30884 | ICBPER | Diario El Peruano |
 | Law 27037 | IGV exemption in the Amazon region | Diario El Peruano |
 | OASIS UBL 2.1 | XSDs in `docs/ubl/` | http://docs.oasis-open.org/ubl/os-UBL-2.1/ |
