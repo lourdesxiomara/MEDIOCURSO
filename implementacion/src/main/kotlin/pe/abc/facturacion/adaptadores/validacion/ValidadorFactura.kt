@@ -89,10 +89,10 @@ class ValidadorFactura : ValidadorDocumento {
             enCatalogo("03", texto("cbc:InvoicedQuantity/@unitCode", l), "R-20", "Línea $n: unidad de medida")
             val cantidad = numeroDe("cbc:InvoicedQuantity", l)
             val valorVenta = numeroDe("cbc:LineExtensionAmount", l)
-            regla(r2(cantidad * numeroDe("cac:Price/cbc:PriceAmount", l)) == valorVenta, "R-28", "Línea $n: LineExtensionAmount ≠ cantidad × valor unitario")
+            regla(r2(cantidad * numeroDe("cac:Price/cbc:PriceAmount", l)) igual valorVenta, "R-28", "Línea $n: LineExtensionAmount ≠ cantidad × valor unitario")
             enCatalogo("16", texto("cac:PricingReference/cac:AlternativeConditionPrice/cbc:PriceTypeCode", l), "R-27", "Línea $n: tipo de precio")
             val subtotales = nodos("cac:TaxTotal/cac:TaxSubtotal", l).map { it as Element }
-            regla(subtotales.sumOf { numeroDe("cbc:TaxAmount", it) } == numeroDe("cac:TaxTotal/cbc:TaxAmount", l), "R-28", "Línea $n: TaxTotal ≠ Σ subtotales")
+            regla(subtotales.sumOf { numeroDe("cbc:TaxAmount", it) } igual numeroDe("cac:TaxTotal/cbc:TaxAmount", l), "R-28", "Línea $n: TaxTotal ≠ Σ subtotales")
             for (s in subtotales) {
                 val codigo = texto("cac:TaxCategory/cac:TaxScheme/cbc:ID", s)
                 val monto = numeroDe("cbc:TaxAmount", s)
@@ -101,20 +101,20 @@ class ValidadorFactura : ValidadorDocumento {
                         enCatalogo("07", texto("cac:TaxCategory/cbc:TaxExemptionReasonCode", s), "R-21", "Línea $n: afectación IGV")
                         val pct = numeroDe("cac:TaxCategory/cbc:Percent", s)
                         regla(pct.compareTo(BigDecimal(18)) == 0, "R-22", "Línea $n: tasa IGV $pct ≠ 18")
-                        regla(r2(numeroDe("cbc:TaxableAmount", s) * pct / CIEN) == monto, "R-22", "Línea $n: IGV mal calculado")
+                        regla(r2(numeroDe("cbc:TaxableAmount", s) * pct / CIEN) igual monto, "R-22", "Línea $n: IGV mal calculado")
                     }
                     "2000" -> {
                         regla(existe("cbc:BaseUnitMeasure|cac:TaxCategory/cbc:PerUnitAmount", s).not(), "R-24", "Línea $n: ISC con BaseUnitMeasure/PerUnitAmount (son del ICBPER, Anexo 9-A ítem 37-A)")
                         val sistema = texto("cac:TaxCategory/cbc:TierRange", s)
                         enCatalogo("08", sistema, "R-24", "Línea $n: sistema de ISC")
                         if (sistema == "01" || sistema == "02")
-                            regla(r2(numeroDe("cbc:TaxableAmount", s) * numeroDe("cac:TaxCategory/cbc:Percent", s) / CIEN) == monto, "R-24", "Línea $n: ISC ≠ base × tasa")
+                            regla(r2(numeroDe("cbc:TaxableAmount", s) * numeroDe("cac:TaxCategory/cbc:Percent", s) / CIEN) igual monto, "R-24", "Línea $n: ISC ≠ base × tasa")
                     }
                     "7152" -> {
                         val bolsas = numeroDe("cbc:BaseUnitMeasure", s)
                         val tasa = numeroDe("cac:TaxCategory/cbc:PerUnitAmount", s)
                         regla(tasa.compareTo(tasaIcbper(fecha)) == 0, "R-26", "Línea $n: ICBPER $tasa ≠ monto vigente ${tasaIcbper(fecha)} al $fecha")
-                        regla(r2(bolsas * tasa) == monto, "R-26", "Línea $n: ICBPER ≠ bolsas × monto")
+                        regla(r2(bolsas * tasa) igual monto, "R-26", "Línea $n: ICBPER ≠ bolsas × monto")
                     }
                     "9997", "9998", "9995" -> {
                         enCatalogo("07", texto("cac:TaxCategory/cbc:TaxExemptionReasonCode", s), "R-21", "Línea $n: afectación IGV")
@@ -127,17 +127,17 @@ class ValidadorFactura : ValidadorDocumento {
         private fun totales(lineas: List<Node>) {
             val suma = lineas.sumOf { numeroDe("cbc:LineExtensionAmount", it) }
             val valorVenta = numeroDe("/inv:Invoice/cac:LegalMonetaryTotal/cbc:LineExtensionAmount")
-            regla(suma == valorVenta, "R-30", "Valor de venta $valorVenta ≠ Σ líneas $suma")
+            regla(suma igual valorVenta, "R-30", "Valor de venta $valorVenta ≠ Σ líneas $suma")
             val totalTributos = numeroDe("/inv:Invoice/cac:TaxTotal/cbc:TaxAmount")
             val subtotales = nodos("/inv:Invoice/cac:TaxTotal/cac:TaxSubtotal").map { it as Element }
-            regla(subtotales.sumOf { numeroDe("cbc:TaxAmount", it) } == totalTributos, "R-28", "TaxTotal del documento ≠ Σ subtotales")
+            regla(subtotales.sumOf { numeroDe("cbc:TaxAmount", it) } igual totalTributos, "R-28", "TaxTotal del documento ≠ Σ subtotales")
             for (s in subtotales) {
                 val codigo = texto("cac:TaxCategory/cac:TaxScheme/cbc:ID", s)
                 val deLineas = nodos("/inv:Invoice/cac:InvoiceLine/cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cac:TaxScheme/cbc:ID='$codigo']/cbc:TaxAmount").sumOf { BigDecimal(it.textContent.trim()) }
-                regla(deLineas == numeroDe("cbc:TaxAmount", s), "R-28", "Tributo $codigo: total ≠ Σ líneas ($deLineas)")
+                regla(deLineas igual numeroDe("cbc:TaxAmount", s), "R-28", "Tributo $codigo: total ≠ Σ líneas ($deLineas)")
             }
             val pagar = numeroDe("/inv:Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount")
-            regla(valorVenta + totalTributos == pagar, "R-31", "PayableAmount $pagar ≠ valor de venta + tributos")
+            regla(valorVenta + totalTributos igual pagar, "R-31", "PayableAmount $pagar ≠ valor de venta + tributos")
         }
 
         private fun formaPago(fecha: String) {
@@ -148,7 +148,7 @@ class ValidadorFactura : ValidadorDocumento {
             val cuotas = nodos("/inv:Invoice/cac:PaymentTerms[starts-with(cbc:PaymentMeansID,'Cuota')]").map { it as Element }
             regla(pendiente.signum() > 0 && pendiente <= numeroDe("/inv:Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount"), "R-36", "Monto neto pendiente fuera de rango")
             regla(cuotas.isNotEmpty(), "R-36", "Crédito sin cuotas")
-            regla(cuotas.sumOf { numeroDe("cbc:Amount", it) } == pendiente, "R-36", "Σ cuotas ≠ monto neto pendiente")
+            regla(cuotas.sumOf { numeroDe("cbc:Amount", it) } igual pendiente, "R-36", "Σ cuotas ≠ monto neto pendiente")
             regla(cuotas.all { texto("cbc:PaymentDueDate", it) > fecha }, "R-36", "Cuota con vencimiento no posterior a la emisión")
         }
 
@@ -210,5 +210,8 @@ class ValidadorFactura : ValidadorDocumento {
         }
 
         private fun r2(x: BigDecimal): BigDecimal = x.setScale(2, RoundingMode.HALF_UP)
+
+        /** Compara importes por valor: 345.8 y 345.80 son el mismo importe (BigDecimal.equals también compara la escala). */
+        private infix fun BigDecimal.igual(otro: BigDecimal) = compareTo(otro) == 0
     }
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import pe.abc.facturacion.adaptadores.envio.CanalSunatSoap
 import pe.abc.facturacion.adaptadores.validacion.ValidadorFactura
 import pe.abc.facturacion.puertos.DocumentoFirmado
+import pe.abc.facturacion.puertos.Observacion
 import pe.abc.facturacion.puertos.ResultadoEnvio
 import java.io.ByteArrayInputStream
 import java.net.InetSocketAddress
@@ -84,8 +85,11 @@ class CanalSunatSoapTest {
             .replace("<cbc:ResponseDate>", "<cbc:Note>4287 - Observación de ejemplo</cbc:Note>\n  <cbc:ResponseDate>")
         val r = canal(servidorQueResponde(200, respuestaConCdr(cdr))).enviar(documento)
         assertIs<ResultadoEnvio.Aceptado>(r)
-        assertEquals(listOf("4287 - Observación de ejemplo"), r.observaciones)
+        assertEquals(listOf(Observacion("4287", "Observación de ejemplo")), r.observaciones)
     }
+
+    @Test fun `nota del CDR sin codigo se conserva como texto`() =
+        assertEquals(Observacion("", "Nubefact DEMO"), CanalSunatSoap.observacion("Nubefact DEMO"))
 
     @Test fun `SOAP Fault de servicio 0100-0999 - excepcion reintentable con el mismo numero`() {
         val r = canal(servidorQueResponde(500, fault("0109", "El sistema no puede responder su solicitud"))).enviar(documento)

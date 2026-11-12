@@ -41,11 +41,14 @@ interface CanalEnvioCpe {
     fun enviar(doc: DocumentoFirmado): ResultadoEnvio
 }
 
+/** Observación del CDR (cbc:Note "4287 - texto"); codigo vacío si la nota no trae código. */
+data class Observacion(val codigo: String, val descripcion: String)
+
 /** CDR recibido: el XML íntegro (documento legal) y sus datos principales. */
 class Cdr(val xml: ByteArray, val codigo: String, val descripcion: String, val notas: List<String>)
 
 sealed interface ResultadoEnvio {
-    data class Aceptado(val cdr: Cdr, val observaciones: List<String>) : ResultadoEnvio           // 0 o ≥ 4000
+    data class Aceptado(val cdr: Cdr, val observaciones: List<Observacion>) : ResultadoEnvio           // 0 o ≥ 4000
     data class Rechazado(val cdr: Cdr, val codigo: String, val descripcion: String) : ResultadoEnvio  // 2000–3999
     data class Excepcion(val codigo: String, val descripcion: String, val reintentable: Boolean) : ResultadoEnvio  // 0100–1999
     data class NoDisponible(val causa: String) : ResultadoEnvio                                     // timeout / sin conexión

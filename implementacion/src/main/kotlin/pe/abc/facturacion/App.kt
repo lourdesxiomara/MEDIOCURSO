@@ -10,14 +10,18 @@ import java.nio.file.Paths
 import kotlin.system.exitProcess
 
 /**
- * Demostración por consola:  ./gradlew generar --args="<comprobante.json> [salida.xml] [certificado.p12 clave]"
+ * Demostración por consola:  ./gradlew generar --args="<comprobante.json> [salida.xml | carpeta/] [certificado.p12 clave] [--para-ose]"
  * Genera el XML UBL 2.1, lo valida (XSD + reglas) y, si se da un certificado, lo firma.
+ * --para-ose emite el comprobante con la fecha de hoy y un correlativo nuevo (para enviarlo a un OSE de prueba).
  */
-fun main(args: Array<String>) {
+fun main(argumentos: Array<String>) {
+    val paraOse = "--para-ose" in argumentos
+    val args = argumentos.filter { it != "--para-ose" }
     if (args.isEmpty()) {
-        System.err.println("Uso: generar <comprobante.json> [salida.xml] [certificado.p12 clave]"); exitProcess(2)
+        System.err.println("Uso: generar <comprobante.json> [salida.xml | carpeta/] [certificado.p12 clave] [--para-ose]"); exitProcess(2)
     }
-    val comprobante = LectorComprobante.leer(Paths.get(args[0]))
+    val leido = LectorComprobante.leer(Paths.get(args[0]))
+    val comprobante = if (paraOse) PreparacionOse.preparar(leido) else leido
     val xml = try { GeneradorFacturaJaxb().generar(comprobante) } catch (e: ErrorEstructuraUbl) {
         System.err.println("R-50: ${e.message}"); exitProcess(1)
     }
@@ -29,8 +33,12 @@ fun main(args: Array<String>) {
         contenido = firmado.contenido
         println("Firmado (R-51). DigestValue: ${firmado.digestValue}")
     }
-    val salida = Paths.get(args.getOrElse(1) { "${xml.nombre}.xml" })
+    // Nombre SUNAT: RUC-TIPO-SERIE-NUMERO.xml (R-52). Si la salida es una carpeta, el archivo se nombra así.
+    val destino = Paths.get(args.getOrElse(1) { "." })
+    val salida = if (Files.isDirectory(destino) || args.getOrElse(1) { "." }.endsWith("/")) destino.resolve("${xml.nombre}.xml") else destino
+    salida.toAbsolutePath().parent?.let { Files.createDirectories(it) }
     Files.write(salida, contenido)
     println(if (hallazgos.isEmpty()) "OK: ${xml.nombre} valido -> $salida" else "${hallazgos.size} hallazgo(s) -> $salida")
+    if (paraOse) println("Comprobante ${comprobante.numero}, fecha ${comprobante.fechaEmision}. Pegue el archivo en probar-xml.nubefact.com, marque 'Firmar' y pulse ENVIAR.")
     exitProcess(if (hallazgos.isEmpty()) 0 else 1)
 }

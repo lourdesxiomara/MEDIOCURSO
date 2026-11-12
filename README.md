@@ -14,7 +14,8 @@ UNAS – School of Computer and Systems Engineering.
 
 ## Phase 2 – Implementation (second midterm)
 UBL 2.1 invoice XML **generated from the Invoice XSD** (JAXB/xjc), validated, signed and submitted, in Kotlin, with
-44 unit tests: see [`implementacion/`](implementacion/README.md) (`cd implementacion && ./gradlew test`).
+62 unit tests, and accepted by a real OSE (Nubefact demo): see [`implementacion/`](implementacion/README.md)
+(`cd implementacion && ./gradlew test`, then `./gradlew generarParaOse`).
 
 ## Deliverables (phase 1)
 | # | Required deliverable | Location |

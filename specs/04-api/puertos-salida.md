@@ -17,6 +17,10 @@ interface GeneradorDocumentoUbl {      // implemented with JAXB classes generate
     fun generar(c: Comprobante): DocumentoXml
 }
 
+interface ValidadorDocumento {         // official XSD (R-50) + SUNAT rules on the XML; empty list = valid
+    fun validar(xml: ByteArray): List<Hallazgo>                 // Hallazgo(regla = "R-xx", mensaje)
+}
+
 interface FirmadorDigital {
     /** Enveloped XMLDSig signature inside ext:UBLExtensions (R-51). Returns signed XML and DigestValue. */
     fun firmar(xml: DocumentoXml, certificado: CertificadoDigital): DocumentoFirmado
@@ -27,6 +31,8 @@ interface CanalEnvioCpe {                 // ADR-004
     fun consultarEstado(ticketOClave: String): ResultadoEnvio  // getStatus / getStatusCdr
     fun enviarBaja(baja: ComunicacionBaja): Ticket             // sendSummary
 }
+
+data class Observacion(val codigo: String, val descripcion: String)  // CDR cbc:Note "4287 - text"
 
 sealed interface ResultadoEnvio {                                   // classified by R-54
     data class Aceptado(val cdr: Cdr, val observaciones: List<Observacion>) : ResultadoEnvio  // 0 or ≥ 4000
@@ -41,6 +47,9 @@ interface PropuestaRegistroVentas {     // SIRE, ADR-007, R-76
     fun descargarPropuesta(ticket: TicketSire): RegistroVentas      // archivoreporte → rows normalized to registro-ventas.schema.json
     fun aceptarPropuesta(periodo: YearMonth): TicketSire            // aceptapropuesta (only if CONCILIADA)
 }
+
+// Phase 2 (implementacion/) implements GeneradorDocumentoUbl, ValidadorDocumento, FirmadorDigital and
+// CanalEnvioCpe.enviar (sendBill). consultarEstado and enviarBaja (summaries and voids) are outside the second midterm.
 
 interface ValidadorRuc { fun consultar(ruc: Ruc): EstadoContribuyente? }  // R-13, optional
 interface Notificador  { fun enviarComprobante(c: Comprobante, correo: String) }

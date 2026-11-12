@@ -65,6 +65,11 @@ class FirmadorXmlDsig(private val idFirma: String = "SignatureABC") : FirmadorDi
     }
 
     companion object {
+        init {
+            // Base64 de SignatureValue y X509Certificate en una sola línea: sin saltos ni "&#13;" (en Windows) dentro de la firma.
+            System.setProperty("com.sun.org.apache.xml.internal.security.ignoreLineBreaks", "true")
+        }
+
         const val EXT = "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
 
         /** Carga el certificado digital de la empresa desde un .pfx / .p12 (PKCS#12). */

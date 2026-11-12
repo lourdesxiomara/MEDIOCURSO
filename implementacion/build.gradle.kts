@@ -83,3 +83,15 @@ tasks.register<JavaExec>("generar") {
     workingDir = projectDir
     systemProperty("repo.raiz", repo.absolutePath)
 }
+
+// Prueba en un OSE real de demostración (probar-xml.nubefact.com): factura con fecha de HOY, correlativo nuevo, cliente con RUC existente
+// y firmada con el certificado de prueba (el OSE la vuelve a firmar con el suyo al marcar "Firmar").
+tasks.register<JavaExec>("generarParaOse") {
+    group = "application"
+    description = "Genera build/ose/RUC-TIPO-SERIE-NUMERO.xml lista para probar-xml.nubefact.com"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set("pe.abc.facturacion.AppKt")
+    workingDir = projectDir
+    systemProperty("repo.raiz", repo.absolutePath)
+    args = listOf("ejemplos-ose/factura-ose.json", "build/ose/", "src/test/resources/cert-prueba.p12", "prueba", "--para-ose")
+}

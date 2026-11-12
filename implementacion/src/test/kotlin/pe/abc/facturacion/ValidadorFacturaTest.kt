@@ -15,6 +15,7 @@ class ValidadorFacturaTest {
     private val validador = ValidadorFactura()
     private val factura = GeneradorFacturaJaxb().generar(Ejemplos.comprobante("comprobante.factura.json")).texto
     private val credito = GeneradorFacturaJaxb().generar(Ejemplos.comprobante("comprobante.factura-isc.json")).texto
+    private val boleta = GeneradorFacturaJaxb().generar(Ejemplos.comprobante("comprobante.boleta.json")).texto
 
     private fun reglas(xml: String) = validador.validar(xml.toByteArray()).map { it.regla }.toSet()
 
@@ -24,7 +25,48 @@ class ValidadorFacturaTest {
         assertTrue(regla in r, "se esperaba $regla y se obtuvo $r")
     }
 
+    /** Reemplaza la ÚLTIMA coincidencia de la expresión (las líneas van después de los totales del documento). */
+    private fun ultima(original: String, expr: String, reemplazo: String): String {
+        val m = Regex(expr).findAll(original).last()
+        return original.substring(0, m.range.first) + m.value.replace(Regex(expr), reemplazo) + original.substring(m.range.last + 1)
+    }
+
     @Test fun `la factura generada no tiene hallazgos`() = assertEquals(emptySet(), reglas(factura))
+    @Test fun `la factura a credito y la boleta generadas no tienen hallazgos`() {
+        assertEquals(emptySet(), reglas(credito))
+        assertEquals(emptySet(), reglas(boleta))
+    }
+
+    @Test fun `los importes se comparan por valor - 345 8 y 345 80 son iguales`() =
+        assertEquals(emptySet(), reglas(factura.replace(""">345.80</cbc:PayableAmount>""", """>345.8</cbc:PayableAmount>""")))
+
+    @Test fun `tipo de comprobante que no es factura ni boleta (R-01)`() =
+        detecta("R-01", factura, """listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">01<""", """listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">07<""")
+
+    @Test fun `correlativo fuera de formato (R-03)`() = detecta("R-03", factura, "<cbc:ID>F001-1</cbc:ID>", "<cbc:ID>F001-0</cbc:ID>")
+
+    @Test fun `DNI que no tiene 8 digitos (R-12)`() = detecta("R-12", boleta, """schemeID="1">45678912<""", """schemeID="1">4567891<""")
+
+    @Test fun `afectacion IGV fuera del catalogo 07 (R-21)`() =
+        detecta("R-21", factura, "<cbc:TaxExemptionReasonCode>10</cbc:TaxExemptionReasonCode>", "<cbc:TaxExemptionReasonCode>99</cbc:TaxExemptionReasonCode>")
+
+    @Test fun `linea exonerada con importe de IGV (R-23)`() {
+        val mutado = ultima(boleta, """(7\.00</cbc:TaxableAmount>\s*<cbc:TaxAmount currencyID="PEN">)0\.00""", "$11.26")
+        assertTrue("R-23" in reglas(mutado), reglas(mutado).toString())
+    }
+
+    @Test fun `tipo de precio fuera del catalogo 16 (R-27)`() = detecta("R-27", factura, "<cbc:PriceTypeCode>01</cbc:PriceTypeCode>", "<cbc:PriceTypeCode>03</cbc:PriceTypeCode>")
+
+    @Test fun `numero de lineas distinto de LineCountNumeric (R-28)`() =
+        detecta("R-28", factura, "<cbc:LineCountNumeric>3</cbc:LineCountNumeric>", "<cbc:LineCountNumeric>4</cbc:LineCountNumeric>")
+
+    @Test fun `valor de venta del documento distinto de la suma de lineas (R-30)`() =
+        detecta("R-30", factura, """<cbc:LineExtensionAmount currencyID="PEN">280.20</cbc:LineExtensionAmount>""", """<cbc:LineExtensionAmount currencyID="PEN">281.20</cbc:LineExtensionAmount>""")
+
+    @Test fun `sin leyenda 1000 del monto en letras (R-32)`() = detecta("R-32", factura, """languageLocaleID="1000"""", """languageLocaleID="1002"""")
+
+    @Test fun `importe en una moneda distinta de la del documento (R-33)`() =
+        detecta("R-33", factura, """<cbc:PriceAmount currencyID="PEN">22.00</cbc:PriceAmount>""", """<cbc:PriceAmount currencyID="USD">22.00</cbc:PriceAmount>""")
 
     @Test fun `estructura invalida - XSD (R-50)`() =
         detecta("R-50", factura, "<cbc:IssueDate>2026-10-22</cbc:IssueDate>", "<cbc:IssueDate>22/10/2026</cbc:IssueDate>")

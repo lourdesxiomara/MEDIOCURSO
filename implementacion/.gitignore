@@ -3,3 +3,8 @@ build/
 .kotlin/
 *.iml
 .idea/
+bin/
+.vscode/
+.project
+.classpath
+.settings/

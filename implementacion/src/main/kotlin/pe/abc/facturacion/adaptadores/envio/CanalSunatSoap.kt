@@ -4,6 +4,7 @@ import pe.abc.facturacion.adaptadores.validacion.ValidadorFactura
 import pe.abc.facturacion.puertos.CanalEnvioCpe
 import pe.abc.facturacion.puertos.Cdr
 import pe.abc.facturacion.puertos.DocumentoFirmado
+import pe.abc.facturacion.puertos.Observacion
 import pe.abc.facturacion.puertos.ResultadoEnvio
 import org.w3c.dom.Element
 import java.io.ByteArrayInputStream
@@ -112,11 +113,15 @@ class CanalSunatSoap(
         fun clasificar(cdr: Cdr): ResultadoEnvio {
             val n = cdr.codigo.toIntOrNull() ?: return ResultadoEnvio.NoDisponible("CDR sin ResponseCode numérico")
             return when {
-                n == 0 || n >= 4000 -> ResultadoEnvio.Aceptado(cdr, cdr.notas)
+                n == 0 || n >= 4000 -> ResultadoEnvio.Aceptado(cdr, cdr.notas.map(::observacion))
                 n in 2000..3999 -> ResultadoEnvio.Rechazado(cdr, cdr.codigo, cdr.descripcion)
                 else -> clasificarExcepcion(cdr.codigo, cdr.descripcion)
             }
         }
+
+        /** "4287 - El precio unitario..." → Observacion("4287", "El precio unitario..."). */
+        fun observacion(nota: String): Observacion =
+            Regex("""^(\d{4})\s*-\s*(.*)$""").find(nota)?.let { Observacion(it.groupValues[1], it.groupValues[2]) } ?: Observacion("", nota)
 
         /** R-55: códigos de servicio (< 1000, p. ej. 0100, 0109) se reintentan con el mismo número; 1000–1999 exigen corregir. */
         fun clasificarExcepcion(codigo: String, descripcion: String): ResultadoEnvio.Excepcion {

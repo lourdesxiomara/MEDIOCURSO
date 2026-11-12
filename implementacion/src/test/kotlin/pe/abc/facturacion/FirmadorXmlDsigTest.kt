@@ -42,6 +42,15 @@ class FirmadorXmlDsigTest {
         assertTrue(firmado.digestValue.isNotBlank())
     }
 
+    @Test fun `SignatureValue y X509Certificate van en una sola linea, sin saltos ni retornos de carro`() {
+        val doc = ValidadorFactura.parsear(firmado.contenido)
+        for (nombre in listOf("SignatureValue", "X509Certificate")) {
+            val valor = doc.getElementsByTagNameNS(XMLSignature.XMLNS, nombre).item(0).textContent
+            assertFalse(valor.any { it == '\n' || it == '\r' }, "$nombre con saltos de línea")
+        }
+        assertFalse("&#13;" in firmado.contenido.toString(Charsets.UTF_8))
+    }
+
     @Test fun `el XML firmado sigue siendo valido (XSD y reglas)`() =
         assertEquals(emptyList(), ValidadorFactura().validar(firmado.contenido))
 
